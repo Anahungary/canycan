@@ -1,22 +1,36 @@
 ---
-// src/pages/blog/page/[page].astro - Página dinámica para paginación del blog
+// src/pages/blog/page/[page].astro - Página dinámica para paginación del blog CORREGIDA
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Container from '../../../components/ui/Container.astro';
 import ArticleList from '../../../components/blog/ArticleList.astro';
 import Card from '../../../components/ui/Card.astro';
 import Badge from '../../../components/ui/Badge.astro';
 
+// Interfaces de TypeScript
+interface Author {
+  name: string;
+  avatar: string;
+}
+
+interface Article {
+  id: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  date: string;
+  author: Author;
+  readingTime: number;
+  categories: string[];
+  featured?: boolean;
+}
+
 // Configuración para la paginación
 const ARTICLES_PER_PAGE = 6;
-const TOTAL_PAGES = 3; // Para el ejemplo, simularemos 3 páginas
 
 // Generar rutas dinámicas para la paginación
 export function getStaticPaths() {
-  // Crear un arreglo con el número total de páginas
-  const pages = Array.from({ length: TOTAL_PAGES }, (_, i) => i + 1);
-  
-  // Simulación de base de datos de artículos
-  const allArticles = [
+  // Simulación de base de datos de artículos con tipado correcto
+  const allArticles: Article[] = [
     // Página 1
     {
       id: 'entrenamiento-profesional-vs-casero',
@@ -45,9 +59,19 @@ export function getStaticPaths() {
       readingTime: 7,
       categories: ['Entrenamiento', 'Perros']
     },
-    // Más artículos para la página 1...
-    
-    // Página 2
+    {
+      id: 'como-elegir-comida-perro',
+      title: 'Cómo elegir la alimentación ideal para tu perro',
+      excerpt: 'Guía completa para entender las necesidades nutricionales de tu perro según su edad, tamaño y actividad física.',
+      image: '/images/articles/dog-food-guide.jpg',
+      date: '2023-09-15',
+      author: {
+        name: 'María Gómez',
+        avatar: '/images/authors/maria-gomez.jpg'
+      },
+      readingTime: 8,
+      categories: ['Alimentación', 'Perros']
+    },
     {
       id: 'entrenamiento-gatuno',
       title: '¿Se pueden entrenar los gatos? Mitos y realidades',
@@ -74,9 +98,6 @@ export function getStaticPaths() {
       readingTime: 6,
       categories: ['Entrenamiento', 'Comportamiento']
     },
-    // Más artículos para la página 2...
-    
-    // Página 3
     {
       id: 'juguetes-inteligencia-perros',
       title: '7 juguetes para estimular la inteligencia de tu perro',
@@ -103,33 +124,68 @@ export function getStaticPaths() {
       readingTime: 9,
       categories: ['Adopción', 'Perros']
     },
-    // Más artículos para la página 3...
+    // Más artículos simulados para tener contenido suficiente
+    {
+      id: 'cuidado-gatos-mayores',
+      title: 'Cuidados especiales para gatos mayores',
+      excerpt: 'Guía completa para cuidar a tu gato senior y mantener su calidad de vida.',
+      image: '/images/articles/senior-cats.jpg',
+      date: '2023-08-20',
+      author: {
+        name: 'María Gómez',
+        avatar: '/images/authors/maria-gomez.jpg'
+      },
+      readingTime: 7,
+      categories: ['Cuidado', 'Gatos']
+    },
+    {
+      id: 'socializar-perro-adulto',
+      title: 'Cómo socializar un perro adulto',
+      excerpt: 'Técnicas para ayudar a perros adultos a socializar con otros perros y personas.',
+      image: '/images/articles/adult-dog-socialization.jpg',
+      date: '2023-08-15',
+      author: {
+        name: 'Carlos Ruiz',
+        avatar: '/images/authors/carlos-ruiz.jpg'
+      },
+      readingTime: 8,
+      categories: ['Comportamiento', 'Perros']
+    }
   ];
   
-  // Dividir los artículos en páginas
-  const pageArticlesMap = pages.reduce((acc, page) => {
-    // En un escenario real, aquí se paginaría correctamente
-    // Para el ejemplo, simularemos mediante la división
+  // Calcular total de páginas basado en el número de artículos
+  const totalPages = Math.ceil(allArticles.length / ARTICLES_PER_PAGE);
+  
+  // Crear un arreglo con el número total de páginas
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+  
+  // Dividir los artículos en páginas con tipado correcto
+  const pageArticlesMap: { [key: number]: typeof allArticles } = {};
+  
+  pages.forEach(page => {
     const startIndex = (page - 1) * ARTICLES_PER_PAGE;
     const endIndex = startIndex + ARTICLES_PER_PAGE;
-    acc[page] = allArticles.slice(startIndex, endIndex);
-    return acc;
-  }, {});
+    pageArticlesMap[page] = allArticles.slice(startIndex, endIndex);
+  });
   
   return pages.map(page => ({
     params: { page: page.toString() },
     props: { 
       page,
       articles: pageArticlesMap[page] || [],
-      totalPages: TOTAL_PAGES
+      totalPages: totalPages
     }
   }));
 }
 
 const { page, articles, totalPages } = Astro.props;
 
-// Categorías del blog (simulación)
-const categories = [
+// Categorías del blog (simulación) con tipado correcto
+const categories: Array<{
+  name: string;
+  count: number;
+  color: 'primary' | 'secondary' | 'success' | 'info';
+}> = [
   { name: 'Entrenamiento', count: 24, color: 'primary' },
   { name: 'Alimentación', count: 18, color: 'secondary' },
   { name: 'Salud', count: 31, color: 'success' },
@@ -180,9 +236,9 @@ const categories = [
         {/* Paginación */}
         <div class="mt-10 flex justify-center">
           <nav class="flex items-center">
-            {parseInt(page) > 1 && (
+            {parseInt(page.toString()) > 1 && (
               <a 
-                href={`/blog/page/${parseInt(page) - 1}`} 
+                href={`/blog/page/${parseInt(page.toString()) - 1}`} 
                 class="px-4 py-2 mx-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
               >
                 &laquo; Anterior
@@ -192,7 +248,7 @@ const categories = [
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
               <a 
                 href={`/blog/page/${pageNum}`} 
-                class={`px-4 py-2 mx-1 ${parseInt(page) === pageNum 
+                class={`px-4 py-2 mx-1 ${parseInt(page.toString()) === pageNum 
                   ? 'bg-[#AFC2D5] text-white' 
                   : 'border border-gray-300 text-gray-700 hover:bg-gray-50'} rounded-md text-sm`}
               >
@@ -200,9 +256,9 @@ const categories = [
               </a>
             ))}
             
-            {parseInt(page) < totalPages && (
+            {parseInt(page.toString()) < totalPages && (
               <a 
-                href={`/blog/page/${parseInt(page) + 1}`} 
+                href={`/blog/page/${parseInt(page.toString()) + 1}`} 
                 class="px-4 py-2 mx-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
               >
                 Siguiente &raquo;
@@ -225,7 +281,7 @@ const categories = [
                   class="flex justify-between items-center py-2 px-3 rounded-md hover:bg-gray-100 transition-colors duration-200"
                 >
                   <span>{category.name}</span>
-                  <Badge variant={category.color} size="sm">{category.count}</Badge>
+                  <Badge variant={category.color as 'primary' | 'secondary' | 'success' | 'info'} size="sm">{category.count}</Badge>
                 </a>
               ))}
             </div>
