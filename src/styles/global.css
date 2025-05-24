@@ -1,0 +1,175 @@
+@import "tailwindcss";
+/* global.css - Estilos globales para mejorar el espaciado y disposición */
+
+/* Mejoras de espaciado para el layout */
+.container {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1320px; /* Ancho ampliado para mejor uso del espacio en pantallas grandes */
+  }
+}
+
+/* Ajustes a la grid para mejorar espaciado entre columnas */
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  
+  .gap-6 {
+    gap: 1.75rem; /* Un poco más de espacio entre columnas */
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  
+  .gap-6 {
+    gap: 2rem; /* Más espacio en pantallas muy grandes */
+  }
+}
+
+/* Mejoras para cards y contenedores */
+.card, .bg-white {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Asegurar que las cards tienen suficiente espacio vertical */
+.card, .p-4 {
+  padding: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .card, .p-4 {
+    padding: 1.5rem;
+  }
+}
+
+/* Mejorar el aspecto y la legibilidad del texto */
+body {
+  color: #2E2E2E;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.3;
+  font-weight: 700;
+  color: #2E2E2E;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+/* Mejoras para los colores y contrastes */
+.text-gray-600 {
+  color: #4B5563; /* Un tono un poco más oscuro para mejor contraste */
+}
+
+.bg-gray-50 {
+  background-color: #F9FAFB; /* Un tono ligeramente más claro */
+}
+
+/* Mejoras para las tarjetas de razas */
+.breed-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.breed-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Asegurarse de que las imágenes se cargan bien */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Mejoras para los botones */
+button, .button {
+  transition: all 0.2s ease;
+}
+
+button:hover, .button:hover {
+  transform: translateY(-2px);
+}
+
+/* Mejoras para la tabla del comparador */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+th, td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* Mejorar la visualización en dispositivos móviles */
+@media (max-width: 640px) {
+  th, td {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  table {
+    font-size: 0.875rem;
+  }
+}

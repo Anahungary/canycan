@@ -1,0 +1,155 @@
+---
+// src/pages/comportamiento/index.astro - Página de categoría de comportamiento
+import CategoryLayout from '../../layouts/CategoryLayout.astro';
+
+// Artículos de comportamiento
+const articles = [
+  {
+    id: 'lenguaje-corporal-perros',
+    title: 'Decodifica el lenguaje corporal de tu perro: 15 señales clave',
+    excerpt: 'Aprende a interpretar correctamente las posturas, gestos y expresiones de tu perro para entender sus emociones y necesidades.',
+    image: '/images/articles/dog-body-language.jpg',
+    date: '2023-09-22',
+    author: {
+      name: 'Laura Martín',
+      avatar: '/images/authors/laura-martin.jpg'
+    },
+    readingTime: 9,
+    categories: ['Comportamiento', 'Comunicación']
+  },
+  {
+    id: 'ansiedad-separacion',
+    title: 'Ansiedad por separación: causas, síntomas y soluciones',
+    excerpt: 'Guía completa para identificar y tratar la ansiedad por separación en perros y gatos de manera efectiva.',
+    image: '/images/articles/separation-anxiety.jpg',
+    date: '2023-09-20',
+    author: {
+      name: 'Carlos Ruiz',
+      avatar: '/images/authors/carlos-ruiz.jpg'
+    },
+    readingTime: 11,
+    categories: ['Comportamiento', 'Ansiedad']
+  },
+  {
+    id: 'agresividad-canina',
+    title: 'Agresividad canina: tipos, causas y métodos de corrección',
+    excerpt: 'Comprende los diferentes tipos de agresividad en perros y cómo abordar cada situación de manera segura.',
+    image: '/images/articles/dog-aggression.jpg',
+    date: '2023-09-18',
+    author: {
+      name: 'María Gómez',
+      avatar: '/images/authors/maria-gomez.jpg'
+    },
+    readingTime: 12,
+    categories: ['Comportamiento', 'Seguridad']
+  },
+  {
+    id: 'socializacion-adultos',
+    title: 'Socialización en perros adultos: nunca es tarde para aprender',
+    excerpt: 'Técnicas y estrategias para socializar perros adultos con otros animales, personas y nuevos entornos.',
+    image: '/images/articles/adult-dog-socialization.jpg',
+    date: '2023-09-16',
+    author: {
+      name: 'Carlos Ruiz',
+      avatar: '/images/authors/carlos-ruiz.jpg'
+    },
+    readingTime: 8,
+    categories: ['Comportamiento', 'Socialización']
+  },
+  {
+    id: 'comportamiento-gatos',
+    title: 'Comportamientos extraños en gatos: ¿normales o preocupantes?',
+    excerpt: 'Descifra los comportamientos felinos más comunes y aprende cuándo es necesario consultar al veterinario.',
+    image: '/images/articles/cat-behavior.jpg',
+    date: '2023-09-14',
+    author: {
+      name: 'Laura Martín',
+      avatar: '/images/authors/laura-martin.jpg'
+    },
+    readingTime: 7,
+    categories: ['Comportamiento', 'Gatos']
+  },
+  {
+    id: 'ladridos-excesivos',
+    title: 'Ladridos excesivos: identificar la causa para encontrar la solución',
+    excerpt: 'Estrategias efectivas para reducir los ladridos problemáticos según el motivo que los provoca.',
+    image: '/images/articles/excessive-barking.jpg',
+    date: '2023-09-12',
+    author: {
+      name: 'María Gómez',
+      avatar: '/images/authors/maria-gomez.jpg'
+    },
+    readingTime: 6,
+    categories: ['Comportamiento', 'Ruido']
+  },
+  {
+    id: 'territorialidad-mascotas',
+    title: 'Territorialidad en mascotas: cómo manejar la posesividad',
+    excerpt: 'Entiende por qué tu mascota se vuelve posesiva con juguetes, comida o espacios y cómo corregirlo.',
+    image: '/images/articles/pet-territoriality.jpg',
+    date: '2023-09-10',
+    author: {
+      name: 'Carlos Ruiz',
+      avatar: '/images/authors/carlos-ruiz.jpg'
+    },
+    readingTime: 8,
+    categories: ['Comportamiento', 'Dominancia']
+  }
+];
+
+// Artículo destacado
+const featuredArticle = {
+  id: 'reactividad-perros-guia-completa',
+  title: 'Reactividad en perros: guía completa para dueños',
+  excerpt: 'Todo lo que necesitas saber sobre la reactividad canina: causas, señales de alarma, técnicas de manejo y cuándo buscar ayuda profesional.',
+  image: '/images/articles/dog-reactivity.jpg',
+  date: '2023-09-25',
+  author: {
+    name: 'María Gómez',
+    avatar: '/images/authors/maria-gomez.jpg'
+  },
+  readingTime: 15,
+  categories: ['Comportamiento', 'Reactividad']
+};
+
+// Subcategorías de comportamiento
+const subcategories = [
+  'Ansiedad y Estrés',
+  'Agresividad',
+  'Socialización',
+  'Comunicación Animal',
+  'Reactividad',
+  'Comportamiento Destructivo',
+  'Problemas de Conducta',
+  'Comportamiento Felino'
+];
+
+// Etiquetas populares
+const popularTags = [
+  'Lenguaje Corporal',
+  'Ansiedad por Separación',
+  'Socialización',
+  'Ladridos',
+  'Agresividad',
+  'Miedo',
+  'Territorialidad',
+  'Reactividad',
+  'Estrés',
+  'Dominancia'
+];
+
+const title = "Comportamiento Animal";
+const description = "Comprende mejor a tu mascota con nuestros artículos sobre comportamiento canino y felino. Soluciones a problemas de conducta, comunicación y convivencia.";
+const image = "/images/categories/behavior-banner.jpg";
+---
+
+<CategoryLayout
+  title={title}
+  description={description}
+  image={image}
+  category="comportamiento"
+  subcategories={subcategories}
+  articles={articles}
+  popularTags={popularTags}
+  featuredArticle={featuredArticle}
+/>

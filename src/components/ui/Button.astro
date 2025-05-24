@@ -1,0 +1,63 @@
+---
+// Button.astro - Componente reutilizable para botones
+interface Props {
+  variant?: 'primary' | 'secondary' | 'outline' | 'text';
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  fullWidth?: boolean;
+  class?: string;
+  disabled?: boolean;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  fullWidth = false,
+  disabled = false,
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+// Mapeo de variantes a clases
+const variantClasses = {
+  primary: 'bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white',
+  secondary: 'bg-[#F6B89E] hover:bg-[#E4A78E] text-white',
+  outline: 'bg-transparent border border-[#AFC2D5] text-[#AFC2D5] hover:bg-[#AFC2D5] hover:bg-opacity-10',
+  text: 'bg-transparent text-[#AFC2D5] hover:text-[#9DB3C6] hover:underline',
+};
+
+// Mapeo de tamaños a clases
+const sizeClasses = {
+  sm: 'text-xs py-1 px-2 rounded',
+  md: 'text-sm py-2 px-4 rounded-md',
+  lg: 'text-base py-3 px-6 rounded-lg',
+};
+
+// Ensamblar clases
+const classes = [
+  'font-medium transition-colors duration-200',
+  variantClasses[variant],
+  sizeClasses[size],
+  fullWidth ? 'w-full' : '',
+  disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+  className,
+].join(' ');
+---
+
+{href ? (
+  <a href={href} class={classes} {...rest}>
+    <slot />
+  </a>
+) : (
+  <button 
+    type={type} 
+    class={classes} 
+    disabled={disabled} 
+    {...rest}
+  >
+    <slot />
+  </button>
+)}

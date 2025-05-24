@@ -1,0 +1,106 @@
+---
+// ArticleMeta.astro - Componente para mostrar metadatos de artículos
+import { Image } from 'astro:assets';
+import Badge from '../ui/Badge.astro';
+
+interface Props {
+  title: string;
+  author: {
+    name: string;
+    avatar?: string;
+    bio?: string;
+  };
+  date: string;
+  readingTime: number;
+  categories: string[];
+  views?: number;
+  showAuthorBio?: boolean;
+}
+
+const { 
+  title, 
+  author, 
+  date, 
+  readingTime, 
+  categories, 
+  views,
+  showAuthorBio = false
+} = Astro.props;
+
+// Formatear fecha
+const formatDate = (dateString: string) => {
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString('es-ES', options);
+};
+
+// Formatear número de vistas
+const formatViews = (count: number) => {
+  if (count < 1000) return count.toString();
+  if (count < 1000000) return (count / 1000).toFixed(1) + 'K';
+  return (count / 1000000).toFixed(1) + 'M';
+};
+---
+
+<div class="mb-8">
+  {/* Categorías */}
+  <div class="flex flex-wrap gap-2 mb-4">
+    {categories.map((category) => (
+      <Badge variant="info" size="md">{category}</Badge>
+    ))}
+  </div>
+  
+  {/* Título */}
+  <h1 class="text-3xl md:text-4xl font-bold text-[#2E2E2E] mb-4">
+    {title}
+  </h1>
+  
+  {/* Metadatos */}
+  <div class="flex flex-wrap items-center text-sm text-gray-600 gap-x-4 gap-y-2">
+    <div class="flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+      <span>{formatDate(date)}</span>
+    </div>
+    
+    <div class="flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>{readingTime} min lectura</span>
+    </div>
+    
+    {views !== undefined && (
+      <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+        </svg>
+        <span>{formatViews(views)} visualizaciones</span>
+      </div>
+    )}
+  </div>
+  
+  {/* Autor */}
+  <div class={`flex items-center mt-4 ${showAuthorBio ? 'border-b border-gray-200 pb-4' : ''}`}>
+    {author.avatar ? (
+      <Image 
+        src={author.avatar} 
+        alt={author.name}
+        width={40}
+        height={40}
+        class="w-10 h-10 rounded-full mr-3"
+      />
+    ) : (
+      <div class="w-10 h-10 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white font-bold mr-3">
+        {author.name.charAt(0)}
+      </div>
+    )}
+    <div>
+      <div class="font-medium text-[#2E2E2E]">Por {author.name}</div>
+      {author.bio && showAuthorBio && (
+        <p class="text-sm text-gray-600 mt-1">{author.bio}</p>
+      )}
+    </div>
+  </div>
+</div>

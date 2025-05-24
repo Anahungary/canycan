@@ -1,0 +1,382 @@
+---
+// src/pages/blog/categoria/[categoria].astro - Página dinámica para categorías del blog
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Container from '../../../components/ui/Container.astro';
+import ArticleList from '../../../components/blog/ArticleList.astro';
+import Button from '../../../components/ui/Button.astro';
+import Badge from '../../../components/ui/Badge.astro';
+import Card from '../../../components/ui/Card.astro';
+
+// En un entorno real, esto sería una consulta a la API o CMS
+export async function getStaticPaths() {
+  // Definir las categorías disponibles con sus metadatos
+  const categories = [
+    {
+      slug: 'entrenamiento',
+      name: 'Entrenamiento',
+      description: 'Técnicas y consejos para educar a tu mascota de forma positiva y efectiva.',
+      image: '/images/categories/training.jpg',
+      color: 'primary'
+    },
+    {
+      slug: 'alimentacion',
+      name: 'Alimentación',
+      description: 'Todo sobre nutrición, dietas y necesidades alimenticias para perros y gatos.',
+      image: '/images/categories/food.jpg',
+      color: 'secondary'
+    },
+    {
+      slug: 'salud',
+      name: 'Salud',
+      description: 'Prevención, cuidados y tratamiento de enfermedades comunes en mascotas.',
+      image: '/images/categories/health.jpg',
+      color: 'success'
+    },
+    {
+      slug: 'comportamiento',
+      name: 'Comportamiento',
+      description: 'Entiende por qué tu mascota actúa como lo hace y cómo resolver problemas conductuales.',
+      image: '/images/categories/behavior.jpg',
+      color: 'info'
+    },
+    {
+      slug: 'perros',
+      name: 'Perros',
+      description: 'Artículos especializados en cuidados, entrenamiento y bienestar canino.',
+      image: '/images/categories/dogs.jpg',
+      color: 'primary'
+    },
+    {
+      slug: 'gatos',
+      name: 'Gatos',
+      description: 'Consejos y guías para entender y cuidar a tus felinos correctamente.',
+      image: '/images/categories/cats.jpg',
+      color: 'secondary'
+    },
+    {
+      slug: 'nuevos-duenos',
+      name: 'Nuevos Dueños',
+      description: 'Información esencial para quienes acaban de adoptar o comprar una mascota.',
+      image: '/images/categories/new-owners.jpg',
+      color: 'success'
+    }
+  ];
+  
+  // Base de datos simulada de artículos
+  const allArticles = [
+    // Artículos de Entrenamiento
+    {
+      id: 'comandos-basicos-perros',
+      title: 'Los 5 comandos básicos que todo perro debería conocer',
+      excerpt: 'Guía paso a paso para enseñar a tu perro los comandos fundamentales: sentado, quieto, ven, abajo y junto.',
+      image: '/images/articles/basic-commands.jpg',
+      date: '2023-09-20',
+      author: {
+        name: 'Carlos Ruiz',
+        avatar: '/images/authors/carlos-ruiz.jpg'
+      },
+      readingTime: 7,
+      categories: ['entrenamiento', 'perros']
+    },
+    {
+      id: 'refuerzo-positivo-tecnicas',
+      title: 'Técnicas de refuerzo positivo para entrenar a tu mascota',
+      excerpt: 'Descubre cómo el refuerzo positivo puede transformar el comportamiento de tu mascota de manera efectiva y sin estrés.',
+      image: '/images/articles/positive-reinforcement.jpg',
+      date: '2023-09-18',
+      author: {
+        name: 'Laura Martín',
+        avatar: '/images/authors/laura-martin.jpg'
+      },
+      readingTime: 6,
+      categories: ['entrenamiento', 'comportamiento']
+    },
+    {
+      id: 'entrenamiento-gatuno',
+      title: '¿Se pueden entrenar los gatos? Mitos y realidades',
+      excerpt: 'Contrario a la creencia popular, los gatos pueden aprender comandos y trucos. Aprende las técnicas efectivas para entrenar a tu felino.',
+      image: '/images/articles/cat-training.jpg',
+      date: '2023-09-15',
+      author: {
+        name: 'María Gómez',
+        avatar: '/images/authors/maria-gomez.jpg'
+      },
+      readingTime: 8,
+      categories: ['entrenamiento', 'gatos']
+    },
+    
+    // Artículos de Alimentación
+    {
+      id: 'como-elegir-comida-perro',
+      title: 'Cómo elegir la alimentación ideal para tu perro',
+      excerpt: 'Guía completa para entender las necesidades nutricionales de tu perro según su edad, tamaño y actividad física.',
+      image: '/images/articles/dog-food-guide.jpg',
+      date: '2023-09-15',
+      author: {
+        name: 'María Gómez',
+        avatar: '/images/authors/maria-gomez.jpg'
+      },
+      readingTime: 8,
+      categories: ['alimentacion', 'perros']
+    },
+    {
+      id: 'dieta-barf-pros-contras',
+      title: 'Dieta BARF: ventajas, riesgos y cómo implementarla correctamente',
+      excerpt: 'Todo lo que necesitas saber sobre la alimentación con comida cruda biológicamente apropiada para tu mascota.',
+      image: '/images/articles/barf-diet.jpg',
+      date: '2023-09-12',
+      author: {
+        name: 'Carlos Ruiz',
+        avatar: '/images/authors/carlos-ruiz.jpg'
+      },
+      readingTime: 9,
+      categories: ['alimentacion', 'salud']
+    },
+    
+    // Artículos de Comportamiento
+    {
+      id: 'problemas-comportamiento-gatos',
+      title: '5 problemas de comportamiento comunes en gatos y cómo solucionarlos',
+      excerpt: 'Aprende a identificar y corregir problemas como marcar territorio, agresividad o ansiedad por separación.',
+      image: '/images/articles/cat-behavior.jpg',
+      date: '2023-09-10',
+      author: {
+        name: 'Carlos Ruiz',
+        avatar: '/images/authors/carlos-ruiz.jpg'
+      },
+      readingTime: 6,
+      categories: ['comportamiento', 'gatos']
+    },
+    {
+      id: 'ansiedad-separacion-perros',
+      title: 'Ansiedad por separación en perros: síntomas y tratamiento',
+      excerpt: 'Cómo identificar si tu perro sufre de ansiedad cuando te vas y estrategias efectivas para ayudarlo.',
+      image: '/images/articles/separation-anxiety.jpg',
+      date: '2023-09-08',
+      author: {
+        name: 'Laura Martín',
+        avatar: '/images/authors/laura-martin.jpg'
+      },
+      readingTime: 7,
+      categories: ['comportamiento', 'perros', 'salud']
+    },
+    
+    // Artículos de Nuevos Dueños
+    {
+      id: 'primeros-dias-cachorro',
+      title: 'La guía definitiva para los primeros días con tu cachorro',
+      excerpt: 'Todo lo que necesitas saber para que la adaptación de tu nuevo cachorro al hogar sea exitosa y sin estrés.',
+      image: '/images/articles/puppy-first-days.jpg',
+      date: '2023-09-05',
+      author: {
+        name: 'Laura Martín',
+        avatar: '/images/authors/laura-martin.jpg'
+      },
+      readingTime: 10,
+      categories: ['nuevos-duenos', 'perros']
+    },
+    {
+      id: 'checklist-primeros-dias-gato',
+      title: 'Checklist: Todo lo que necesitas para recibir a tu primer gato',
+      excerpt: 'Desde la caja de arena hasta los juguetes, esta lista te asegurará tener todo preparado para la llegada de tu nuevo felino.',
+      image: '/images/articles/cat-checklist.jpg',
+      date: '2023-09-02',
+      author: {
+        name: 'María Gómez',
+        avatar: '/images/authors/maria-gomez.jpg'
+      },
+      readingTime: 6,
+      categories: ['nuevos-duenos', 'gatos']
+    }
+  ];
+  
+  return categories.map(category => {
+    // Filtrar artículos por categoría
+    const categoryArticles = allArticles.filter(article => 
+      article.categories.includes(category.slug)
+    );
+    
+    return {
+      params: { categoria: category.slug },
+      props: { 
+        category,
+        articles: categoryArticles
+      }
+    };
+  });
+}
+
+const { category, articles } = Astro.props;
+
+// Categorías relacionadas (simulación)
+const relatedCategories = [
+  { slug: 'entrenamiento', name: 'Entrenamiento' },
+  { slug: 'comportamiento', name: 'Comportamiento' },
+  { slug: 'salud', name: 'Salud' },
+  { slug: 'alimentacion', name: 'Alimentación' }
+];
+
+// Etiquetas populares (simulación)
+const popularTags = [
+  'Cachorros',
+  'Adiestramiento',
+  'Nutrición',
+  'Salud dental',
+  'Comportamiento',
+  'Socialización',
+  'Juegos',
+  'Adopción'
+];
+---
+
+<BaseLayout
+  title={`${category.name} | Blog de PataDigital`}
+  description={category.description}
+  ogImage={category.image}
+>
+  {/* Hero de categoría */}
+  <div class={`bg-[#AFC2D5] bg-opacity-20`}>
+    <Container>
+      <div class="py-12 md:py-16">
+        <div class="max-w-3xl">
+          <Badge variant={category.color} size="md" class="mb-3">Categoría</Badge>
+          <h1 class="text-3xl md:text-4xl font-bold text-[#2E2E2E] mb-4">{category.name}</h1>
+          <p class="text-lg text-gray-600">{category.description}</p>
+          
+          {/* Breadcrumbs */}
+          <div class="flex items-center text-sm text-gray-500 mt-4">
+            <a href="/" class="hover:text-[#AFC2D5]">Inicio</a>
+            <span class="mx-2">/</span>
+            <a href="/blog" class="hover:text-[#AFC2D5]">Blog</a>
+            <span class="mx-2">/</span>
+            <span class="text-gray-700">{category.name}</span>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </div>
+  
+  <Container class="py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* Artículos */}
+      <div class="lg:col-span-8">
+        {articles.length > 0 ? (
+          <div>
+            <ArticleList 
+              articles={articles} 
+              layout="grid" 
+              columns={2}
+            />
+            
+            {/* Paginación (si hubiera) */}
+            {articles.length > 6 && (
+              <div class="mt-10 flex justify-center">
+                <nav class="flex items-center">
+                  <span class="px-4 py-2 mx-1 bg-[#AFC2D5] text-white rounded-md text-sm">1</span>
+                  <a 
+                    href={`/blog/categoria/${category.slug}/page/2`}
+                    class="px-4 py-2 mx-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    2
+                  </a>
+                  <a 
+                    href={`/blog/categoria/${category.slug}/page/2`}
+                    class="px-4 py-2 mx-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    Siguiente &raquo;
+                  </a>
+                </nav>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div class="bg-gray-50 rounded-lg p-8 text-center">
+            <h2 class="text-lg font-medium text-gray-900 mb-2">No se encontraron artículos</h2>
+            <p class="text-gray-600 mb-4">
+              Aún no tenemos artículos en esta categoría. ¡Vuelve pronto!
+            </p>
+            <Button href="/blog" variant="primary">
+              Volver al blog
+            </Button>
+          </div>
+        )}
+      </div>
+      
+      {/* Sidebar */}
+      <div class="lg:col-span-4">
+        <div class="sticky top-[140px] space-y-8">
+          {/* Categorías relacionadas */}
+          <Card variant="default" padding="md">
+            <h3 class="text-lg font-bold mb-4">Categorías relacionadas</h3>
+            <div class="space-y-2">
+              {relatedCategories.map(relCat => (
+                <a 
+                  href={`/blog/categoria/${relCat.slug}`}
+                  class={`block py-2 px-3 rounded-md hover:bg-gray-100 transition-colors duration-200 ${relCat.slug === category.slug ? 'bg-gray-100 font-medium' : ''}`}
+                >
+                  {relCat.name}
+                </a>
+              ))}
+            </div>
+          </Card>
+          
+          {/* Etiquetas populares */}
+          <Card variant="default" padding="md">
+            <h3 class="text-lg font-bold mb-4">Etiquetas populares</h3>
+            <div class="flex flex-wrap gap-2">
+              {popularTags.map(tag => (
+                <a 
+                  href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+                  class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm"
+                >
+                  {tag}
+                </a>
+              ))}
+            </div>
+          </Card>
+          
+          {/* Newsletter */}
+          <Card variant="highlight" padding="md">
+            <h3 class="text-lg font-bold mb-3">Suscríbete a nuestra newsletter</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Recibe los mejores artículos de {category.name.toLowerCase()} y más directamente en tu correo.
+            </p>
+            
+            <form class="space-y-3">
+              <div>
+                <label for="email-sidebar" class="sr-only">Correo electrónico</label>
+                <input
+                  type="email"
+                  id="email-sidebar"
+                  name="email"
+                  required
+                  placeholder="Tu correo electrónico"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AFC2D5] focus:border-transparent"
+                />
+              </div>
+              <div class="flex">
+                <label class="flex items-start">
+                  <input 
+                    type="checkbox" 
+                    name="accept-terms" 
+                    required
+                    class="h-4 w-4 mt-1 rounded border-gray-300 text-[#AFC2D5] focus:ring-[#AFC2D5]" 
+                  />
+                  <span class="ml-2 text-xs text-gray-500">
+                    Acepto recibir correos y la política de privacidad
+                  </span>
+                </label>
+              </div>
+              <button
+                type="submit"
+                class="w-full bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200"
+              >
+                Suscribirme
+              </button>
+            </form>
+          </Card>
+        </div>
+      </div>
+    </div>
+  </Container>
+</BaseLayout>

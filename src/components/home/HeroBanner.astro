@@ -1,0 +1,130 @@
+---
+// src/components/home/HeroBanner.astro
+import { Image } from 'astro:assets';
+import Button from '../ui/Button.astro';
+import Badge from '../ui/Badge.astro';
+
+interface Props {
+  title: string;
+  subtitle: string;
+  image: string;
+  articleId?: string;
+  category?: string;
+  badges?: string[];
+  primaryCTA: {
+    text: string;
+    url: string;
+  };
+  secondaryCTA?: {
+    text: string;
+    url: string;
+  };
+  layout?: 'centered' | 'left' | 'right';
+  overlay?: 'light' | 'dark' | 'gradient' | 'none';
+  height?: 'small' | 'medium' | 'large';
+}
+
+const {
+  title,
+  subtitle,
+  image,
+  articleId,
+  category,
+  badges = [],
+  primaryCTA,
+  secondaryCTA,
+  layout = 'left',
+  overlay = 'gradient',
+  height = 'medium',
+} = Astro.props;
+
+// Mapeo de alturas
+const heightClasses = {
+  small: 'h-[400px]',
+  medium: 'h-[500px]',
+  large: 'h-[600px]',
+};
+
+// Mapeo de overlays
+const overlayClasses = {
+  light: 'bg-white/30',
+  dark: 'bg-black/50',
+  gradient: 'bg-gradient-to-r from-black/60 to-transparent',
+  none: '',
+};
+
+// Mapeo de layouts
+const contentClasses = {
+  centered: 'justify-center items-center text-center',
+  left: 'justify-start items-center text-left',
+  right: 'justify-end items-center text-right',
+};
+
+// Generar clase de contenedor
+const containerClass = `relative flex ${heightClasses[height]} w-full overflow-hidden rounded-xl`;
+const contentContainerClass = `flex flex-col ${contentClasses[layout]} w-full h-full z-10 p-8 md:p-12 lg:p-16 ${
+  layout === 'centered' ? 'max-w-3xl mx-auto' : layout === 'right' ? 'ml-auto max-w-2xl' : 'max-w-2xl'
+}`;
+---
+
+<div class={containerClass}>
+  {/* Imagen de fondo */}
+  <div class="absolute inset-0 w-full h-full">
+    <Image
+      src={image}
+      alt={title}
+      width={1920}
+      height={1080}
+      class="w-full h-full object-cover"
+    />
+    {overlay !== 'none' && <div class={`absolute inset-0 ${overlayClasses[overlay]}`}></div>}
+  </div>
+  
+  {/* Contenido */}
+  <div class={contentContainerClass}>
+    {/* Badges y categoría */}
+    <div class="mb-4 flex flex-wrap gap-2">
+      {category && (
+        <Badge variant="primary" size="md" class="uppercase font-bold">
+          {category}
+        </Badge>
+      )}
+      {badges.map(badge => (
+        <Badge variant="secondary" size="md">
+          {badge}
+        </Badge>
+      ))}
+    </div>
+    
+    {/* Título y subtítulo */}
+    <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-md">
+      {title}
+    </h1>
+    <p class="text-lg md:text-xl text-white mb-8 max-w-2xl drop-shadow-md">
+      {subtitle}
+    </p>
+    
+    {/* CTAs */}
+    <div class="flex flex-wrap gap-4">
+      <Button 
+        href={primaryCTA.url}
+        variant="primary" 
+        size="lg"
+        class="bg-white text-[#2E2E2E] hover:bg-gray-100 border border-white font-medium shadow-md"
+      >
+        {primaryCTA.text}
+      </Button>
+      
+      {secondaryCTA && (
+        <Button 
+          href={secondaryCTA.url}
+          variant="outline" 
+          size="lg"
+          class="border-white text-white hover:bg-white hover:bg-opacity-10 font-medium shadow-md"
+        >
+          {secondaryCTA.text}
+        </Button>
+      )}
+    </div>
+  </div>
+</div>

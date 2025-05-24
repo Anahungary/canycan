@@ -1,0 +1,32 @@
+---
+const { isMobile = false } = Astro.props;
+
+const navItems = [
+  { name: 'Comparador de Razas', href: '/comparador-razas' },
+  { name: 'Entrenamiento', href: '/entrenamiento' },
+  { name: 'Cuidado', href: '/cuidado' },
+  { name: 'Comportamiento', href: '/comportamiento' },
+  { name: 'Nuevos Dueños', href: '/nuevos-duenos' },
+  { name: 'Blog', href: '/blog' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<nav>
+  <ul class={isMobile ? "space-y-2" : "flex space-x-4"}>
+    {navItems.map(item => (
+      <li>
+        <a 
+          href={item.href} 
+          class={`px-3 py-2 rounded-md text-sm font-medium ${currentPath === item.href || currentPath.startsWith(item.href + '/') 
+            ? 'bg-[#AFC2D5] text-white' 
+            : 'text-[#2E2E2E] hover:bg-[#F4E2D8] hover:text-[#2E2E2E]'}`}
+          aria-current={currentPath === item.href ? 'page' : undefined}
+        >
+          {item.name}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>

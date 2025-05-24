@@ -1,0 +1,110 @@
+---
+// src/components/home/CategoryFeature.astro
+import { Image } from 'astro:assets';
+import Button from '../ui/Button.astro';
+import ArticleCard from '../blog/ArticleCard.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  image: string;
+  iconSrc?: string;
+  articles: any[];
+  color?: 'blue' | 'coral' | 'green' | 'beige';
+  showMoreUrl: string;
+  layout?: 'left' | 'right';
+}
+
+const {
+  title,
+  description,
+  image,
+  iconSrc,
+  articles,
+  color = 'blue',
+  showMoreUrl,
+  layout = 'left'
+} = Astro.props;
+
+// Mapeo de colores para fondos y bordes
+const colorClasses = {
+  blue: {
+    bg: 'bg-[#AFC2D5] bg-opacity-10',
+    border: 'border-[#AFC2D5]',
+    text: 'text-[#AFC2D5]'
+  },
+  coral: {
+    bg: 'bg-[#F6B89E] bg-opacity-10',
+    border: 'border-[#F6B89E]',
+    text: 'text-[#F6B89E]'
+  },
+  green: {
+    bg: 'bg-[#C8D6B9] bg-opacity-10',
+    border: 'border-[#C8D6B9]',
+    text: 'text-[#5A7251]'
+  },
+  beige: {
+    bg: 'bg-[#F4E2D8] bg-opacity-10',
+    border: 'border-[#F4E2D8]',
+    text: 'text-[#BE9B7B]'
+  }
+};
+
+const selectedColor = colorClasses[color];
+---
+
+<div class={`category-feature ${selectedColor.bg} rounded-xl overflow-hidden`}>
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    {/* Cabecera de categoría */}
+    <div class={`lg:col-span-4 ${layout === 'right' ? 'lg:order-2' : ''}`}>
+      <div class="relative h-full min-h-[250px] lg:min-h-full">
+        <Image 
+          src={image} 
+          alt={title}
+          width={600}
+          height={500}
+          class="w-full h-full object-cover"
+        />
+        
+        <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center p-6">
+          {iconSrc && (
+            <div class="mb-4">
+              <Image 
+                src={iconSrc} 
+                alt=""
+                width={60}
+                height={60}
+                class="w-14 h-14"
+              />
+            </div>
+          )}
+          
+          <h2 class="text-3xl font-bold text-white mb-3">{title}</h2>
+          <p class="text-white text-opacity-90 mb-6">{description}</p>
+          
+          <Button 
+            href={showMoreUrl}
+            variant="primary"
+            class="bg-white text-[#2E2E2E] hover:bg-gray-100 inline-flex self-start"
+          >
+            Ver más artículos
+          </Button>
+        </div>
+      </div>
+    </div>
+    
+    {/* Artículos destacados */}
+    <div class={`lg:col-span-8 p-6 ${layout === 'right' ? 'lg:order-1' : ''}`}>
+      <div class="space-y-6">
+        {articles.map((article, index) => (
+          <div class={`${index !== articles.length - 1 ? 'border-b border-gray-200 pb-6' : ''}`}>
+            <ArticleCard 
+              {...article} 
+              variant="horizontal"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>

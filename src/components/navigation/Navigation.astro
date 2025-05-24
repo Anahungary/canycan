@@ -1,0 +1,263 @@
+---
+// src/components/navigation/Navigation.astro - Navegación principal actualizada (CORREGIDA)
+---
+
+<nav class="bg-white shadow-sm border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      
+      <!-- Logo -->
+      <div class="flex-shrink-0">
+        <a href="/" class="flex items-center">
+          <div class="w-10 h-10 bg-[#AFC2D5] rounded-lg flex items-center justify-center mr-3">
+            <span class="text-white font-bold text-lg">🐕</span>
+          </div>
+          <span class="text-xl font-bold text-[#2E2E2E]">PataDigital</span>
+        </a>
+      </div>
+
+      <!-- Navegación principal - Desktop -->
+      <div class="hidden lg:block">
+        <div class="ml-10 flex items-baseline space-x-8">
+          
+          <!-- Dropdown: Contenido -->
+          <div class="relative group">
+            <button class="text-gray-700 hover:text-[#AFC2D5] px-3 py-2 text-sm font-medium flex items-center transition-colors">
+              Contenido
+              <svg class="ml-1 h-4 w-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            
+            <!-- Dropdown Menu -->
+            <div class="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div class="py-2">
+                <a href="/blog" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] transition-colors">
+                  <div class="w-8 h-8 bg-[#AFC2D5] bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
+                    📰
+                  </div>
+                  <div>
+                    <div class="font-medium">Blog</div>
+                    <div class="text-xs text-gray-500">Todos los artículos</div>
+                  </div>
+                </a>
+                
+                <a href="/entrenamiento" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] transition-colors">
+                  <div class="w-8 h-8 bg-[#F6B89E] bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
+                    🎓
+                  </div>
+                  <div>
+                    <div class="font-medium">Entrenamiento</div>
+                    <div class="text-xs text-gray-500">Técnicas y consejos</div>
+                  </div>
+                </a>
+                
+                <a href="/comportamiento" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] transition-colors">
+                  <div class="w-8 h-8 bg-[#C8D6B9] bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
+                    🧠
+                  </div>
+                  <div>
+                    <div class="font-medium">Comportamiento</div>
+                    <div class="text-xs text-gray-500">Comunicación animal</div>
+                  </div>
+                </a>
+                
+                <a href="/cuidado" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] transition-colors">
+                  <div class="w-8 h-8 bg-[#F4E2D8] bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
+                    💙
+                  </div>
+                  <div>
+                    <div class="font-medium">Cuidado</div>
+                    <div class="text-xs text-gray-500">Salud y bienestar</div>
+                  </div>
+                </a>
+                
+                <a href="/nuevos-duenos" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] transition-colors">
+                  <div class="w-8 h-8 bg-[#AFC2D5] bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
+                    🆕
+                  </div>
+                  <div>
+                    <div class="font-medium">Nuevos Dueños</div>
+                    <div class="text-xs text-gray-500">Guías para principiantes</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dropdown: Razas -->
+          <div class="relative group">
+            <button class="text-gray-700 hover:text-[#AFC2D5] px-3 py-2 text-sm font-medium flex items-center transition-colors">
+              Razas
+              <svg class="ml-1 h-4 w-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            
+            <div class="absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div class="py-2">
+                <a href="/tu-raza-ideal" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] transition-colors">
+                  <div class="w-8 h-8 bg-[#AFC2D5] bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
+                    🎯
+                  </div>
+                  <div>
+                    <div class="font-medium">Tu Raza Ideal</div>
+                    <div class="text-xs text-gray-500">Cuestionario personalizado</div>
+                  </div>
+                </a>
+                
+                <a href="/comparador-razas" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] transition-colors">
+                  <div class="w-8 h-8 bg-[#F6B89E] bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
+                    🔍
+                  </div>
+                  <div>
+                    <div class="font-medium">Comparador</div>
+                    <div class="text-xs text-gray-500">Compara hasta 3 razas</div>
+                  </div>
+                </a>
+                
+                <a href="/razas" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] transition-colors">
+                  <div class="w-8 h-8 bg-[#C8D6B9] bg-opacity-20 rounded-lg flex items-center justify-center mr-3">
+                    📚
+                  </div>
+                  <div>
+                    <div class="font-medium">Todas las Razas</div>
+                    <div class="text-xs text-gray-500">Perros y gatos</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Enlaces directos -->
+          <a href="/adopcion" class="text-gray-700 hover:text-[#AFC2D5] px-3 py-2 text-sm font-medium transition-colors">
+            Adopción
+          </a>
+          
+          <a href="/veterinarios" class="text-gray-700 hover:text-[#AFC2D5] px-3 py-2 text-sm font-medium transition-colors">
+            Veterinarios
+          </a>
+
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="hidden lg:flex items-center space-x-4">
+        <a href="/tu-raza-ideal" class="bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          Encuentra tu raza
+        </a>
+        
+        <!-- Búsqueda -->
+        <button class="text-gray-500 hover:text-[#AFC2D5] transition-colors" onclick="openSearch()">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Menú móvil -->
+      <div class="lg:hidden">
+        <button class="text-gray-500 hover:text-[#AFC2D5] transition-colors" onclick="toggleMobileMenu()">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Menú móvil (oculto por defecto) -->
+  <div id="mobile-menu" class="lg:hidden hidden bg-white border-t border-gray-100">
+    <div class="px-4 pt-2 pb-3 space-y-1">
+      
+      <!-- Sección: Contenido -->
+      <div class="border-b border-gray-100 pb-3 mb-3">
+        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Contenido</div>
+        <a href="/blog" class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] rounded-md">
+          📰 Blog
+        </a>
+        <a href="/entrenamiento" class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] rounded-md">
+          🎓 Entrenamiento
+        </a>
+        <a href="/comportamiento" class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] rounded-md">
+          🧠 Comportamiento
+        </a>
+        <a href="/cuidado" class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] rounded-md">
+          💙 Cuidado
+        </a>
+        <a href="/nuevos-duenos" class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] rounded-md">
+          🆕 Nuevos Dueños
+        </a>
+      </div>
+
+      <!-- Sección: Razas -->
+      <div class="border-b border-gray-100 pb-3 mb-3">
+        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Razas</div>
+        <a href="/tu-raza-ideal" class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] rounded-md">
+          🎯 Tu Raza Ideal
+        </a>
+        <a href="/comparador-razas" class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] rounded-md">
+          🔍 Comparador
+        </a>
+        <a href="/razas" class="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] rounded-md">
+          📚 Todas las Razas
+        </a>
+      </div>
+
+      <!-- Enlaces adicionales -->
+      <a href="/adopcion" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] rounded-md">
+        Adopción
+      </a>
+      <a href="/veterinarios" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#AFC2D5] rounded-md">
+        Veterinarios
+      </a>
+
+      <div class="pt-3 mt-3 border-t border-gray-100">
+        <a href="/tu-raza-ideal" class="block w-full bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white px-4 py-2 rounded-lg text-sm font-medium text-center transition-colors">
+          Encuentra tu raza
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // ✅ FUNCIONES CON VERIFICACIONES DE NULL CORRECTAS
+  function toggleMobileMenu(): void {
+    const menu = document.getElementById('mobile-menu');
+    // ✅ Verificación de null antes de usar el elemento
+    if (menu) {
+      menu.classList.toggle('hidden');
+    }
+  }
+
+  function openSearch(): void {
+    // Implementar modal de búsqueda
+    console.log('Abrir búsqueda');
+  }
+
+  // ✅ MANEJO CORRECTO DE EVENTOS CON VERIFICACIONES DE TIPO
+  document.addEventListener('click', function(event: Event): void {
+    const menu = document.getElementById('mobile-menu');
+    
+    // ✅ Verificación de null para menu
+    if (!menu) return;
+    
+    // ✅ Verificación de null y casting correcto para event.target
+    if (!event.target) return;
+    
+    // ✅ Verificar que event.target sea un Element antes de usar closest
+    const target = event.target as Element;
+    const button = target.closest('button');
+    
+    // ✅ Verificación adicional antes de usar contains
+    if (!button && !menu.contains(target)) {
+      menu.classList.add('hidden');
+    }
+  });
+
+  // ✅ ASEGURAR QUE LAS FUNCIONES ESTÉN DISPONIBLES GLOBALMENTE
+  (window as any).toggleMobileMenu = toggleMobileMenu;
+  (window as any).openSearch = openSearch;
+</script>

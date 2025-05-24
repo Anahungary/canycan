@@ -1,0 +1,138 @@
+---
+// src/pages/entrenamiento/index.astro - Página de categoría de entrenamiento
+import CategoryLayout from '../../layouts/CategoryLayout.astro';
+
+// Simulación de datos de artículos (en producción vendrían de la API o CMS)
+const articles = [
+  {
+    id: 'comandos-basicos-perros',
+    title: 'Los 5 comandos básicos que todo perro debería conocer',
+    excerpt: 'Guía paso a paso para enseñar a tu perro los comandos fundamentales: sentado, quieto, ven, abajo y junto.',
+    image: '/images/articles/basic-commands.jpg',
+    date: '2023-09-20',
+    author: {
+      name: 'Carlos Ruiz',
+      avatar: '/images/authors/carlos-ruiz.jpg'
+    },
+    readingTime: 7,
+    categories: ['Entrenamiento', 'Perros']
+  },
+  {
+    id: 'refuerzo-positivo-tecnicas',
+    title: 'Técnicas de refuerzo positivo para entrenar a tu mascota',
+    excerpt: 'Descubre cómo el refuerzo positivo puede transformar el comportamiento de tu mascota de manera efectiva y sin estrés.',
+    image: '/images/articles/positive-reinforcement.jpg',
+    date: '2023-09-18',
+    author: {
+      name: 'Laura Martín',
+      avatar: '/images/authors/laura-martin.jpg'
+    },
+    readingTime: 6,
+    categories: ['Entrenamiento', 'Psicología Animal']
+  },
+  {
+    id: 'entrenamiento-gatuno',
+    title: '¿Se pueden entrenar los gatos? Mitos y realidades',
+    excerpt: 'Contrario a la creencia popular, los gatos pueden aprender comandos y trucos. Aprende las técnicas efectivas para entrenar a tu felino.',
+    image: '/images/articles/cat-training.jpg',
+    date: '2023-09-15',
+    author: {
+      name: 'María Gómez',
+      avatar: '/images/authors/maria-gomez.jpg'
+    },
+    readingTime: 8,
+    categories: ['Entrenamiento', 'Gatos']
+  },
+  {
+    id: 'problemas-comportamiento',
+    title: 'Soluciones a los 7 problemas de comportamiento más comunes',
+    excerpt: 'Desde tirar de la correa hasta ladrar excesivamente, descubre cómo corregir los comportamientos problemáticos más frecuentes.',
+    image: '/images/articles/behavior-problems.jpg',
+    date: '2023-09-12',
+    author: {
+      name: 'Carlos Ruiz',
+      avatar: '/images/authors/carlos-ruiz.jpg'
+    },
+    readingTime: 9,
+    categories: ['Entrenamiento', 'Comportamiento']
+  },
+  {
+    id: 'entrenamiento-cachorros',
+    title: 'Guía completa de entrenamiento para cachorros',
+    excerpt: 'Todo lo que necesitas saber para criar un cachorro bien educado desde el primer día en casa.',
+    image: '/images/articles/puppy-training.jpg',
+    date: '2023-09-10',
+    author: {
+      name: 'Laura Martín',
+      avatar: '/images/authors/laura-martin.jpg'
+    },
+    readingTime: 10,
+    categories: ['Entrenamiento', 'Cachorros']
+  },
+  {
+    id: 'clicker-training',
+    title: 'Entrenamiento con clicker: principios y beneficios',
+    excerpt: 'El entrenamiento con clicker permite una comunicación precisa con tu mascota. Aprende a usarlo correctamente.',
+    image: '/images/articles/clicker-training.jpg',
+    date: '2023-09-08',
+    author: {
+      name: 'María Gómez',
+      avatar: '/images/authors/maria-gomez.jpg'
+    },
+    readingTime: 6,
+    categories: ['Entrenamiento', 'Técnicas']
+  }
+];
+
+// Artículo destacado (el primero de la lista)
+const featuredArticle = {
+  id: 'entrenamiento-profesional-vs-casero',
+  title: '¿Entrenamiento profesional o en casa? Pros y contras',
+  excerpt: 'Analiza las ventajas y desventajas de cada opción para tomar la mejor decisión según las necesidades de tu mascota y tus circunstancias.',
+  image: '/images/articles/professional-training.jpg',
+  date: '2023-09-25',
+  author: {
+    name: 'Carlos Ruiz',
+    avatar: '/images/authors/carlos-ruiz.jpg'
+  },
+  readingTime: 8,
+  categories: ['Entrenamiento', 'Consejos']
+};
+
+// Subcategorías de entrenamiento
+const subcategories = [
+  'Cachorros',
+  'Obediencia Básica',
+  'Problemas de Comportamiento',
+  'Técnicas Avanzadas',
+  'Entrenamiento de Gatos',
+  'Adiestramiento Deportivo'
+];
+
+// Etiquetas populares
+const popularTags = [
+  'Refuerzo Positivo',
+  'Socialización',
+  'Clicker',
+  'Trucos',
+  'Ladridos',
+  'Ansiedad',
+  'Agresividad',
+  'Cachorros'
+];
+
+const title = "Entrenamiento de Mascotas";
+const description = "Descubre técnicas efectivas y consejos de expertos para entrenar a tu perro o gato. Guías paso a paso para todos los niveles, desde comandos básicos hasta trucos avanzados.";
+const image = "/images/categories/training-banner.jpg";
+---
+
+<CategoryLayout
+  title={title}
+  description={description}
+  image={image}
+  category="entrenamiento"
+  subcategories={subcategories}
+  articles={articles}
+  popularTags={popularTags}
+  featuredArticle={featuredArticle}
+/>

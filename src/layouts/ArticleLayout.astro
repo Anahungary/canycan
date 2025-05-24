@@ -1,0 +1,228 @@
+---
+// ArticleLayout.astro - Layout para páginas de artículos
+import BaseLayout from './BaseLayout.astro';
+import ArticleMeta from '../components/blog/ArticleMeta.astro';
+import ShareButtons from '../components/blog/ShareButtons.astro';
+import Container from '../components/ui/Container.astro';
+import Card from '../components/ui/Card.astro';
+import { Image } from 'astro:assets';
+
+interface Author {
+  name: string;
+  avatar?: string;
+  bio?: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  image: string;
+  author: Author;
+  date: string;
+  readingTime: number;
+  categories: string[];
+  views?: number;
+  relatedArticles?: any[]; // Artículos relacionados
+  showTableOfContents?: boolean;
+}
+
+const { 
+  title, 
+  description, 
+  image, 
+  author, 
+  date, 
+  readingTime, 
+  categories,
+  views,
+  relatedArticles = [],
+  showTableOfContents = true,
+} = Astro.props;
+
+// URL canónica para compartir
+const currentUrl = Astro.url.pathname;
+---
+
+<BaseLayout 
+  title={title}
+  description={description}
+  ogImage={image}
+  canonicalUrl={currentUrl}
+  bodyClass="article-page"
+>
+  <div class="article-hero py-8 md:py-12 bg-white border-b border-gray-100">
+    <Container size="md">
+      <ArticleMeta 
+        title={title}
+        author={author}
+        date={date}
+        readingTime={readingTime}
+        categories={categories}
+        views={views}
+        showAuthorBio={false}
+      />
+    </Container>
+  </div>
+  
+  <Container size="md" class="py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* Contenido principal */}
+      <article class="lg:col-span-8">
+        {/* Imagen destacada */}
+        <div class="mb-8 rounded-lg overflow-hidden">
+          <Image 
+            src={image} 
+            alt={title}
+            width={1200}
+            height={630}
+            class="w-full h-auto"
+          />
+        </div>
+        
+        {/* Tabla de contenidos (si está habilitada) */}
+        {showTableOfContents && (
+          <Card variant="default" padding="md" class="mb-8">
+            <h2 class="text-lg font-bold mb-3">Tabla de contenidos</h2>
+            <div class="table-of-contents text-sm">
+              {/* La tabla de contenidos se generará dinámicamente con JavaScript */}
+              <div id="table-of-contents-container"></div>
+            </div>
+          </Card>
+        )}
+        
+        {/* Contenido del artículo */}
+        <div class="article-content prose prose-lg max-w-none">
+          <slot />
+        </div>
+        
+        {/* Autor (bio) */}
+        <Card variant="default" padding="md" class="mt-12">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            {author.avatar ? (
+              <Image 
+                src={author.avatar} 
+                alt={author.name}
+                width={80}
+                height={80}
+                class="w-16 h-16 rounded-full"
+              />
+            ) : (
+              <div class="w-16 h-16 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white text-xl font-bold">
+                {author.name.charAt(0)}
+              </div>
+            )}
+            <div>
+              <h3 class="text-lg font-bold">{author.name}</h3>
+              {author.bio && (
+                <p class="text-gray-600 mt-1">{author.bio}</p>
+              )}
+            </div>
+          </div>
+        </Card>
+        
+        {/* Botones para compartir */}
+        <div class="mt-8 border-t border-gray-200 pt-8">
+          <h3 class="text-lg font-bold mb-4">Compartir artículo</h3>
+          <ShareButtons 
+            url={currentUrl} 
+            title={title} 
+            vertical={false} 
+            showLabel={true}
+          />
+        </div>
+      </article>
+      
+      {/* Sidebar */}
+      <div class="lg:col-span-4">
+        {/* Compartir (versión sticky) */}
+        <div class="sticky top-24">
+          <Card variant="default" padding="md" class="mb-8">
+            <h3 class="text-lg font-bold mb-4">Compartir</h3>
+            <ShareButtons 
+              url={currentUrl} 
+              title={title} 
+              vertical={true} 
+              showLabel={false}
+            />
+          </Card>
+          
+          {/* Artículos relacionados */}
+          {relatedArticles.length > 0 && (
+            <Card variant="default" padding="md">
+              <h3 class="text-lg font-bold mb-4">Artículos relacionados</h3>
+              <div class="space-y-4">
+                {relatedArticles.map(article => (
+                  <div class="flex items-start space-x-3">
+                    <a href={`/articulos/${article.id}`} class="flex-shrink-0">
+                      <Image 
+                        src={article.image} 
+                        alt={article.title}
+                        width={80}
+                        height={60}
+                        class="w-20 h-16 object-cover rounded"
+                      />
+                    </a>
+                    <div>
+                      <a 
+                        href={`/articulos/${article.id}`} 
+                        class="text-sm font-medium hover:text-[#AFC2D5] line-clamp-2"
+                      >
+                        {article.title}
+                      </a>
+                      <p class="text-xs text-gray-500 mt-1">
+                        {article.readingTime} min lectura
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
+        </div>
+      </div>
+    </div>
+  </Container>
+  
+  <script>
+    // Script para generar la tabla de contenidos dinámicamente
+    document.addEventListener('DOMContentLoaded', () => {
+      const articleContent = document.querySelector('.article-content');
+      const tocContainer = document.getElementById('table-of-contents-container');
+      
+      if (articleContent && tocContainer) {
+        const headings = articleContent.querySelectorAll('h2, h3');
+        
+        if (headings.length > 0) {
+          const toc = document.createElement('ul');
+          toc.className = 'space-y-2';
+          
+          headings.forEach((heading, index) => {
+            // Añadir un ID al encabezado si no tiene uno
+            if (!heading.id) {
+              heading.id = `heading-${index}`;
+            }
+            
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = `#${heading.id}`;
+            link.textContent = heading.textContent;
+            link.className = heading.tagName === 'H2' 
+              ? 'text-[#2E2E2E] hover:text-[#AFC2D5]' 
+              : 'text-gray-600 hover:text-[#AFC2D5] ml-4';
+            
+            listItem.appendChild(link);
+            toc.appendChild(listItem);
+          });
+          
+          tocContainer.appendChild(toc);
+        } else {
+          // Si no hay encabezados, ocultar la tabla de contenidos
+          const tocCard = tocContainer.closest('.card');
+          if (tocCard) {
+            tocCard.style.display = 'none';
+          }
+        }
+      }
+    });
+  </script>
+</BaseLayout>

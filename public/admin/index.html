@@ -1,0 +1,33 @@
+<!-- public/admin/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administración - PataDigital</title>
+  <link rel="stylesheet" href="https://unpkg.com/netlify-cms/dist/cms.css" />
+  <style>
+    /* Personalización del CMS */
+    :root {
+      --primary-color: #AFC2D5;
+      --secondary-color: #F6B89E;
+    }
+    
+    /* Otros estilos personalizados */
+  </style>
+</head>
+<body>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+  <script>
+    // Personalización del editor
+    CMS.registerPreviewStyle('/admin/preview-styles.css');
+    
+    // Widgets personalizados
+    // ...
+    
+    // Preview templates personalizados
+    // ...
+  </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+---
+// ArticleList.astro - Componente para mostrar listas de artículos
+import ArticleCard from './ArticleCard.astro';
+
+interface Article {
+  id: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  author: {
+    name: string;
+    avatar?: string;
+  };
+  date: string;
+  readingTime: number;
+  categories: string[];
+  featured?: boolean;
+}
+
+interface Props {
+  articles: Article[];
+  title?: string;
+  description?: string;
+  showFeatured?: boolean;
+  layout?: 'grid' | 'list' | 'featured';
+  columns?: 1 | 2 | 3 | 4;
+}
+
+const { 
+  articles, 
+  title, 
+  description, 
+  showFeatured = true,
+  layout = 'grid',
+  columns = 3
+} = Astro.props;
+
+// Separar artículos destacados
+const featuredArticles = showFeatured 
+  ? articles.filter(article => article.featured)
+  : [];
+const regularArticles = showFeatured 
+  ? articles.filter(article => !article.featured) 
+  : articles;
+
+// Determinar clases de grid según columnas
+const gridClasses = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-1 sm:grid-cols-2',
+  3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+  4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+};
+---
+
+<div>
+  {title && (
+    <div class="mb-6">
+      <h2 class="text-2xl font-bold text-[#2E2E2E]">{title}</h2>
+      {description && <p class="text-gray-600 mt-1">{description}</p>}
+    </div>
+  )}
+  
+  {/* Layout: Featured (destacado grande arriba y grid abajo) */}
+  {layout === 'featured' && featuredArticles.length > 0 && (
+    <div class="space-y-8">
+      <div class="mb-8">
+        {featuredArticles.slice(0, 1).map(article => (
+          <ArticleCard {...article} />
+        ))}
+      </div>
+      
+      {regularArticles.length > 0 && (
+        <div class={`grid gap-6 ${gridClasses[columns]}`}>
+          {regularArticles.map(article => (
+            <ArticleCard {...article} />
+          ))}
+        </div>
+      )}
+    </div>
+  )}
+  
+  {/* Layout: Grid (cuadrícula) */}
+  {layout === 'grid' && (
+    <div class={`grid gap-6 ${gridClasses[columns]}`}>
+      {articles.map(article => (
+        <ArticleCard {...article} />
+      ))}
+    </div>
+  )}
+  
+  {/* Layout: List (lista vertical) */}
+  {layout === 'list' && (
+    <div class="space-y-6">
+      {articles.map(article => (
+        <ArticleCard {...article} />
+      ))}
+    </div>
+  )}
+  
+  {articles.length === 0 && (
+    <div class="text-center py-12 bg-gray-50 rounded-lg">
+      <h3 class="text-lg font-medium text-gray-900 mb-2">
+        No hay artículos disponibles
+      </h3>
+      <p class="text-gray-600">
+        Vuelve pronto para ver nuevo contenido.
+      </p>
+    </div>
+  )}
+</div>

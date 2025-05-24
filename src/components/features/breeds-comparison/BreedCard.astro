@@ -1,0 +1,176 @@
+---
+// BreedCard.astro - Componente para mostrar una tarjeta de raza individual
+import { Image } from 'astro:assets';
+import Badge from '../../ui/Badge.astro';
+import Button from '../../ui/Button.astro';
+
+interface Props {
+  id: string;
+  name: string;
+  image: string;
+  size: 'small' | 'medium' | 'large';
+  energyLevel: 1 | 2 | 3 | 4 | 5;
+  friendliness: 1 | 2 | 3 | 4 | 5;
+  grooming: 1 | 2 | 3 | 4 | 5;
+  training: 1 | 2 | 3 | 4 | 5;
+  type: 'dog' | 'cat';
+  goodWith: ('children' | 'dogs' | 'cats' | 'seniors' | 'apartments')[];
+  hypoallergenic: boolean; // Añadido para corregir el error
+  featured?: boolean;
+}
+
+const { 
+  id, 
+  name, 
+  image, 
+  size, 
+  energyLevel, 
+  friendliness, 
+  grooming,
+  training,
+  type,
+  goodWith,
+  hypoallergenic,
+  featured = false
+} = Astro.props;
+
+// Mapeo de tamaños a texto descriptivo
+const sizeMap = {
+  small: 'Pequeño',
+  medium: 'Mediano',
+  large: 'Grande'
+};
+
+// Función para renderizar estrellas de calificación
+const renderRating = (rating: number) => {
+  return Array.from({ length: 5 }, (_, i) => {
+    const filled = i < rating;
+    return filled 
+      ? '★' 
+      : '☆';
+  }).join('');
+};
+
+// Paleta de colores para la tarjeta
+const typeColor = type === 'dog' ? 'bg-[#AFC2D5]' : 'bg-[#F6B89E]';
+---
+
+<div class={`relative rounded-lg overflow-hidden border ${featured ? 'border-[#AFC2D5]' : 'border-gray-200'} bg-white transition-all duration-300 hover:shadow-md`}>
+  {featured && (
+    <div class="absolute top-3 right-3 z-10">
+      <Badge variant="primary" size="sm">Destacado</Badge>
+    </div>
+  )}
+  
+  <div class="relative h-48 overflow-hidden">
+    <Image 
+      src={image} 
+      alt={`${name} - raza de ${type === 'dog' ? 'perro' : 'gato'}`}
+      width={400}
+      height={300}
+      class="w-full h-full object-cover"
+    />
+    <div class={`absolute top-3 left-3 ${typeColor} text-white text-xs px-2 py-1 rounded-full`}>
+      {type === 'dog' ? 'Perro' : 'Gato'}
+    </div>
+  </div>
+  
+  <div class="p-4">
+    <h3 class="text-lg font-bold text-[#2E2E2E] mb-2">{name}</h3>
+    
+    <div class="mb-4 grid grid-cols-2 gap-y-2 text-sm">
+      <div>
+        <span class="text-gray-600">Tamaño:</span> 
+        <span class="font-medium">{sizeMap[size]}</span>
+      </div>
+      
+      <div>
+        <span class="text-gray-600">Energía:</span> 
+        <span class="font-medium text-amber-500">{renderRating(energyLevel)}</span>
+      </div>
+      
+      <div>
+        <span class="text-gray-600">Sociabilidad:</span> 
+        <span class="font-medium text-amber-500">{renderRating(friendliness)}</span>
+      </div>
+      
+      <div>
+        <span class="text-gray-600">Cuidados:</span> 
+        <span class="font-medium text-amber-500">{renderRating(grooming)}</span>
+      </div>
+    </div>
+    
+    {/* Añadimos información sobre si es hipoalergénico */}
+    <div class="mb-2 text-sm">
+      <span class="text-gray-600">Hipoalergénico:</span> 
+      <span class="font-medium">{hypoallergenic ? 'Sí' : 'No'}</span>
+    </div>
+    
+    {goodWith.length > 0 && (
+      <div class="mb-4">
+        <p class="text-sm text-gray-600 mb-1">Ideal para:</p>
+        <div class="flex flex-wrap gap-1">
+          {goodWith.map(trait => (
+            <Badge variant="info" size="sm">{
+              trait === 'children' ? 'Niños' :
+              trait === 'dogs' ? 'Perros' :
+              trait === 'cats' ? 'Gatos' :
+              trait === 'seniors' ? 'Adultos mayores' :
+              trait === 'apartments' ? 'Apartamentos' : trait
+            }</Badge>
+          ))}
+        </div>
+      </div>
+    )}
+    
+    <div class="flex justify-between items-center mt-4">
+      <Button href={`/razas/${id}`} variant="primary" size="sm">
+        Ver detalles
+      </Button>
+      
+      <Button href={`/comparador-razas?add=${id}`} variant="outline" size="sm">
+        Comparar
+      </Button>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Estilos adicionales para mejorar la tarjeta */
+div {
+  height: 100%; /* Garantiza que todas las tarjetas tengan la misma altura */
+}
+
+.text-amber-500 {
+  color: #f59e0b; /* Un tono de ámbar que se ve mejor */
+}
+
+/* Añadir hover effect para mejorar la interactividad */
+.transition-all:hover {
+  transform: translateY(-5px);
+}
+
+/* Mejorar la legibilidad del texto */
+h3 {
+  line-height: 1.3;
+}
+
+/* Ajustar el espacio para dispositivos pequeños */
+@media (max-width: 640px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 12px;
+  }
+  
+  .p-4 {
+    padding: 1rem;
+  }
+}
+
+/* Mejorar la visualización en dispositivos grandes */
+@media (min-width: 1024px) {
+  .p-4 {
+    padding: 1.25rem;
+  }
+}
+</style>

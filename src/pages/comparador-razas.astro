@@ -1,0 +1,219 @@
+---
+// src/pages/comparador-razas.astro - Página del comparador de razas completa
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import BreedsComparisonContainer from '../components/features/breeds-comparison/BreedsComparisonContainer.jsx';
+import Card from '../components/ui/Card.astro';
+import Button from '../components/ui/Button.astro';
+import { breedsData } from '../data/breeds/index.js'; // 🆕 Usar el índice corregido
+
+const title = "Comparador de Razas | Encuentra la mascota perfecta para ti";
+const description = "Compara perros y gatos, filtra por tamaño, energía, y compatibilidad familiar para encontrar la raza ideal para tu estilo de vida.";
+
+// ✅ USAR DATOS REALES EN LUGAR DE HARDCODEADOS
+const breeds = breedsData;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="bg-[#F4E2D8] bg-opacity-30 py-10">
+    <Container>
+      <div class="text-center max-w-3xl mx-auto mb-10">
+        <h1 class="text-3xl md:text-4xl font-bold mb-4">Comparador Inteligente de Razas</h1>
+        <p class="text-lg text-gray-600">
+          Encuentra y compara la mascota que mejor se adapte a tu estilo de vida y necesidades.
+          Nuestro sistema analiza tu perfil y te muestra exactamente por qué cada raza es compatible contigo.
+        </p>
+      </div>
+
+      <!-- Sección de filtros y comparación mejorada -->
+      <div class="mb-12">
+        <BreedsComparisonContainer breeds={breeds} client:load />
+      </div>
+      
+      <!-- El resto del contenido permanece igual... -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16">
+        <Card variant="default" padding="md">
+          <h2 class="text-xl font-bold mb-4">🎯 Cómo funciona nuestro comparador inteligente</h2>
+          <ul class="space-y-3">
+            <li class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white mr-3 mt-0.5">
+                <span class="text-sm font-bold">1</span>
+              </div>
+              <p><strong>Selecciona hasta 3 razas:</strong> Haz clic en "Comparar" en las razas que te interesan.</p>
+            </li>
+            <li class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white mr-3 mt-0.5">
+                <span class="text-sm font-bold">2</span>
+              </div>
+              <p><strong>Análisis automático:</strong> Si completaste nuestro cuestionario, verás análisis personalizado.</p>
+            </li>
+            <li class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white mr-3 mt-0.5">
+                <span class="text-sm font-bold">3</span>
+              </div>
+              <p><strong>Recomendaciones específicas:</strong> Te decimos exactamente por qué cada raza es buena o problemática para TI.</p>
+            </li>
+            <li class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white mr-3 mt-0.5">
+                <span class="text-sm font-bold">4</span>
+              </div>
+              <p><strong>Toma decisión informada:</strong> Con toda la información, elige la mejor mascota para tu situación.</p>
+            </li>
+          </ul>
+        </Card>
+        
+        <Card variant="default" padding="md">
+          <h2 class="text-xl font-bold mb-4">💡 Consejos para usar el comparador</h2>
+          <ul class="space-y-3">
+            <li class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#F6B89E] flex items-center justify-center text-white mr-3 mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <p><strong>Haz el cuestionario primero:</strong> Para obtener análisis personalizado, completa "Tu Raza Ideal".</p>
+            </li>
+            <li class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#F6B89E] flex items-center justify-center text-white mr-3 mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <p><strong>Compara razas diferentes:</strong> Mezcla perros grandes y pequeños, o perros y gatos para ver diferencias.</p>
+            </li>
+            <li class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#F6B89E] flex items-center justify-center text-white mr-3 mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <p><strong>Lee los detalles:</strong> Presta atención a los "aspectos positivos" y "consideraciones" específicas.</p>
+            </li>
+            <li class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#F6B89E] flex items-center justify-center text-white mr-3 mt-0.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <p><strong>Investiga más:</strong> Usa los enlaces "Ver perfil completo" para información detallada de cada raza.</p>
+            </li>
+          </ul>
+        </Card>
+      </div>
+
+      <div class="mt-16 bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="p-8">
+          <div class="text-center max-w-3xl mx-auto">
+            <h2 class="text-2xl font-bold mb-4">🚀 Herramientas adicionales</h2>
+            <p class="text-lg text-gray-600 mb-8">
+              Aprovecha al máximo nuestro sistema para encontrar tu mascota ideal.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card variant="default" padding="md" class="text-center">
+                <div class="w-16 h-16 bg-[#AFC2D5] bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#AFC2D5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Cuestionario personalizado</h3>
+                <p class="text-gray-600 mb-4">Obtén tu raza ideal basada en tu estilo de vida específico. ¡Imprescindible para análisis personalizado!</p>
+                <Button href="/tu-raza-ideal" variant="primary" size="sm">
+                  Hacer cuestionario
+                </Button>
+              </Card>
+              
+              <Card variant="default" padding="md" class="text-center">
+                <div class="w-16 h-16 bg-[#C8D6B9] bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#5A7251]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-bold mb-2">Guías especializadas</h3>
+                <p class="text-gray-600 mb-4">Artículos detallados sobre cuidados, entrenamiento y convivencia con cada tipo de mascota.</p>
+                <Button href="/blog" variant="outline" size="sm">
+                  Explorar guías
+                </Button>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-16">
+        <div class="text-center mb-8">
+          <h2 class="text-2xl font-bold mb-4">✨ Historias de éxito</h2>
+          <p class="text-gray-600">Familias que encontraron a su compañero perfecto usando nuestro sistema</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card variant="default" padding="md" class="text-center">
+            <div class="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4 overflow-hidden">
+              <img src="/images/testimonials/family1.jpg" alt="Familia con perro" class="w-full h-full object-cover" />
+            </div>
+            <h3 class="text-lg font-bold mb-2">Familia González</h3>
+            <p class="text-gray-600 text-sm mb-3">
+              "El comparador nos mostró que el Golden Retriever era 89% compatible con nosotros. ¡Tenían razón! Es perfecto para nuestros niños y estilo de vida activo."
+            </p>
+            <div class="text-[#AFC2D5] text-sm font-medium">
+              ✅ Adoptaron: Golden Retriever (89% compatibilidad)
+            </div>
+          </Card>
+          
+          <Card variant="default" padding="md" class="text-center">
+            <div class="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4 overflow-hidden">
+              <img src="/images/testimonials/couple1.jpg" alt="Pareja con gato" class="w-full h-full object-cover" />
+            </div>
+            <h3 class="text-lg font-bold mb-2">Ana y Carlos</h3>
+            <p class="text-gray-600 text-sm mb-3">
+              "Comparamos 3 razas de gatos. El análisis nos advirtió sobre el mayor cuidado del pelaje del Ragdoll, pero nos preparamos y ahora es parte de la familia."
+            </p>
+            <div class="text-[#F6B89E] text-sm font-medium">
+              ✅ Adoptaron: Ragdoll (preparados para el desafío)
+            </div>
+          </Card>
+          
+          <Card variant="default" padding="md" class="text-center">
+            <div class="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4 overflow-hidden">
+              <img src="/images/testimonials/senior1.jpg" alt="Persona mayor con perro pequeño" class="w-full h-full object-cover" />
+            </div>
+            <h3 class="text-lg font-bold mb-2">María Elena</h3>
+            <p class="text-gray-600 text-sm mb-3">
+              "A mis 70 años el comparador me recomendó el Poodle por su inteligencia y bajo mantenimiento. Fue la elección perfecta para mi ritmo de vida."
+            </p>
+            <div class="text-[#AFC2D5] text-sm font-medium">
+              ✅ Adoptó: Poodle (ideal para su edad)
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      <div class="mt-16 bg-gradient-to-r from-[#AFC2D5] to-[#9DB3C6] rounded-lg p-8 text-center text-white">
+        <h2 class="text-2xl font-bold mb-4">¿Listo para encontrar tu mascota ideal?</h2>
+        <p class="text-lg mb-6 opacity-90">
+          Comienza con nuestro cuestionario y luego usa el comparador para tomar la mejor decisión.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button href="/tu-raza-ideal" variant="secondary" size="lg" class="bg-white text-[#AFC2D5] hover:bg-gray-100">
+            1. Hacer cuestionario
+          </Button>
+          <Button href="#" data-scroll="400" variant="outline" size="lg" class="border-white text-white hover:bg-white hover:bg-opacity-20">
+            2. Usar comparador
+          </Button>
+        </div>
+      </div>
+    </Container>
+  </div>
+</BaseLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const scrollButton = document.querySelector('[data-scroll]');
+    if (scrollButton) {
+      scrollButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({ top: 400, behavior: 'smooth' });
+      });
+    }
+  });
+</script>

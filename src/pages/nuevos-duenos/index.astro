@@ -1,0 +1,168 @@
+---
+// src/pages/nuevos-duenos/index.astro - Página de categoría para nuevos dueños
+import CategoryLayout from '../../layouts/CategoryLayout.astro';
+
+// Artículos para nuevos dueños
+const articles = [
+  {
+    id: 'checklist-nuevo-cachorro',
+    title: 'Checklist completo: todo lo que necesitas antes de traer tu cachorro',
+    excerpt: 'Lista exhaustiva de productos, preparativos y consideraciones esenciales para recibir a tu nuevo cachorro en casa.',
+    image: '/images/articles/puppy-checklist.jpg',
+    date: '2023-09-24',
+    author: {
+      name: 'Laura Martín',
+      avatar: '/images/authors/laura-martin.jpg'
+    },
+    readingTime: 12,
+    categories: ['Nuevos Dueños', 'Cachorros']
+  },
+  {
+    id: 'primeros-dias-casa',
+    title: 'Los primeros 30 días: guía de adaptación para tu nueva mascota',
+    excerpt: 'Paso a paso para que la transición de tu nueva mascota a su nuevo hogar sea exitosa y sin estrés.',
+    image: '/images/articles/first-30-days.jpg',
+    date: '2023-09-22',
+    author: {
+      name: 'María Gómez',
+      avatar: '/images/authors/maria-gomez.jpg'
+    },
+    readingTime: 10,
+    categories: ['Nuevos Dueños', 'Adaptación']
+  },
+  {
+    id: 'elegir-veterinario',
+    title: 'Cómo elegir el veterinario perfecto para tu mascota',
+    excerpt: 'Criterios importantes para seleccionar al profesional que cuidará la salud de tu compañero de por vida.',
+    image: '/images/articles/choosing-vet.jpg',
+    date: '2023-09-20',
+    author: {
+      name: 'Carlos Ruiz',
+      avatar: '/images/authors/carlos-ruiz.jpg'
+    },
+    readingTime: 8,
+    categories: ['Nuevos Dueños', 'Salud']
+  },
+  {
+    id: 'costos-mascota-primer-ano',
+    title: 'Presupuesto real: cuánto cuesta una mascota el primer año',
+    excerpt: 'Desglose detallado de todos los gastos iniciales y recurrentes para que planifiques tu presupuesto correctamente.',
+    image: '/images/articles/pet-costs-first-year.jpg',
+    date: '2023-09-18',
+    author: {
+      name: 'Laura Martín',
+      avatar: '/images/authors/laura-martin.jpg'
+    },
+    readingTime: 9,
+    categories: ['Nuevos Dueños', 'Presupuesto']
+  },
+  {
+    id: 'errores-comunes-nuevos-duenos',
+    title: '10 errores que cometen los dueños primerizos (y cómo evitarlos)',
+    excerpt: 'Los errores más frecuentes de quienes tienen su primera mascota y consejos para evitar problemas futuros.',
+    image: '/images/articles/first-time-owner-mistakes.jpg',
+    date: '2023-09-16',
+    author: {
+      name: 'Carlos Ruiz',
+      avatar: '/images/authors/carlos-ruiz.jpg'
+    },
+    readingTime: 11,
+    categories: ['Nuevos Dueños', 'Consejos']
+  },
+  {
+    id: 'preparar-casa-mascota',
+    title: 'Cómo preparar tu casa para la llegada de tu nueva mascota',
+    excerpt: 'Guía de seguridad y adaptación del hogar para crear un ambiente seguro y cómodo para tu mascota.',
+    image: '/images/articles/pet-proofing-home.jpg',
+    date: '2023-09-14',
+    author: {
+      name: 'María Gómez',
+      avatar: '/images/authors/maria-gomez.jpg'
+    },
+    readingTime: 7,
+    categories: ['Nuevos Dueños', 'Seguridad']
+  },
+  {
+    id: 'adopcion-vs-compra',
+    title: '¿Adoptar o comprar? Guía para tomar la mejor decisión',
+    excerpt: 'Pros y contras de cada opción, qué considerar y cómo elegir la alternativa más adecuada para tu situación.',
+    image: '/images/articles/adoption-vs-buying.jpg',
+    date: '2023-09-12',
+    author: {
+      name: 'Laura Martín',
+      avatar: '/images/authors/laura-martin.jpg'
+    },
+    readingTime: 8,
+    categories: ['Nuevos Dueños', 'Adopción']
+  },
+  {
+    id: 'rutinas-basicas-mascota',
+    title: 'Establecer rutinas básicas: alimentación, paseos y descanso',
+    excerpt: 'Cómo crear horarios y rutinas que beneficien tanto a tu mascota como a tu vida familiar.',
+    image: '/images/articles/basic-pet-routines.jpg',
+    date: '2023-09-10',
+    author: {
+      name: 'Carlos Ruiz',
+      avatar: '/images/authors/carlos-ruiz.jpg'
+    },
+    readingTime: 6,
+    categories: ['Nuevos Dueños', 'Rutinas']
+  }
+];
+
+// Artículo destacado
+const featuredArticle = {
+  id: 'guia-completa-primer-mascota',
+  title: '¿Tu primera mascota? Guía completa para dueños primerizos',
+  excerpt: 'Todo lo que necesitas saber antes, durante y después de tener tu primera mascota. Desde la elección hasta los cuidados diarios.',
+  image: '/images/articles/first-pet-complete-guide.jpg',
+  date: '2023-09-27',
+  author: {
+    name: 'María Gómez',
+    avatar: '/images/authors/maria-gomez.jpg'
+  },
+  readingTime: 18,
+  categories: ['Nuevos Dueños', 'Guía Completa']
+};
+
+// Subcategorías para nuevos dueños
+const subcategories = [
+  'Preparativos Iniciales',
+  'Primeros Días',
+  'Productos Esenciales',
+  'Presupuesto y Costos',
+  'Adopción Responsable',
+  'Errores Comunes',
+  'Rutinas Básicas',
+  'Seguridad en el Hogar'
+];
+
+// Etiquetas populares
+const popularTags = [
+  'Primera Mascota',
+  'Checklist',
+  'Cachorros',
+  'Adopción',
+  'Presupuesto',
+  'Preparativos',
+  'Rutinas',
+  'Errores Comunes',
+  'Veterinario',
+  'Seguridad'
+];
+
+const title = "Nuevos Dueños";
+const description = "¿Tu primera mascota? Encuentra toda la información que necesitas para ser un dueño responsable desde el primer día. Guías, consejos y errores a evitar.";
+const image = "/images/categories/new-owners-banner.jpg";
+---
+
+<CategoryLayout
+  title={title}
+  description={description}
+  image={image}
+  category="nuevos-duenos"
+  subcategories={subcategories}
+  articles={articles}
+  popularTags={popularTags}
+  featuredArticle={featuredArticle}
+/>

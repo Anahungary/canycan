@@ -1,0 +1,43 @@
+---
+// Badge.astro - Componente para etiquetas y badges
+interface Props {
+  variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'info';
+  size?: 'sm' | 'md';
+  class?: string;
+}
+
+const { 
+  variant = 'default', 
+  size = 'sm',
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+// Mapeo de variantes a clases
+const variantClasses = {
+  default: 'bg-gray-100 text-gray-800',
+  primary: 'bg-[#AFC2D5] bg-opacity-20 text-[#AFC2D5]',
+  secondary: 'bg-[#F6B89E] bg-opacity-20 text-[#F6B89E]',
+  success: 'bg-green-100 text-green-800',
+  warning: 'bg-amber-100 text-amber-800',
+  info: 'bg-[#C8D6B9] bg-opacity-30 text-[#5A7251]',
+};
+
+// Mapeo de tamaños a clases
+const sizeClasses = {
+  sm: 'text-xs px-2 py-0.5 rounded',
+  md: 'text-sm px-2.5 py-1 rounded-md',
+};
+
+// Ensamblar clases
+const classes = [
+  'inline-flex items-center font-medium',
+  variantClasses[variant],
+  sizeClasses[size],
+  className,
+].join(' ');
+---
+
+<span class={classes} {...rest}>
+  <slot />
+</span>

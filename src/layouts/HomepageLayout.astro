@@ -1,0 +1,221 @@
+---
+// HomepageLayout.astro - Layout especial para la página de inicio
+import BaseLayout from './BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import Button from '../components/ui/Button.astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+  featuredBreeds?: any[];
+  featuredArticles?: any[];
+  categories?: {
+    title: string;
+    description: string;
+    image: string;
+    url: string;
+  }[];
+}
+
+const { 
+  featuredBreeds = [],
+  featuredArticles = [],
+  categories = []
+} = Astro.props;
+---
+
+<BaseLayout
+  title="PataDigital - Tu revista especializada en perros y gatos"
+  description="La revista digital para amantes de mascotas: consejos, guías, comparativa de razas y más."
+  bodyClass="homepage"
+>
+  {/* Hero principal */}
+  <div class="bg-gradient-to-br from-[#AFC2D5] to-[#C8D6B9] text-white">
+    <Container>
+      <div class="py-16 md:py-24 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        <div>
+          <h1 class="text-4xl md:text-5xl font-bold mb-6">
+            Encuentra la mascota <span class="text-[#2E2E2E]">perfecta</span> para tu vida
+          </h1>
+          <p class="text-xl mb-8">
+            Te ayudamos a elegir, educar y cuidar a tu compañero de vida con información de calidad.
+          </p>
+          <div class="flex flex-wrap gap-4">
+            <Button 
+              href="/comparador-razas" 
+              variant="primary" 
+              size="lg" 
+              class="bg-white text-[#2E2E2E] hover:bg-gray-100 border border-white"
+            >
+              Comparar razas
+            </Button>
+            <Button 
+              href="/nuevos-duenos" 
+              variant="outline" 
+              size="lg"
+              class="border-white text-white hover:bg-white hover:bg-opacity-10"
+            >
+              Soy nuevo dueño
+            </Button>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="relative z-10">
+            <Image 
+              src="/images/home/hero-dog-cat.png" 
+              alt="Perro y gato juntos"
+              width={600}
+              height={500}
+              class="w-full h-auto"
+            />
+          </div>
+          <div class="absolute inset-0 bg-white bg-opacity-10 rounded-full blur-3xl transform -translate-y-1/4 translate-x-1/4 -z-10"></div>
+        </div>
+      </div>
+    </Container>
+  </div>
+  
+  {/* Secciones de categorías */}
+  <div class="py-16 bg-white">
+    <Container>
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold mb-4">Explora nuestras secciones</h2>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Todo lo que necesitas saber sobre el cuidado, entrenamiento y bienestar de tu mascota.
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {categories.map(category => (
+          <a 
+            href={category.url} 
+            class="group relative rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 aspect-[5/3]"
+          >
+            <Image 
+              src={category.image} 
+              alt={category.title}
+              width={500}
+              height={300}
+              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6 text-white">
+              <h3 class="text-xl font-bold mb-2">{category.title}</h3>
+              <p class="text-sm opacity-90">{category.description}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </Container>
+  </div>
+  
+  {/* Comparador de razas */}
+  <div class="py-16 bg-[#F4E2D8] bg-opacity-30">
+    <Container>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <h2 class="text-3xl font-bold mb-4">Encuentra la raza perfecta para ti</h2>
+          <p class="text-lg text-gray-700 mb-6">
+            Utiliza nuestro comparador de razas para descubrir qué mascota se adapta mejor a tu estilo de vida, espacio y experiencia.
+          </p>
+          <ul class="space-y-4 mb-8">
+            <li class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <p>Filtra por tamaño, energía y necesidades específicas</p>
+            </li>
+            <li class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <p>Compara hasta 3 razas diferentes lado a lado</p>
+            </li>
+            <li class="flex items-start">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <p>Descubre pros y contras detallados de cada raza</p>
+            </li>
+          </ul>
+          <Button href="/comparador-razas" variant="primary" size="lg">
+            Ir al comparador de razas
+          </Button>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          {featuredBreeds.slice(0, 4).map((breed, index) => (
+            <a 
+              href={`/razas/${breed.id}`}
+              class={`rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200 ${index === 0 ? 'col-span-2 row-span-2' : ''}`}
+            >
+              <div class="relative aspect-square">
+                <Image 
+                  src={breed.image} 
+                  alt={breed.name}
+                  width={300}
+                  height={300}
+                  class="w-full h-full object-cover"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4 text-white">
+                  <h3 class="font-bold">{breed.name}</h3>
+                  <p class="text-xs opacity-90">{breed.type === 'dog' ? 'Perro' : 'Gato'}</p>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </Container>
+  </div>
+  
+  {/* Últimos artículos */}
+  <div class="py-16 bg-white">
+    <Container>
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold">Artículos recientes</h2>
+        <Button href="/blog" variant="outline">
+          Ver todos
+        </Button>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {featuredArticles.map(article => (
+          <slot name="article-card" article={article} />
+        ))}
+      </div>
+    </Container>
+  </div>
+  
+  {/* CTA Newsletter */}
+  <div class="py-16 bg-[#C8D6B9] bg-opacity-20">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-3xl font-bold mb-4">Únete a nuestra comunidad</h2>
+        <p class="text-lg text-gray-700 mb-8">
+          Suscríbete para recibir consejos, artículos y novedades sobre el cuidado de mascotas directamente en tu correo.
+        </p>
+        
+        <div class="max-w-md mx-auto">
+          <form class="flex flex-col md:flex-row gap-3">
+            <input
+              type="email"
+              placeholder="Tu correo electrónico"
+              class="flex-grow px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#AFC2D5] focus:border-transparent"
+              required
+            />
+            <Button type="submit" variant="primary" size="lg" class="whitespace-nowrap">
+              Suscribirme
+            </Button>
+          </form>
+          <p class="text-xs text-gray-500 mt-3">
+            Prometemos no hacer spam. Puedes darte de baja en cualquier momento.
+          </p>
+        </div>
+      </div>
+    </Container>
+  </div>
+</BaseLayout>

@@ -1,0 +1,168 @@
+---
+// src/pages/cuidado/index.astro - Página de categoría de cuidado y bienestar
+import CategoryLayout from '../../layouts/CategoryLayout.astro';
+
+// Artículos de cuidado y bienestar
+const articles = [
+  {
+    id: 'nutricion-perros-edad',
+    title: 'Nutrición según la edad: cachorro, adulto y senior',
+    excerpt: 'Guía completa sobre las necesidades nutricionales específicas de cada etapa de vida de tu perro.',
+    image: '/images/articles/dog-nutrition-age.jpg',
+    date: '2023-09-23',
+    author: {
+      name: 'María Gómez',
+      avatar: '/images/authors/maria-gomez.jpg'
+    },
+    readingTime: 10,
+    categories: ['Cuidado', 'Nutrición']
+  },
+  {
+    id: 'higiene-dental-mascotas',
+    title: 'Higiene dental: prevención de enfermedades bucales',
+    excerpt: 'Rutinas de cuidado dental casero y señales de alerta para mantener los dientes de tu mascota saludables.',
+    image: '/images/articles/dental-hygiene.jpg',
+    date: '2023-09-21',
+    author: {
+      name: 'Carlos Ruiz',
+      avatar: '/images/authors/carlos-ruiz.jpg'
+    },
+    readingTime: 8,
+    categories: ['Cuidado', 'Salud Dental']
+  },
+  {
+    id: 'cepillado-tecnicas',
+    title: 'Técnicas de cepillado según el tipo de pelaje',
+    excerpt: 'Aprende las mejores técnicas y herramientas para mantener el pelo de tu mascota sano y sin enredos.',
+    image: '/images/articles/grooming-techniques.jpg',
+    date: '2023-09-19',
+    author: {
+      name: 'Laura Martín',
+      avatar: '/images/authors/laura-martin.jpg'
+    },
+    readingTime: 7,
+    categories: ['Cuidado', 'Grooming']
+  },
+  {
+    id: 'ejercicio-rutinas',
+    title: 'Rutinas de ejercicio adaptadas a cada raza y edad',
+    excerpt: 'Diseña la rutina de actividad física perfecta según las necesidades específicas de tu mascota.',
+    image: '/images/articles/exercise-routines.jpg',
+    date: '2023-09-17',
+    author: {
+      name: 'Carlos Ruiz',
+      avatar: '/images/authors/carlos-ruiz.jpg'
+    },
+    readingTime: 9,
+    categories: ['Cuidado', 'Ejercicio']
+  },
+  {
+    id: 'vacunas-calendario',
+    title: 'Calendario de vacunación para perros y gatos',
+    excerpt: 'Todo lo que necesitas saber sobre las vacunas esenciales y opcionales para mantener protegida a tu mascota.',
+    image: '/images/articles/vaccination-schedule.jpg',
+    date: '2023-09-15',
+    author: {
+      name: 'María Gómez',
+      avatar: '/images/authors/maria-gomez.jpg'
+    },
+    readingTime: 11,
+    categories: ['Cuidado', 'Salud']
+  },
+  {
+    id: 'cuidado-ojos-oidos',
+    title: 'Cuidado de ojos y oídos: prevención de infecciones',
+    excerpt: 'Rutinas de limpieza y señales de alarma para mantener los ojos y oídos de tu mascota en perfecto estado.',
+    image: '/images/articles/eyes-ears-care.jpg',
+    date: '2023-09-13',
+    author: {
+      name: 'Laura Martín',
+      avatar: '/images/authors/laura-martin.jpg'
+    },
+    readingTime: 6,
+    categories: ['Cuidado', 'Higiene']
+  },
+  {
+    id: 'primeros-auxilios',
+    title: 'Primeros auxilios para mascotas: guía de emergencias',
+    excerpt: 'Conocimientos básicos que todo dueño debe tener para actuar en situaciones de emergencia.',
+    image: '/images/articles/pet-first-aid.jpg',
+    date: '2023-09-11',
+    author: {
+      name: 'Carlos Ruiz',
+      avatar: '/images/authors/carlos-ruiz.jpg'
+    },
+    readingTime: 12,
+    categories: ['Cuidado', 'Emergencias']
+  },
+  {
+    id: 'cuidado-gatos-senior',
+    title: 'Cuidado especial para gatos senior: cambios y necesidades',
+    excerpt: 'Adaptaciones necesarias en el cuidado cuando tu gato entra en la tercera edad.',
+    image: '/images/articles/senior-cat-care.jpg',
+    date: '2023-09-09',
+    author: {
+      name: 'María Gómez',
+      avatar: '/images/authors/maria-gomez.jpg'
+    },
+    readingTime: 8,
+    categories: ['Cuidado', 'Gatos Senior']
+  }
+];
+
+// Artículo destacado
+const featuredArticle = {
+  id: 'bienestar-integral-mascotas',
+  title: 'Bienestar integral: cuerpo, mente y espíritu de tu mascota',
+  excerpt: 'Una visión holística del cuidado de mascotas que abarca salud física, mental y emocional para una vida plena y feliz.',
+  image: '/images/articles/holistic-pet-care.jpg',
+  date: '2023-09-26',
+  author: {
+    name: 'Laura Martín',
+    avatar: '/images/authors/laura-martin.jpg'
+  },
+  readingTime: 13,
+  categories: ['Cuidado', 'Bienestar Integral']
+};
+
+// Subcategorías de cuidado
+const subcategories = [
+  'Nutrición y Alimentación',
+  'Higiene y Grooming',
+  'Salud Preventiva',
+  'Ejercicio y Actividad',
+  'Cuidados por Edad',
+  'Primeros Auxilios',
+  'Salud Dental',
+  'Bienestar Emocional'
+];
+
+// Etiquetas populares
+const popularTags = [
+  'Nutrición',
+  'Vacunas',
+  'Higiene Dental',
+  'Grooming',
+  'Ejercicio',
+  'Primeros Auxilios',
+  'Mascotas Senior',
+  'Prevención',
+  'Bienestar',
+  'Cuidados Básicos'
+];
+
+const title = "Cuidado y Bienestar";
+const description = "Todo lo que necesitas saber sobre el cuidado integral de tu mascota: nutrición, higiene, salud preventiva y bienestar físico y emocional.";
+const image = "/images/categories/care-banner.jpg";
+---
+
+<CategoryLayout
+  title={title}
+  description={description}
+  image={image}
+  category="cuidado"
+  subcategories={subcategories}
+  articles={articles}
+  popularTags={popularTags}
+  featuredArticle={featuredArticle}
+/>

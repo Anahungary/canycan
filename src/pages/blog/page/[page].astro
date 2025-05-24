@@ -1,0 +1,278 @@
+---
+// src/pages/blog/page/[page].astro - Página dinámica para paginación del blog
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Container from '../../../components/ui/Container.astro';
+import ArticleList from '../../../components/blog/ArticleList.astro';
+import Card from '../../../components/ui/Card.astro';
+import Badge from '../../../components/ui/Badge.astro';
+
+// Configuración para la paginación
+const ARTICLES_PER_PAGE = 6;
+const TOTAL_PAGES = 3; // Para el ejemplo, simularemos 3 páginas
+
+// Generar rutas dinámicas para la paginación
+export function getStaticPaths() {
+  // Crear un arreglo con el número total de páginas
+  const pages = Array.from({ length: TOTAL_PAGES }, (_, i) => i + 1);
+  
+  // Simulación de base de datos de artículos
+  const allArticles = [
+    // Página 1
+    {
+      id: 'entrenamiento-profesional-vs-casero',
+      title: '¿Entrenamiento profesional o en casa? Pros y contras',
+      excerpt: 'Analiza las ventajas y desventajas de cada opción para tomar la mejor decisión según las necesidades de tu mascota y tus circunstancias.',
+      image: '/images/articles/professional-training.jpg',
+      date: '2023-09-25',
+      author: {
+        name: 'Carlos Ruiz',
+        avatar: '/images/authors/carlos-ruiz.jpg'
+      },
+      readingTime: 8,
+      categories: ['Entrenamiento', 'Consejos'],
+      featured: true
+    },
+    {
+      id: 'comandos-basicos-perros',
+      title: 'Los 5 comandos básicos que todo perro debería conocer',
+      excerpt: 'Guía paso a paso para enseñar a tu perro los comandos fundamentales: sentado, quieto, ven, abajo y junto.',
+      image: '/images/articles/basic-commands.jpg',
+      date: '2023-09-20',
+      author: {
+        name: 'Carlos Ruiz',
+        avatar: '/images/authors/carlos-ruiz.jpg'
+      },
+      readingTime: 7,
+      categories: ['Entrenamiento', 'Perros']
+    },
+    // Más artículos para la página 1...
+    
+    // Página 2
+    {
+      id: 'entrenamiento-gatuno',
+      title: '¿Se pueden entrenar los gatos? Mitos y realidades',
+      excerpt: 'Contrario a la creencia popular, los gatos pueden aprender comandos y trucos. Aprende las técnicas efectivas para entrenar a tu felino.',
+      image: '/images/articles/cat-training.jpg',
+      date: '2023-09-15',
+      author: {
+        name: 'María Gómez',
+        avatar: '/images/authors/maria-gomez.jpg'
+      },
+      readingTime: 8,
+      categories: ['Entrenamiento', 'Gatos']
+    },
+    {
+      id: 'refuerzo-positivo-tecnicas',
+      title: 'Técnicas de refuerzo positivo para entrenar a tu mascota',
+      excerpt: 'Descubre cómo el refuerzo positivo puede transformar el comportamiento de tu mascota de manera efectiva y sin estrés.',
+      image: '/images/articles/positive-reinforcement.jpg',
+      date: '2023-09-18',
+      author: {
+        name: 'Laura Martín',
+        avatar: '/images/authors/laura-martin.jpg'
+      },
+      readingTime: 6,
+      categories: ['Entrenamiento', 'Comportamiento']
+    },
+    // Más artículos para la página 2...
+    
+    // Página 3
+    {
+      id: 'juguetes-inteligencia-perros',
+      title: '7 juguetes para estimular la inteligencia de tu perro',
+      excerpt: 'Descubre los mejores juguetes interactivos para mantener a tu perro mental y físicamente activo.',
+      image: '/images/articles/dog-toys.jpg',
+      date: '2023-09-03',
+      author: {
+        name: 'Carlos Ruiz',
+        avatar: '/images/authors/carlos-ruiz.jpg'
+      },
+      readingTime: 5,
+      categories: ['Entretenimiento', 'Perros']
+    },
+    {
+      id: 'proceso-adopcion-perro',
+      title: 'Paso a paso: El proceso de adopción de un perro en protectoras',
+      excerpt: 'Todo lo que debes saber antes, durante y después de adoptar un perro: trámites, visitas y preparación del hogar.',
+      image: '/images/articles/dog-adoption.jpg',
+      date: '2023-08-25',
+      author: {
+        name: 'Laura Martín',
+        avatar: '/images/authors/laura-martin.jpg'
+      },
+      readingTime: 9,
+      categories: ['Adopción', 'Perros']
+    },
+    // Más artículos para la página 3...
+  ];
+  
+  // Dividir los artículos en páginas
+  const pageArticlesMap = pages.reduce((acc, page) => {
+    // En un escenario real, aquí se paginaría correctamente
+    // Para el ejemplo, simularemos mediante la división
+    const startIndex = (page - 1) * ARTICLES_PER_PAGE;
+    const endIndex = startIndex + ARTICLES_PER_PAGE;
+    acc[page] = allArticles.slice(startIndex, endIndex);
+    return acc;
+  }, {});
+  
+  return pages.map(page => ({
+    params: { page: page.toString() },
+    props: { 
+      page,
+      articles: pageArticlesMap[page] || [],
+      totalPages: TOTAL_PAGES
+    }
+  }));
+}
+
+const { page, articles, totalPages } = Astro.props;
+
+// Categorías del blog (simulación)
+const categories = [
+  { name: 'Entrenamiento', count: 24, color: 'primary' },
+  { name: 'Alimentación', count: 18, color: 'secondary' },
+  { name: 'Salud', count: 31, color: 'success' },
+  { name: 'Comportamiento', count: 27, color: 'info' }
+];
+---
+
+<BaseLayout 
+  title={`Blog - Página ${page} | PataDigital`}
+  description={`Explora la página ${page} de nuestro blog sobre perros y gatos. Artículos sobre entrenamiento, salud, comportamiento y más.`}
+>
+  {/* Hero */}
+  <div class="bg-gradient-to-r from-[#AFC2D5] to-[#C8D6B9]">
+    <Container>
+      <div class="py-12 md:py-16 text-center">
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">Blog de PataDigital</h1>
+        <p class="text-lg text-white text-opacity-90 max-w-2xl mx-auto">
+          Artículos, consejos y guías escritos por expertos para mejorar la calidad de vida de tus mascotas
+        </p>
+        
+        <div class="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto mt-6">
+          {categories.map(category => (
+            <a 
+              href={`/blog/categoria/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
+              class={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 text-white transition-all duration-200`}
+            >
+              {category.name}
+            </a>
+          ))}
+        </div>
+      </div>
+    </Container>
+  </div>
+  
+  {/* Artículos paginados */}
+  <Container class="py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* Lista de artículos */}
+      <div class="lg:col-span-8">
+        <h2 class="text-2xl font-bold mb-8">Artículos - Página {page}</h2>
+        
+        <ArticleList 
+          articles={articles} 
+          layout="grid" 
+          columns={2}
+        />
+        
+        {/* Paginación */}
+        <div class="mt-10 flex justify-center">
+          <nav class="flex items-center">
+            {parseInt(page) > 1 && (
+              <a 
+                href={`/blog/page/${parseInt(page) - 1}`} 
+                class="px-4 py-2 mx-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+              >
+                &laquo; Anterior
+              </a>
+            )}
+            
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
+              <a 
+                href={`/blog/page/${pageNum}`} 
+                class={`px-4 py-2 mx-1 ${parseInt(page) === pageNum 
+                  ? 'bg-[#AFC2D5] text-white' 
+                  : 'border border-gray-300 text-gray-700 hover:bg-gray-50'} rounded-md text-sm`}
+              >
+                {pageNum}
+              </a>
+            ))}
+            
+            {parseInt(page) < totalPages && (
+              <a 
+                href={`/blog/page/${parseInt(page) + 1}`} 
+                class="px-4 py-2 mx-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+              >
+                Siguiente &raquo;
+              </a>
+            )}
+          </nav>
+        </div>
+      </div>
+      
+      {/* Sidebar */}
+      <div class="lg:col-span-4">
+        <div class="sticky top-[140px] space-y-8">
+          {/* Categorías */}
+          <Card variant="default" padding="md">
+            <h3 class="text-lg font-bold mb-4">Categorías</h3>
+            <div class="space-y-2">
+              {categories.map(category => (
+                <a 
+                  href={`/blog/categoria/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
+                  class="flex justify-between items-center py-2 px-3 rounded-md hover:bg-gray-100 transition-colors duration-200"
+                >
+                  <span>{category.name}</span>
+                  <Badge variant={category.color} size="sm">{category.count}</Badge>
+                </a>
+              ))}
+            </div>
+          </Card>
+          
+          {/* Newsletter */}
+          <Card variant="highlight" padding="md">
+            <h3 class="text-lg font-bold mb-3">Suscríbete a nuestra newsletter</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Recibe en tu correo los mejores artículos y consejos para el cuidado de tus mascotas
+            </p>
+            
+            <form class="space-y-3">
+              <div>
+                <label for="email-sidebar" class="sr-only">Correo electrónico</label>
+                <input
+                  type="email"
+                  id="email-sidebar"
+                  name="email"
+                  required
+                  placeholder="Tu correo electrónico"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AFC2D5] focus:border-transparent"
+                />
+              </div>
+              <div class="flex">
+                <label class="flex items-start">
+                  <input 
+                    type="checkbox" 
+                    name="accept-terms" 
+                    required
+                    class="h-4 w-4 mt-1 rounded border-gray-300 text-[#AFC2D5] focus:ring-[#AFC2D5]" 
+                  />
+                  <span class="ml-2 text-xs text-gray-500">
+                    Acepto recibir correos y la política de privacidad
+                  </span>
+                </label>
+              </div>
+              <button
+                type="submit"
+                class="w-full bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200"
+              >
+                Suscribirme
+              </button>
+            </form>
+          </Card>
+        </div>
+      </div>
+    </div>
+  </Container>
+</BaseLayout>

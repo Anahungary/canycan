@@ -1,0 +1,48 @@
+---
+// Card.astro - Componente reutilizable para tarjetas de contenido
+interface Props {
+  variant?: 'default' | 'article' | 'breed' | 'highlight';
+  padding?: 'none' | 'sm' | 'md' | 'lg';
+  class?: string;
+  href?: string;
+}
+
+const {
+  variant = 'default',
+  padding = 'md',
+  class: className = '',
+  href,
+  ...rest
+} = Astro.props;
+
+// Mapeo de variantes a clases
+const variantClasses = {
+  default: 'bg-white border border-gray-200',
+  article: 'bg-white border border-gray-200 hover:shadow-md',
+  breed: 'bg-[#F4E2D8] border border-[#F4E2D8]',
+  highlight: 'bg-[#C8D6B9] border border-[#C8D6B9]',
+};
+
+// Mapeo de padding a clases
+const paddingClasses = {
+  none: 'p-0',
+  sm: 'p-3',
+  md: 'p-5',
+  lg: 'p-6',
+};
+
+// Ensamblar clases
+const classes = [
+  'rounded-lg transition-all duration-200',
+  variantClasses[variant],
+  paddingClasses[padding],
+  href ? 'cursor-pointer' : '',
+  className,
+].join(' ');
+
+const Tag = href ? 'a' : 'div';
+---
+
+<Tag href={href} class={classes} {...rest}>
+  <slot />
+</Tag>

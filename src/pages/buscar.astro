@@ -1,0 +1,385 @@
+---
+// src/pages/buscar.astro - Página de resultados de búsqueda (CORREGIDA)
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import ArticleCard from '../components/blog/ArticleCard.astro';
+import BreedCard from '../components/features/breeds-comparison/BreedCard.astro';
+import Card from '../components/ui/Card.astro';
+import Button from '../components/ui/Button.astro';
+import { Image } from 'astro:assets';
+
+// ✅ INTERFACES PARA TIPADO CORRECTO
+interface Article {
+  id: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  date: string;
+  author: {
+    name: string;
+    avatar: string;
+  };
+  readingTime: number;
+  categories: string[];
+}
+
+interface Breed {
+  id: string;
+  name: string;
+  image: string;
+  size: 'small' | 'medium' | 'large';
+  energyLevel: 1 | 2 | 3 | 4 | 5;
+  friendliness: 1 | 2 | 3 | 4 | 5;
+  grooming: 1 | 2 | 3 | 4 | 5;
+  training: 1 | 2 | 3 | 4 | 5;
+  type: 'dog' | 'cat';
+  goodWith: ('children' | 'dogs' | 'cats' | 'seniors' | 'apartments')[];
+  hypoallergenic: boolean;
+  featured?: boolean;
+}
+
+// Obtener el término de búsqueda de la URL
+const { searchParams } = Astro.url;
+const searchQuery = searchParams.get('q') || '';
+
+// ✅ DATOS TIPADOS CORRECTAMENTE
+const allArticles: Article[] = [
+  {
+    id: 'comandos-basicos-perros',
+    title: 'Los 5 comandos básicos que todo perro debería conocer',
+    excerpt: 'Guía paso a paso para enseñar a tu perro los comandos fundamentales: sentado, quieto, ven, abajo y junto.',
+    image: '/images/articles/basic-commands.jpg',
+    date: '2023-09-20',
+    author: {
+      name: 'Carlos Ruiz',
+      avatar: '/images/authors/carlos-ruiz.jpg'
+    },
+    readingTime: 7,
+    categories: ['Entrenamiento', 'Perros']
+  },
+  {
+    id: 'como-elegir-comida-perro',
+    title: 'Cómo elegir la alimentación ideal para tu perro',
+    excerpt: 'Guía completa para entender las necesidades nutricionales de tu perro según su edad, tamaño y actividad física.',
+    image: '/images/articles/dog-food-guide.jpg',
+    date: '2023-09-15',
+    author: {
+      name: 'María Gómez',
+      avatar: '/images/authors/maria-gomez.jpg'
+    },
+    readingTime: 8,
+    categories: ['Alimentación', 'Perros']
+  },
+  {
+    id: 'comportamiento-gatos-nocturnos',
+    title: 'Por qué tu gato está más activo de noche',
+    excerpt: 'Entende el comportamiento nocturno natural de los felinos y cómo adaptarte a sus horarios.',
+    image: '/images/articles/cat-night-behavior.jpg',
+    date: '2023-09-10',
+    author: {
+      name: 'Laura Martín',
+      avatar: '/images/authors/laura-martin.jpg'
+    },
+    readingTime: 6,
+    categories: ['Comportamiento', 'Gatos']
+  },
+  {
+    id: 'entrenar-cachorro-casa',
+    title: 'Cómo entrenar a un cachorro para hacer sus necesidades',
+    excerpt: 'Métodos efectivos y paciencia para enseñar a tu cachorro dónde y cuándo hacer sus necesidades.',
+    image: '/images/articles/puppy-house-training.jpg',
+    date: '2023-09-05',
+    author: {
+      name: 'Carlos Ruiz',
+      avatar: '/images/authors/carlos-ruiz.jpg'
+    },
+    readingTime: 9,
+    categories: ['Entrenamiento', 'Cachorros']
+  }
+];
+
+const allBreeds: Breed[] = [
+  {
+    id: 'labrador-retriever',
+    name: 'Labrador Retriever',
+    image: '/images/breeds/labrador-retriever.jpg',
+    size: 'large',
+    energyLevel: 4,
+    friendliness: 5,
+    grooming: 2,
+    training: 5,
+    type: 'dog',
+    goodWith: ['children', 'dogs', 'cats'],
+    hypoallergenic: false
+  },
+  {
+    id: 'maine-coon',
+    name: 'Maine Coon',
+    image: '/images/breeds/maine-coon.jpg',
+    size: 'large',
+    energyLevel: 3,
+    friendliness: 4,
+    grooming: 4,
+    training: 3,
+    type: 'cat',
+    goodWith: ['children', 'dogs'],
+    hypoallergenic: false
+  },
+  {
+    id: 'french-bulldog',
+    name: 'Bulldog Francés',
+    image: '/images/breeds/french-bulldog.jpg',
+    size: 'small',
+    energyLevel: 3,
+    friendliness: 4,
+    grooming: 2,
+    training: 3,
+    type: 'dog',
+    goodWith: ['children', 'apartments'],
+    hypoallergenic: false
+  },
+  {
+    id: 'siamese',
+    name: 'Siamés',
+    image: '/images/breeds/siamese.jpg',
+    size: 'medium',
+    energyLevel: 4,
+    friendliness: 3,
+    grooming: 1,
+    training: 4,
+    type: 'cat',
+    goodWith: ['apartments'],
+    hypoallergenic: true
+  },
+  {
+    id: 'golden-retriever',
+    name: 'Golden Retriever',
+    image: '/images/breeds/golden-retriever.jpg',
+    size: 'large',
+    energyLevel: 4,
+    friendliness: 5,
+    grooming: 3,
+    training: 5,
+    type: 'dog',
+    goodWith: ['children', 'dogs', 'cats'],
+    hypoallergenic: false
+  }
+];
+
+// ✅ FUNCIÓN DE BÚSQUEDA CON TIPADO CORRECTO - SOLUCION AL ERROR TS7006
+function search(query: string): { articles: Article[]; breeds: Breed[] } {
+  if (!query || query.trim() === '') {
+    return { articles: [], breeds: [] };
+  }
+  
+  const lowerQuery = query.toLowerCase();
+  
+  // Buscar en artículos (título, extracto y categorías)
+  const matchedArticles = allArticles.filter((article: Article) => {
+    return article.title.toLowerCase().includes(lowerQuery) || 
+           article.excerpt.toLowerCase().includes(lowerQuery) ||
+           article.categories.some((cat: string) => cat.toLowerCase().includes(lowerQuery));
+  });
+  
+  // Buscar en razas (nombre y tipo)
+  const matchedBreeds = allBreeds.filter((breed: Breed) => {
+    return breed.name.toLowerCase().includes(lowerQuery) || 
+           (breed.type === 'dog' && (lowerQuery.includes('perr') || lowerQuery.includes('dog'))) ||
+           (breed.type === 'cat' && (lowerQuery.includes('gat') || lowerQuery.includes('cat')));
+  });
+  
+  return {
+    articles: matchedArticles,
+    breeds: matchedBreeds
+  };
+}
+
+// Realizar la búsqueda
+const searchResults = search(searchQuery);
+const hasResults = searchResults.articles.length > 0 || searchResults.breeds.length > 0;
+
+// Búsquedas populares (para mostrar si no hay resultados)
+const popularSearches = [
+  'entrenamiento',
+  'cachorros',
+  'alimentación',
+  'razas pequeñas',
+  'comportamiento',
+  'gatos'
+];
+---
+
+<BaseLayout
+  title={searchQuery ? `Resultados de búsqueda: ${searchQuery}` : 'Buscar en PataDigital'}
+  description={searchQuery ? `Resultados de búsqueda para "${searchQuery}" en PataDigital - artículos, razas y consejos relacionados.` : 'Busca artículos, razas y consejos sobre mascotas en PataDigital.'}
+>
+  <Container class="py-12">
+    {/* Formulario de búsqueda */}
+    <div class="mb-10">
+      <h1 class="text-3xl font-bold mb-6">
+        {searchQuery ? 'Resultados de búsqueda' : 'Buscar en PataDigital'}
+      </h1>
+      
+      <form action="/buscar" method="get" class="mb-6">
+        <div class="flex max-w-2xl">
+          <input 
+            type="text" 
+            name="q" 
+            value={searchQuery}
+            placeholder="Buscar artículos, razas, consejos..."
+            class="flex-1 border border-gray-300 rounded-l-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#AFC2D5] focus:border-transparent"
+          />
+          <button 
+            type="submit" 
+            class="bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white px-6 py-3 rounded-r-md transition-colors duration-200"
+          >
+            Buscar
+          </button>
+        </div>
+      </form>
+      
+      {searchQuery && (
+        <p class="text-lg text-gray-600">
+          {hasResults 
+            ? `Mostrando resultados para "${searchQuery}" (${searchResults.articles.length + searchResults.breeds.length} resultados)` 
+            : `No se encontraron resultados para "${searchQuery}"`}
+        </p>
+      )}
+    </div>
+    
+    {hasResults ? (
+      <div class="space-y-12">
+        {/* Resultados de razas */}
+        {searchResults.breeds.length > 0 && (
+          <div>
+            <h2 class="text-2xl font-bold mb-6">Razas ({searchResults.breeds.length})</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* ✅ SOLUCION AL ERROR TS2322 - USAR PROPS INDIVIDUALES */}
+              {searchResults.breeds.map((breed: Breed) => (
+                <BreedCard 
+                  id={breed.id}
+                  name={breed.name}
+                  image={breed.image}
+                  size={breed.size}
+                  energyLevel={breed.energyLevel}
+                  friendliness={breed.friendliness}
+                  grooming={breed.grooming}
+                  training={breed.training}
+                  type={breed.type}
+                  goodWith={breed.goodWith}
+                  hypoallergenic={breed.hypoallergenic}
+                  featured={breed.featured}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Resultados de artículos */}
+        {searchResults.articles.length > 0 && (
+          <div>
+            <h2 class="text-2xl font-bold mb-6">Artículos ({searchResults.articles.length})</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {searchResults.articles.map((article: Article) => (
+                <ArticleCard 
+                  id={article.id}
+                  title={article.title}
+                  excerpt={article.excerpt}
+                  image={article.image}
+                  date={article.date}
+                  author={article.author}
+                  readingTime={article.readingTime}
+                  categories={article.categories}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    ) : (
+      <div class="mt-10 space-y-10">
+        {/* Sin resultados */}
+        <Card variant="default" padding="lg" class="text-center max-w-2xl mx-auto">
+          <div class="flex justify-center mb-6">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center">
+              <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+          </div>
+          
+          <h2 class="text-xl font-bold mb-2">No hemos encontrado resultados</h2>
+          <p class="text-gray-600 mb-6">
+            No hay contenido que coincida con tu búsqueda. Intenta con otros términos o explora algunas de nuestras categorías populares.
+          </p>
+          
+          <div class="flex flex-wrap justify-center gap-2 mb-6">
+            {popularSearches.map((term: string) => (
+              <a 
+                href={`/buscar?q=${term}`}
+                class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm"
+              >
+                {term}
+              </a>
+            ))}
+          </div>
+          
+          <div class="flex justify-center">
+            <Button href="/" variant="primary">
+              Volver al inicio
+            </Button>
+          </div>
+        </Card>
+        
+        {/* Sugerencias alternativas */}
+        <div>
+          <h2 class="text-2xl font-bold mb-6 text-center">También podría interesarte</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <a href="/comparador-razas" class="group block">
+              <div class="rounded-lg overflow-hidden mb-3">
+                <Image 
+                  src="/images/categories/breeds.jpg"
+                  alt="Comparador de razas"
+                  width={400}
+                  height={250}
+                  class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+              <h3 class="text-lg font-bold group-hover:text-[#AFC2D5] transition-colors">Comparador de razas</h3>
+              <p class="text-gray-600 text-sm">Encuentra la mascota perfecta para ti según tu estilo de vida</p>
+            </a>
+            
+            <a href="/entrenamiento" class="group block">
+              <div class="rounded-lg overflow-hidden mb-3">
+                <Image 
+                  src="/images/categories/training.jpg"
+                  alt="Guías de entrenamiento"
+                  width={400}
+                  height={250}
+                  class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+              <h3 class="text-lg font-bold group-hover:text-[#AFC2D5] transition-colors">Guías de entrenamiento</h3>
+              <p class="text-gray-600 text-sm">Aprende a educar a tu mascota con técnicas positivas y efectivas</p>
+            </a>
+            
+            <a href="/nuevos-duenos" class="group block">
+              <div class="rounded-lg overflow-hidden mb-3">
+                <Image 
+                  src="/images/categories/new-owners.jpg"
+                  alt="Consejos para nuevos dueños"
+                  width={400}
+                  height={250}
+                  class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+              <h3 class="text-lg font-bold group-hover:text-[#AFC2D5] transition-colors">Consejos para nuevos dueños</h3>
+              <p class="text-gray-600 text-sm">Todo lo que necesitas saber al adoptar tu primera mascota</p>
+            </a>
+          </div>
+        </div>
+      </div>
+    )}
+  </Container>
+</BaseLayout>

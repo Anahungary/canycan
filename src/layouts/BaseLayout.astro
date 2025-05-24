@@ -1,0 +1,84 @@
+---
+// BaseLayout.astro - Layout base para todas las páginas
+import Header from '../components/common/Header.astro';
+import Footer from '../components/common/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  canonicalUrl?: string;
+  bodyClass?: string;
+}
+
+const { 
+  title, 
+  description = 'La revista digital para amantes de mascotas: consejos, guías, comparativa de razas y más.',
+  ogImage = '/og-image.jpg',
+  canonicalUrl,
+  bodyClass = '',
+} = Astro.props;
+
+// URL canónica
+const siteUrl = import.meta.env.SITE || 'https://revista-mascotas.com';
+const canonical = canonicalUrl 
+  ? (canonicalUrl.startsWith('http') ? canonicalUrl : `${siteUrl}${canonicalUrl}`) 
+  : `${siteUrl}${Astro.url.pathname}`;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | PataDigital</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`} />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonical} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`} />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Preload CSS -->
+    <link rel="preload" href="/styles/critical.css" as="style" />
+    <link rel="stylesheet" href="/styles/critical.css" />
+    
+    <slot name="head" />
+  </head>
+  <body class={`min-h-screen flex flex-col bg-[#FAFAFA] font-inter text-[#2E2E2E] ${bodyClass}`}>
+    <Header />
+    
+    <main class="flex-grow">
+      <slot />
+    </main>
+    
+    <Footer />
+    
+    <!-- Scripts -->
+    <script src="/scripts/main.js" defer></script>
+    <slot name="scripts" />
+  </body>
+</html>

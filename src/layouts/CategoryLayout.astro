@@ -1,0 +1,227 @@
+---
+// CategoryLayout.astro - Layout para páginas de categoría
+import BaseLayout from './BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import ArticleList from '../components/blog/ArticleList.astro';
+import Card from '../components/ui/Card.astro';
+import Badge from '../components/ui/Badge.astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  category: string;
+  subcategories?: string[];
+  articles: any[];
+  popularTags?: string[];
+  featuredArticle?: any;
+}
+
+const { 
+  title, 
+  description, 
+  image = '/images/categories/default.jpg',
+  category,
+  subcategories = [],
+  articles = [],
+  popularTags = [],
+  featuredArticle
+} = Astro.props;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  ogImage={image}
+>
+  {/* Hero */}
+  <div class="bg-gradient-to-br from-[#AFC2D5] to-[#C8D6B9] text-white">
+    <Container>
+      <div class="py-16 md:py-24">
+        <div class="max-w-2xl mx-auto text-center">
+          <h1 class="text-3xl md:text-4xl font-bold mb-4">{title}</h1>
+          <p class="text-lg md:text-xl opacity-90 mb-6">{description}</p>
+          
+          {subcategories.length > 0 && (
+            <div class="flex flex-wrap justify-center gap-2 mt-6">
+              {subcategories.map(subcategory => (
+                <a 
+                  href={`/${category}/${subcategory.toLowerCase().replace(/\s+/g, '-')}`}
+                  class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200"
+                >
+                  {subcategory}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </Container>
+  </div>
+  
+  <Container class="py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* Contenido principal */}
+      <div class="lg:col-span-8">
+        {/* Artículo destacado si existe */}
+        {featuredArticle && (
+          <div class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">Artículo destacado</h2>
+            <Card variant="default" padding="none" class="overflow-hidden">
+              <div class="relative h-80">
+                <Image 
+                  src={featuredArticle.image} 
+                  alt={featuredArticle.title}
+                  width={1200}
+                  height={600}
+                  class="w-full h-full object-cover"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-70"></div>
+                <div class="absolute bottom-0 left-0 p-6 text-white">
+                  <div class="flex flex-wrap gap-2 mb-3">
+                    {featuredArticle.categories.map((cat: string) => (
+                      <Badge variant="info" size="sm">{cat}</Badge>
+                    ))}
+                  </div>
+                  <h3 class="text-2xl font-bold mb-2">{featuredArticle.title}</h3>
+                  <p class="mb-4">{featuredArticle.excerpt}</p>
+                  <a 
+                    href={`/articulos/${featuredArticle.id}`}
+                    class="bg-white text-[#2E2E2E] hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium inline-block"
+                  >
+                    Leer artículo
+                  </a>
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
+        
+        {/* Lista de artículos */}
+        <div>
+          <h2 class="text-2xl font-bold mb-6">Artículos recientes</h2>
+          <ArticleList 
+            articles={articles} 
+            layout="grid" 
+            columns={2}
+          />
+        </div>
+      </div>
+      
+      {/* Sidebar */}
+      <div class="lg:col-span-4">
+        <div class="sticky top-[140px] space-y-8">
+          {/* Subcategorías */}
+          {subcategories.length > 0 && (
+            <Card variant="default" padding="md">
+              <h3 class="text-lg font-bold mb-4">Explorar {title}</h3>
+              <div class="space-y-2">
+                {subcategories.map(subcategory => (
+                  <a 
+                    href={`/${category}/${subcategory.toLowerCase().replace(/\s+/g, '-')}`}
+                    class="block py-2 px-3 rounded-md hover:bg-gray-100 transition-colors duration-200"
+                  >
+                    {subcategory}
+                  </a>
+                ))}
+              </div>
+            </Card>
+          )}
+          
+          {/* Etiquetas populares */}
+          {popularTags.length > 0 && (
+            <Card variant="default" padding="md">
+              <h3 class="text-lg font-bold mb-4">Temas populares</h3>
+              <div class="flex flex-wrap gap-2">
+                {popularTags.map(tag => (
+                  <a 
+                    href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm"
+                  >
+                    {tag}
+                  </a>
+                ))}
+              </div>
+            </Card>
+          )}
+          
+          {/* Newsletter */}
+          <Card variant="highlight" padding="md">
+            <h3 class="text-lg font-bold mb-3">Suscríbete a nuestra newsletter</h3>
+            <p class="text-sm text-gray-600 mb-4">
+              Recibe consejos, artículos y novedades sobre el cuidado de mascotas directamente en tu correo.
+            </p>
+            
+            <form class="space-y-3">
+              <div>
+                <label for="email-sidebar" class="sr-only">Correo electrónico</label>
+                <input
+                  type="email"
+                  id="email-sidebar"
+                  name="email"
+                  required
+                  placeholder="Tu correo electrónico"
+                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AFC2D5] focus:border-transparent"
+                />
+              </div>
+              <div class="flex">
+                <label class="flex items-start">
+                  <input 
+                    type="checkbox" 
+                    name="accept-terms" 
+                    required
+                    class="h-4 w-4 mt-1 rounded border-gray-300 text-[#AFC2D5] focus:ring-[#AFC2D5]" 
+                  />
+                  <span class="ml-2 text-xs text-gray-500">
+                    Acepto recibir correos y la política de privacidad
+                  </span>
+                </label>
+              </div>
+              <button
+                type="submit"
+                class="w-full bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200"
+              >
+                Suscribirme
+              </button>
+            </form>
+          </Card>
+        </div>
+      </div>
+    </div>
+    
+    {/* Paginación */}
+    {articles.length >= 10 && (
+      <div class="mt-12 flex justify-center">
+        <nav class="flex items-center">
+          <a 
+            href="#" 
+            class="px-4 py-2 mx-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+          >
+            &laquo; Anterior
+          </a>
+          <span class="px-4 py-2 mx-1 bg-[#AFC2D5] text-white rounded-md text-sm">1</span>
+          <a 
+            href="#" 
+            class="px-4 py-2 mx-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+          >
+            2
+          </a>
+          <a 
+            href="#" 
+            class="px-4 py-2 mx-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+          >
+            3
+          </a>
+          <span class="px-2 text-gray-500">...</span>
+          <a 
+            href="#" 
+            class="px-4 py-2 mx-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+          >
+            Siguiente &raquo;
+          </a>
+        </nav>
+      </div>
+    )}
+  </Container>
+</BaseLayout>
