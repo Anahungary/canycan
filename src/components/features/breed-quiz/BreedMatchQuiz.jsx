@@ -1,9 +1,9 @@
+// src/components/features/breed-quiz/BreedMatchQuiz.jsx - VERSIÓN CORREGIDA
 import React, { useState, useEffect } from 'react';
 import QuizQuestion from './QuizQuestion';
-import BreedRecommendationResult from './BreedRecommendationResult';
-import EnhancedResultsDisplay from './EnhancedResultsDisplay'; // 🆕 Import nuevo componente
-import { defaultQuizQuestions, collectUserResponses } from '../../../utils/quizHelpers';
-import { getBreedRecommendations, calculateCompatibilityScore, identifyStrengths, identifyChallenges } from '../../../utils/breedMatcher';
+import DualBreedRecommendationResults from './DualBreedRecommendationResults';
+import { getDynamicQuizQuestions, collectUserResponses, shouldShowQuestion } from '../../../utils/quizHelpers';
+import { getDualBreedRecommendations, calculateCompatibilityScore, identifyStrengths, identifyChallenges } from '../../../utils/breedMatcher';
 import { breedsData } from '../../../data/breeds/index.js';
 
 const BreedMatchQuiz = () => {
@@ -11,7 +11,7 @@ const BreedMatchQuiz = () => {
   const [breeds, setBreeds] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [recommendations, setRecommendations] = useState(null);
+  const [dualRecommendations, setDualRecommendations] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [quizProgress, setQuizProgress] = useState(0);
@@ -26,61 +26,133 @@ const BreedMatchQuiz = () => {
   
   const BREEDS_PER_PAGE = 20;
   
+  // 🔧 CARGA DE DATOS MEJORADA CON VALIDACIÓN
   useEffect(() => {
     async function loadData() {
       try {
         console.log('🔄 Cargando datos del cuestionario...');
-        setQuestions(defaultQuizQuestions);
-        setBreeds(breedsData);
-        console.log('✅ Datos cargados:', {
-          questions: defaultQuizQuestions.length,
-          breeds: breedsData.length
-        });
+        
+        if (!breedsData || !Array.isArray(breedsData) || breedsData.length === 0) {
+          console.error('❌ Error: No se encontraron datos de razas en el índice');
+          throw new Error('Datos de razas no disponibles');
+        }
+        
+        const validBreeds = breedsData.filter(breed => 
+          breed && 
+          breed.id && 
+          breed.name && 
+          breed.type && 
+          ['dog', 'cat'].includes(breed.type) &&
+          typeof breed.energyLevel === 'number' &&
+          typeof breed.friendliness === 'number' &&
+          typeof breed.grooming === 'number'
+        );
+        
+        if (validBreeds.length === 0) {
+          console.error('❌ Error: No se encontraron razas válidas');
+          throw new Error('Datos de razas inválidos');
+        }
+        
+        console.log(`✅ Datos validados: ${validBreeds.length} razas válidas de ${breedsData.length} totales`);
+        
+        const stats = {
+          total: validBreeds.length,
+          dogs: validBreeds.filter(b => b.type === 'dog').length,
+          cats: validBreeds.filter(b => b.type === 'cat').length,
+          withImages: validBreeds.filter(b => b.image).length,
+          hypoallergenic: validBreeds.filter(b => b.hypoallergenic).length
+        };
+        
+        console.log('📊 Estadísticas de razas cargadas:', stats);
+        
+        setBreeds(validBreeds);
         setIsLoading(false);
+        
       } catch (error) {
-        console.error('❌ Error loading quiz data:', error);
+        console.error('❌ Error crítico cargando datos del cuestionario:', error);
+        
+        // Modo de emergencia con datos mínimos
+        const emergencyBreeds = [
+          {
+            id: 'labrador-retriever',
+            name: 'Labrador Retriever',
+            image: '/images/breeds/labrador-retriever.jpg',
+            description: 'Raza amigable y leal, perfecta para familias.',
+            size: 'large',
+            energyLevel: 4,
+            friendliness: 5,
+            grooming: 2,
+            training: 5,
+            type: 'dog',
+            goodWith: ['children', 'dogs'],
+            hypoallergenic: false,
+            furLength: 'short',
+            noiseLevel: 3,
+            healthIssues: 3,
+            costLevel: 3,
+            independenceLevel: 2,
+            suitableFor: ['family', 'companion']
+          },
+          {
+            id: 'golden-retriever',
+            name: 'Golden Retriever',
+            image: '/images/breeds/golden-retriever.jpg',
+            description: 'Perro inteligente y cariñoso.',
+            size: 'large',
+            energyLevel: 4,
+            friendliness: 5,
+            grooming: 3,
+            training: 5,
+            type: 'dog',
+            goodWith: ['children', 'dogs'],
+            hypoallergenic: false,
+            furLength: 'medium',
+            noiseLevel: 2,
+            healthIssues: 3,
+            costLevel: 3,
+            independenceLevel: 2,
+            suitableFor: ['family', 'companion']
+          },
+          {
+            id: 'persian-cat',
+            name: 'Persa',
+            image: '/images/breeds/persian.jpg',
+            description: 'Gato elegante y tranquilo.',
+            size: 'medium',
+            energyLevel: 2,
+            friendliness: 3,
+            grooming: 5,
+            training: 2,
+            type: 'cat',
+            goodWith: ['seniors', 'apartments'],
+            hypoallergenic: false,
+            furLength: 'long',
+            noiseLevel: 1,
+            healthIssues: 4,
+            costLevel: 4,
+            independenceLevel: 4,
+            suitableFor: ['companion']
+          }
+        ];
+        
+        console.log('🔄 Usando datos de emergencia:', emergencyBreeds.length, 'razas');
+        setBreeds(emergencyBreeds);
         setIsLoading(false);
-        setQuestions(defaultQuizQuestions);
-        setBreeds(breedsData);
       }
     }
     loadData();
   }, []);
   
-  // ✅ LÓGICA CONDICIONAL: Obtener preguntas relevantes
-  const getRelevantQuestions = () => {
-  return questions.filter(question => {
-    // Solo mostrar entrenamiento detallado si elige perros
-    if (question.id === 'trainingWillingness' && answers['petTypePreference'] === 'cat') {
-      return false; // Los gatos no necesitan entrenamiento formal
-    }
-    
-    // Pregunta 6 (childrenAge): Solo mostrar si tiene niños
-    if (question.id === 'childrenAge' && answers['hasChildren'] !== 'yes') {
-      return false;
-    }
-    
-    // Pregunta 8 (otherPets): Solo mostrar si tiene otras mascotas
-    if (question.id === 'otherPets' && answers['hasOtherPets'] !== 'yes') {
-      return false;
-    }
-    
-    // Pregunta 16 (allergyLevel): Solo mostrar si hay alergias
-    if (question.id === 'allergyLevel' && answers['allergies'] !== 'yes') {
-      return false;
-    }
-    
-    return true;
-  });
-};
-
-
-  const relevantQuestions = getRelevantQuestions();
+  // Generar preguntas dinámicas
+  const relevantQuestions = React.useMemo(() => {
+    const dynamicQuestions = getDynamicQuizQuestions(answers);
+    return dynamicQuestions.filter(question => shouldShowQuestion(question.id, answers));
+  }, [answers]);
   
   useEffect(() => {
     if (relevantQuestions.length > 0) {
       const progress = ((currentQuestionIndex + 1) / relevantQuestions.length) * 100;
-      setQuizProgress(progress);
+      setQuizProgress(Math.min(progress, 100));
     }
   }, [currentQuestionIndex, relevantQuestions.length]);
   
@@ -92,33 +164,26 @@ const BreedMatchQuiz = () => {
       [questionId]: answer
     };
     
-    // ✅ LIMPIAR RESPUESTAS CONDICIONALES cuando cambia una respuesta padre
-    if (questionId === 'petTypePreference' && answer === 'cat') {
-      // Si cambia a gatos, eliminar respuesta de nivel de actividad
-      delete newAnswers['activityLevel'];
-      // Asignar nivel de actividad por defecto para gatos
-      newAnswers['activityLevel'] = 'moderate';
+    // Limpiar respuestas condicionales cuando cambia una respuesta padre
+    if (questionId === 'petTypePreference') {
+      if (answer === 'cat') {
+        delete newAnswers['noiseToleranceLevel'];
+        delete newAnswers['trainingWillingness'];
+      }
+      delete newAnswers['sizePreference'];
+      delete newAnswers['feedingPreference'];
     }
     
     if (questionId === 'hasChildren' && answer !== 'yes') {
-      // Si no tiene niños, eliminar respuesta de edad de niños
       delete newAnswers['childrenAge'];
-      // Asignar valor por defecto
-      newAnswers['childrenAge'] = 'no_children';
     }
     
     if (questionId === 'hasOtherPets' && answer !== 'yes') {
-      // Si no tiene otras mascotas, eliminar tipo de mascotas
       delete newAnswers['otherPets'];
-      // Asignar valor por defecto
-      newAnswers['otherPets'] = 'no_pets';
     }
     
     if (questionId === 'allergies' && answer !== 'yes') {
-      // Si no hay alergias, eliminar nivel de alergias
       delete newAnswers['allergyLevel'];
-      // Asignar valor por defecto
-      newAnswers['allergyLevel'] = 'no_allergies';
     }
     
     setAnswers(newAnswers);
@@ -130,7 +195,7 @@ const BreedMatchQuiz = () => {
       if (currentQuestionIndex < relevantQuestions.length - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
       } else {
-        calculateResults();
+        calculateDualResults();
       }
       setIsTransitioning(false);
     }, 300);
@@ -146,35 +211,62 @@ const BreedMatchQuiz = () => {
     }, 300);
   };
   
-  const calculateResults = () => {
-    console.log('🧮 Calculando resultados...');
+  // Calcular resultados duales (Colombia + Global)
+  const calculateDualResults = () => {
+    console.log('🇨🇴 Calculando resultados duales Colombia/Global...');
     setIsLoading(true);
     
     try {
+      if (!breeds || breeds.length === 0) {
+        throw new Error('No hay razas disponibles para calcular recomendaciones');
+      }
+      
       const profile = collectUserResponses(answers);
       console.log('👤 Perfil del usuario:', profile);
       
-      const results = getBreedRecommendations(profile, breeds);
-      console.log('🎯 Resultados calculados:', results);
+      if (!profile || !profile.petTypePreference) {
+        throw new Error('Perfil de usuario inválido');
+      }
+      
+      let availableBreeds = breeds;
+      if (profile.petTypePreference !== 'any') {
+        availableBreeds = breeds.filter(breed => breed.type === profile.petTypePreference);
+        console.log(`🔍 Filtrando por tipo ${profile.petTypePreference}: ${availableBreeds.length} razas disponibles`);
+      }
+      
+      if (availableBreeds.length === 0) {
+        throw new Error(`No hay razas de tipo ${profile.petTypePreference} disponibles`);
+      }
+      
+      const dualResults = getDualBreedRecommendations(profile, availableBreeds);
+      console.log('🎯 Resultados duales calculados:', dualResults);
+      
+      if (!dualResults || !dualResults.colombianRecommendation || !dualResults.globalRecommendation) {
+        throw new Error('No se pudieron generar recomendaciones duales');
+      }
       
       localStorage.setItem('userProfile', JSON.stringify(profile));
       console.log('💾 Perfil guardado en localStorage');
       
       setUserProfile(profile);
-      setRecommendations(results);
+      setDualRecommendations(dualResults);
       setShowAllBreeds(true);
+      
     } catch (error) {
-      console.error('❌ Error calculating recommendations:', error);
-      alert('Ha ocurrido un error al calcular las recomendaciones. Por favor, inténtalo de nuevo.');
-    } finally {
+      console.error('❌ Error calculating dual recommendations:', error);
+      alert(`Ha ocurrido un error al calcular las recomendaciones: ${error.message}. Por favor, verifica tus respuestas e inténtalo de nuevo.`);
       setIsLoading(false);
+    } finally {
+      if (dualRecommendations) {
+        setIsLoading(false);
+      }
     }
   };
   
   const restartQuiz = () => {
     setCurrentQuestionIndex(0);
     setAnswers({});
-    setRecommendations(null);
+    setDualRecommendations(null);
     setUserProfile(null);
     setQuizProgress(0);
     setShowAllBreeds(false);
@@ -210,7 +302,6 @@ const BreedMatchQuiz = () => {
     return Math.ceil(getFilteredBreeds().length / BREEDS_PER_PAGE);
   };
 
-  // Funciones para comparación
   const addToComparison = (breed) => {
     if (selectedForComparison.length < 3 && !selectedForComparison.find(b => b.id === breed.id)) {
       setSelectedForComparison(prev => [...prev, breed]);
@@ -222,9 +313,29 @@ const BreedMatchQuiz = () => {
   };
 
   const compareRecommended = () => {
-    if (recommendations?.allRecommendations) {
-      const topThree = recommendations.allRecommendations.slice(0, 3).map(rec => rec.breed);
-      setSelectedForComparison(topThree);
+    if (dualRecommendations) {
+      const breedsToCompare = [];
+      
+      const colombianBreedData = breeds.find(b => b.id === dualRecommendations.colombianRecommendation.breed.id);
+      const globalBreedData = breeds.find(b => b.id === dualRecommendations.globalRecommendation.breed.id);
+      
+      if (colombianBreedData) {
+        breedsToCompare.push(colombianBreedData);
+      }
+      
+      if (globalBreedData && globalBreedData.id !== colombianBreedData?.id) {
+        breedsToCompare.push(globalBreedData);
+      }
+      
+      if (dualRecommendations.colombianAlternatives.length > 0) {
+        const alternativeData = breeds.find(b => b.id === dualRecommendations.colombianAlternatives[0].breed.id);
+        if (alternativeData && !breedsToCompare.find(b => b.id === alternativeData.id)) {
+          breedsToCompare.push(alternativeData);
+        }
+      }
+      
+      console.log('🔍 Comparando razas recomendadas:', breedsToCompare.map(b => b.name));
+      setSelectedForComparison(breedsToCompare.slice(0, 3));
       setShowComparator(true);
     }
   };
@@ -330,9 +441,12 @@ const BreedMatchQuiz = () => {
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center">
             <img 
-              src={breed.image} 
+              src={breed.image || '/images/breeds/default.jpg'} 
               alt={breed.name}
               className="w-16 h-16 rounded-full object-cover mr-4"
+              onError={(e) => {
+                e.target.src = '/images/breeds/default.jpg';
+              }}
             />
             <div>
               <h4 className="font-bold text-lg">{breed.name}</h4>
@@ -379,159 +493,191 @@ const BreedMatchQuiz = () => {
   };
 
   // Pantalla de carga inicial
-  if (isLoading && !recommendations) {
+  if (isLoading && !dualRecommendations) {
     return (
       <div className="flex flex-col justify-center items-center py-12">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#AFC2D5] mb-4"></div>
-        <p className="text-gray-600">Preparando el cuestionario...</p>
+        <p className="text-gray-600">
+          {breeds.length === 0 ? 'Cargando datos de razas...' : 'Preparando el cuestionario...'}
+        </p>
+        {breeds.length > 0 && (
+          <p className="text-sm text-gray-500 mt-2">
+            {breeds.length} razas disponibles
+          </p>
+        )}
       </div>
     );
   }
   
-// Pantalla de resultados con exploración mejorada
- if (recommendations) {
-   return (
-     <div className="space-y-8">
-       {/* 🆕 COMPONENTE PRINCIPAL DE RESULTADOS MEJORADOS */}
-       <EnhancedResultsDisplay 
-         results={recommendations}
-         onCompareBreeds={(breedsToCompare) => {
-           console.log('🔍 Comparando razas sugeridas:', breedsToCompare);
-           const breedsList = breedsToCompare.map(rec => rec.breed);
-           setSelectedForComparison(breedsList);
-           setShowComparator(true);
-         }}
-       />
-       
-       {/* Explorador de todas las razas */}
-       {showAllBreeds && (
-         <div className="mt-12 bg-gray-50 rounded-lg p-6">
-           <div className="flex justify-between items-center mb-6">
-             <h3 className="text-xl font-bold text-[#2E2E2E]">
-               Explora todas las razas disponibles
-             </h3>
-             <div className="text-sm text-gray-600">
-               {selectedForComparison.length}/3 seleccionadas para comparar
-             </div>
-           </div>
+  // 🆕 PANTALLA DE RESULTADOS DUALES
+  if (dualRecommendations) {
+    return (
+      <div className="space-y-8">
+        {/* Componente principal de resultados duales */}
+        <DualBreedRecommendationResults 
+          results={dualRecommendations}
+          onCompareBreeds={(breedsToCompare) => {
+            console.log('🔍 Comparando razas sugeridas:', breedsToCompare);
+            
+            const completeBreeds = breedsToCompare.map(breed => {
+              const fullBreed = breeds.find(b => b.id === breed.id);
+              return fullBreed || breed;
+            }).filter(Boolean);
+            
+            setSelectedForComparison(completeBreeds);
+            setShowComparator(true);
+          }}
+        />
+        
+        {/* Explorador de todas las razas */}
+        {showAllBreeds && (
+          <div className="mt-12 bg-gray-50 rounded-lg p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-[#2E2E2E]">
+                Explora todas las razas disponibles
+              </h3>
+              <div className="text-sm text-gray-600">
+                {selectedForComparison.length}/3 seleccionadas para comparar
+              </div>
+            </div>
 
-           {/* Buscador */}
-           <div className="mb-6">
-             <div className="max-w-md">
-               <label className="block text-sm font-medium text-gray-700 mb-2">
-                 ¿Tienes una raza en mente?
-               </label>
-               <input
-                 type="text"
-                 placeholder="Buscar por nombre, tipo o tamaño..."
-                 value={searchTerm}
-                 onChange={(e) => {
-                   setSearchTerm(e.target.value);
-                   setCurrentPage(1);
-                 }}
-                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#AFC2D5]"
-               />
-             </div>
-           </div>
+            {/* Buscador */}
+            <div className="mb-6">
+              <div className="max-w-md">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ¿Tienes una raza en mente?
+                </label>
+                <input
+                  type="text"
+                  placeholder="Buscar por nombre, tipo o tamaño..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#AFC2D5]"
+                />
+              </div>
+            </div>
 
-           {/* Grid de razas */}
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-             {getPaginatedBreeds().map(breed => (
-               <div key={breed.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-                 <div className="h-32 overflow-hidden">
-                   <img 
-                     src={breed.image} 
-                     alt={breed.name}
-                     className="w-full h-full object-cover"
-                   />
-                 </div>
-                 <div className="p-3">
-                   <h4 className="font-bold text-sm mb-1">{breed.name}</h4>
-                   <p className="text-xs text-gray-600 mb-2">
-                     {breed.type === 'dog' ? 'Perro' : 'Gato'} • {
-                       breed.size === 'small' ? 'Pequeño' : 
-                       breed.size === 'medium' ? 'Mediano' : 'Grande'
-                     }
-                   </p>
-                   <button
-                     onClick={() => {
-                       if (isSelectedForComparison(breed.id)) {
-                         removeFromComparison(breed.id);
-                       } else {
-                         addToComparison(breed);
-                         setShowComparator(true);
-                       }
-                     }}
-                     disabled={!isSelectedForComparison(breed.id) && selectedForComparison.length >= 3}
-                     className={`w-full px-3 py-1 rounded text-xs font-medium transition-colors ${
-                       isSelectedForComparison(breed.id)
-                         ? 'bg-red-500 hover:bg-red-600 text-white'
-                         : selectedForComparison.length >= 3
-                           ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                           : 'bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white'
-                     }`}
-                   >
-                     {isSelectedForComparison(breed.id) ? 'Quitar' : 
-                      selectedForComparison.length >= 3 ? 'Máximo 3' : 'Comparar'}
-                   </button>
-                 </div>
-               </div>
-             ))}
-           </div>
+            {/* Grid de razas */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              {getPaginatedBreeds().map(breed => (
+                <div key={breed.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                  <div className="h-32 overflow-hidden">
+                    <img 
+                      src={breed.image || '/images/breeds/default.jpg'} 
+                      alt={breed.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = '/images/breeds/default.jpg';
+                      }}
+                    />
+                  </div>
+                  <div className="p-3">
+                    <h4 className="font-bold text-sm mb-1">{breed.name}</h4>
+                    <p className="text-xs text-gray-600 mb-2">
+                      {breed.type === 'dog' ? 'Perro' : 'Gato'} • {
+                        breed.size === 'small' ? 'Pequeño' : 
+                        breed.size === 'medium' ? 'Mediano' : 'Grande'
+                      }
+                    </p>
+                    <button
+                      onClick={() => {
+                        if (isSelectedForComparison(breed.id)) {
+                          removeFromComparison(breed.id);
+                        } else {
+                          addToComparison(breed);
+                          setShowComparator(true);
+                        }
+                      }}
+                      disabled={!isSelectedForComparison(breed.id) && selectedForComparison.length >= 3}
+                      className={`w-full px-3 py-1 rounded text-xs font-medium transition-colors ${
+                        isSelectedForComparison(breed.id)
+                          ? 'bg-red-500 hover:bg-red-600 text-white'
+                          : selectedForComparison.length >= 3
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white'
+                      }`}
+                    >
+                      {isSelectedForComparison(breed.id) ? 'Quitar' : 
+                       selectedForComparison.length >= 3 ? 'Máximo 3' : 'Comparar'}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-           {/* Paginación */}
-           {getTotalPages() > 1 && (
-             <div className="flex justify-center items-center space-x-4">
-               <button
-                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                 disabled={currentPage === 1}
-                 className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-               >
-                 Anterior
-               </button>
-               <span className="text-sm text-gray-600">
-                 Página {currentPage} de {getTotalPages()}
-               </span>
-               <button
-                 onClick={() => setCurrentPage(prev => Math.min(getTotalPages(), prev + 1))}
-                 disabled={currentPage === getTotalPages()}
-                 className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-               >
-                 Siguiente
-               </button>
-             </div>
-           )}
-         </div>
-       )}
+            {/* Paginación */}
+            {getTotalPages() > 1 && (
+              <div className="flex justify-center items-center space-x-4">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Anterior
+                </button>
+                <span className="text-sm text-gray-600">
+                  Página {currentPage} de {getTotalPages()}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(getTotalPages(), prev + 1))}
+                  disabled={currentPage === getTotalPages()}
+                  className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Siguiente
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
-       {/* Comparador integrado */}
-       {showComparator && selectedForComparison.length > 0 && renderComparisonAnalysis()}
-       
-       {/* Acciones finales */}
-       <div className="mt-8 bg-gray-50 rounded-lg p-6 text-center">
-         <h4 className="text-lg font-bold text-[#2E2E2E] mb-2">¿Qué sigue?</h4>
-         <p className="text-gray-600 mb-4">
-           Explora más razas, compara opciones o vuelve a hacer el cuestionario
-         </p>
-         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-           <button
-             className="px-6 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-md text-sm font-medium transition-colors"
-             onClick={restartQuiz}
-           >
-             🔄 Volver a empezar
-           </button>
-         </div>
-       </div>
-     </div>
-   );
- }  
+        {/* Comparador integrado */}
+        {showComparator && selectedForComparison.length > 0 && renderComparisonAnalysis()}
+        
+        {/* Botón para comparar recomendadas */}
+        <div className="mt-8 bg-gradient-to-r from-[#C8D6B9] to-[#B8CBA9] rounded-lg p-6 text-center">
+          <h4 className="text-xl font-bold text-[#5A7251] mb-2">
+            🔍 ¿Quieres comparar tus recomendaciones?
+          </h4>
+          <p className="text-[#5A7251] mb-4">
+            Compara tu raza colombiana vs la ideal global para tomar la mejor decisión
+          </p>
+          <button 
+            onClick={compareRecommended}
+            className="px-8 py-3 bg-[#5A7251] hover:bg-[#4A6244] text-white rounded-lg font-medium transition-colors shadow-md hover:shadow-lg"
+          >
+            🔍 Comparar mis recomendaciones
+          </button>
+        </div>
+        
+        {/* Acciones finales */}
+        <div className="mt-8 bg-gray-50 rounded-lg p-6 text-center">
+          <h4 className="text-lg font-bold text-[#2E2E2E] mb-2">¿Qué sigue?</h4>
+          <p className="text-gray-600 mb-4">
+            Explora más razas, compara opciones o vuelve a hacer el cuestionario
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              className="px-6 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-md text-sm font-medium transition-colors"
+              onClick={restartQuiz}
+            >
+              🔄 Volver a empezar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }  
+
   // Error si no hay preguntas
-  if (questions.length === 0) {
+  if (relevantQuestions.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="text-red-500 mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 18.5c-.77.833.192 2.5 1.732 2.5z" clipRule="evenodd" />
           </svg>
         </div>
         <h3 className="text-lg font-bold text-gray-900 mb-2">
@@ -550,10 +696,10 @@ const BreedMatchQuiz = () => {
     );
   }
   
-  // Cuestionario principal con lógica condicional
+  // 🆕 CUESTIONARIO PRINCIPAL CON ORDEN CORREGIDO
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Barra de progreso */}
+      {/* Barra de progreso mejorada */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-medium text-gray-500">
@@ -569,24 +715,42 @@ const BreedMatchQuiz = () => {
             style={{ width: `${quizProgress}%` }}
           ></div>
         </div>
+        
+        {/* Indicador de tipo de pregunta */}
+        {relevantQuestions[currentQuestionIndex] && (
+          <div className="mt-2 text-center">
+            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+              {getQuestionCategory(relevantQuestions[currentQuestionIndex].id)}
+            </span>
+          </div>
+        )}
       </div>
-      
-      {/* Contenedor de preguntas */}
+
+      {/* 🚀 CONTENEDOR DE PREGUNTAS CON TRANSICIÓN - APARECE PRIMERO */}
       <div className={`transition-all duration-300 ${
         isTransitioning 
           ? 'opacity-0 transform translate-x-4' 
           : 'opacity-100 transform translate-x-0'
       }`}>
         {relevantQuestions.length > 0 && currentQuestionIndex < relevantQuestions.length && (
-          <QuizQuestion
-            question={relevantQuestions[currentQuestionIndex]}
-            onAnswer={handleAnswer}
-            currentAnswer={answers[relevantQuestions[currentQuestionIndex]?.id]}
-          />
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <QuizQuestion
+              question={relevantQuestions[currentQuestionIndex]}
+              onAnswer={handleAnswer}
+              currentAnswer={answers[relevantQuestions[currentQuestionIndex]?.id]}
+            />
+          </div>
         )}
       </div>
       
-      {/* Botones de navegación */}
+      {/* Información contextual dinámica */}
+      {relevantQuestions[currentQuestionIndex] && (
+        <div className="mb-6">
+          {renderQuestionContext(relevantQuestions[currentQuestionIndex].id, answers)}
+        </div>
+      )}
+      
+      {/* Botones de navegación mejorados */}
       <div className="flex justify-between items-center mt-8">
         <button 
           className={`flex items-center px-6 py-3 border border-gray-300 text-gray-700 rounded-md text-sm font-medium transition-all ${
@@ -610,6 +774,17 @@ const BreedMatchQuiz = () => {
               : '¡Última pregunta!'
             }
           </p>
+          {/* Indicador de progreso visual */}
+          <div className="flex justify-center mt-2 space-x-1">
+            {Array.from({ length: Math.min(5, relevantQuestions.length) }, (_, i) => (
+              <div
+                key={i}
+                className={`w-2 h-2 rounded-full ${
+                  i <= currentQuestionIndex ? 'bg-[#AFC2D5]' : 'bg-gray-300'
+                }`}
+              />
+            ))}
+          </div>
         </div>
         
         <button 
@@ -630,7 +805,7 @@ const BreedMatchQuiz = () => {
             </>
           ) : (
             <>
-              Ver mis resultados
+              🇨🇴 Ver mis resultados
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
@@ -639,22 +814,100 @@ const BreedMatchQuiz = () => {
         </button>
       </div>
       
-      {/* Pantalla de carga para cálculos */}
+      {/* Pantalla de carga para cálculos mejorada */}
       {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-8 max-w-sm w-full mx-4 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#AFC2D5] mx-auto mb-4"></div>
             <h3 className="text-lg font-bold text-gray-900 mb-2">
-              Calculando tu compatibilidad...
+              🇨🇴 Calculando tu compatibilidad...
             </h3>
-            <p className="text-gray-600 text-sm">
-              Analizamos tus respuestas con nuestro algoritmo especializado
+            <p className="text-gray-600 text-sm mb-2">
+              Analizamos tus respuestas con las {breeds.length} razas disponibles en nuestro índice
             </p>
+            <div className="bg-blue-50 rounded-lg p-3 mt-4">
+              <p className="text-blue-800 text-xs">
+                💡 Te mostraremos tanto tu mejor opción en Colombia como tu raza ideal teórica
+              </p>
+            </div>
           </div>
         </div>
       )}
     </div>
   );
+};
+
+// Funciones auxiliares para mejorar la experiencia
+
+// Categorizar preguntas para mostrar contexto
+const getQuestionCategory = (questionId) => {
+  const categories = {
+    'petTypePreference': '🐕🐱 Tipo de mascota',
+    'homeType': '🏠 Vivienda',
+    'hoursAway': '⏰ Tiempo disponible',
+    'activityLevel': '⚡ Actividad física',
+    'hasChildren': '👶 Familia',
+    'childrenAge': '👶 Edad de niños',
+    'hasOtherPets': '🐾 Otras mascotas',
+    'otherPets': '🐾 Tipo de mascotas',
+    'experience': '🎓 Experiencia',
+    'sizePreference': '📏 Tamaño preferido',
+    'furLengthPreference': '💇‍♀️ Tipo de pelaje',
+    'noiseToleranceLevel': '🔊 Tolerancia al ruido',
+    'groomingWillingness': '💅 Cuidados',
+    'trainingWillingness': '🎓 Entrenamiento',
+    'allergies': '🤧 Alergias',
+    'allergyLevel': '🤧 Nivel de alergias',
+    'budgetLevel': '💰 Presupuesto',
+    'feedingPreference': '🍖 Alimentación',
+    'purpose': '🎯 Objetivo'
+  };
+  
+  return categories[questionId] || '❓ Información adicional';
+};
+
+// Renderizar contexto específico por pregunta
+const renderQuestionContext = (questionId, answers) => {
+  const petType = answers.petTypePreference;
+  
+  const contextMessages = {
+    'petTypePreference': (
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <p className="text-blue-800 text-sm">
+          💡 <strong>Tip:</strong> Esta decisión afectará las siguientes preguntas. Los perros y gatos tienen necesidades muy diferentes.
+        </p>
+      </div>
+    ),
+    'budgetLevel': (
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <p className="text-yellow-800 text-sm">
+          💰 <strong>Importante:</strong> Incluye comida, veterinario, accesorios y cuidados. Una mascota puede costar entre $200k-1.2M COP mensuales según la raza.
+        </p>
+      </div>
+    ),
+    'feedingPreference': petType && (
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+        <p className="text-green-800 text-sm">
+          🍖 <strong>Contexto:</strong> {
+            petType === 'cat' 
+              ? 'Para gatos: comida estándar ~$32k/mes, premium ~$60k/mes (1.5kg mensual)'
+              : petType === 'dog'
+                ? 'Para perros: varía por tamaño desde $60k/mes (pequeños) hasta $280k/mes (grandes premium)'
+                : 'Los costos varían significativamente entre perros y gatos'
+          }
+        </p>
+      </div>
+    ),
+    'hasChildren': (
+      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+        <p className="text-purple-800 text-sm">
+          👶 <strong>Seguridad:</strong> La compatibilidad con niños es crucial. Algunas razas son naturalmente más pacientes con los pequeños.
+        </p>
+      </div>
+    )
+  };
+  
+  return contextMessages[questionId] || null;
 };
 
 export default BreedMatchQuiz;

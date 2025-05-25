@@ -127,7 +127,7 @@ export interface UserProfile {
   budgetLevel: Level;  // Presupuesto para mantenimiento
 
   // 🆕 NUEVOS CAMPOS COP
-  feedingPreference?: 'normal' | 'premium' | 'flexible';  // Preferencia alimentación
+feedingPreference?: 'standard' | 'premium' | 'flexible';
   budgetAmount?: number;  // Monto específico si es necesario
   
   // Objetivos o propósitos
