@@ -218,7 +218,7 @@ const currentUrl = Astro.url.pathname;
         } else {
           // Si no hay encabezados, ocultar la tabla de contenidos
           const tocCard = tocContainer.closest('.card');
-          if (tocCard) {
+          if (tocCard && tocCard instanceof HTMLElement) {
             tocCard.style.display = 'none';
           }
         }
