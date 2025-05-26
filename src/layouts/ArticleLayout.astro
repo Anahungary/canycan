@@ -1,5 +1,5 @@
 ---
-// ArticleLayout.astro - Layout para páginas de artículos MEJORADO
+// ArticleLayout.astro - Layout para páginas de artículos con TOC original
 import BaseLayout from './BaseLayout.astro';
 import ArticleMeta from '../components/blog/ArticleMeta.astro';
 import ShareButtons from '../components/blog/ShareButtons.astro';
@@ -24,6 +24,7 @@ interface Props {
   views?: number;
   relatedArticles?: any[]; // Artículos relacionados
   showTableOfContents?: boolean;
+  popularArticles?: any[]; // 5 artículos populares para sidebar
 }
 
 const { 
@@ -37,6 +38,7 @@ const {
   views,
   relatedArticles = [],
   showTableOfContents = true,
+  popularArticles = []
 } = Astro.props;
 
 // URL canónica para compartir
@@ -50,7 +52,7 @@ const currentUrl = Astro.url.pathname;
   canonicalUrl={currentUrl}
   bodyClass="article-page"
 >
-  <!-- Estilos para títulos más grandes y scroll spy -->
+  <!-- Estilos para títulos más grandes -->
   <style>
     /* TÍTULOS MÁS GRANDES */
     .article-content.prose h1 {
@@ -97,39 +99,116 @@ const currentUrl = Astro.url.pathname;
       margin-bottom: 1.5rem !important;
     }
     
-    /* TOC mejorada con scroll spy */
-    .toc-link {
-      transition: all 0.2s ease !important;
-      display: block !important;
-      padding: 0.5rem 0 !important;
-      border-left: 3px solid transparent !important;
-      padding-left: 0.75rem !important;
-      border-radius: 4px !important;
+    /* TOC original - inline en el contenido */
+    .inline-toc {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 2rem 0;
     }
     
-    .toc-link:hover {
-      background-color: #f7fafc !important;
+    .inline-toc h2 {
+      font-size: 1.2rem !important;
+      font-weight: 700 !important;
+      margin: 0 0 1rem 0 !important;
+      padding: 0 !important;
+      border: none !important;
       color: #2d3748 !important;
     }
     
-    .toc-link.active {
-      background-color: #ebf8ff !important;
-      border-left-color: #4299e1 !important;
-      color: #2b6cb0 !important;
-      font-weight: 600 !important;
+    .inline-toc ul {
+      margin: 0 !important;
+      padding: 0 !important;
+      list-style: none !important;
     }
     
-    .toc-h3 {
-      margin-left: 1rem !important;
+    .inline-toc li {
+      margin: 0.5rem 0 !important;
+      padding-left: 0 !important;
+    }
+    
+    .inline-toc a {
+      color: #4a5568 !important;
+      text-decoration: none !important;
+      display: block !important;
+      padding: 0.5rem 0 !important;
+      transition: color 0.2s ease !important;
+    }
+    
+    .inline-toc a:hover {
+      color: #2d3748 !important;
+    }
+    
+    .inline-toc .toc-h3 {
+      margin-left: 1.5rem !important;
       font-size: 0.9rem !important;
       color: #718096 !important;
     }
     
-    .toc-sticky {
+    /* Sidebar styles */
+    .sidebar-sticky {
       position: sticky;
       top: 6rem;
       max-height: calc(100vh - 8rem);
       overflow-y: auto;
+    }
+    
+    .popular-articles-list {
+      counter-reset: article-counter;
+    }
+    
+    .popular-article-item {
+      counter-increment: article-counter;
+      position: relative;
+      padding-left: 2.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 1.5rem;
+    }
+    
+    .popular-article-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    
+    .popular-article-item::before {
+      content: counter(article-counter);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+      background: #4299e1;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .popular-article-title {
+      font-size: 0.95rem !important;
+      font-weight: 600 !important;
+      line-height: 1.4 !important;
+      margin: 0 0 0.5rem 0 !important;
+    }
+    
+    .popular-article-title a {
+      color: #2d3748 !important;
+      text-decoration: none !important;
+    }
+    
+    .popular-article-title a:hover {
+      color: #4299e1 !important;
+    }
+    
+    .popular-article-meta {
+      font-size: 0.8rem;
+      color: #718096;
     }
   </style>
 
@@ -161,6 +240,14 @@ const currentUrl = Astro.url.pathname;
             class="w-full h-auto"
           />
         </div>
+        
+        {/* Tabla de contenidos inline (como la tenías) */}
+        {showTableOfContents && (
+          <div class="inline-toc">
+            <h2>Tabla de contenidos</h2>
+            <div id="inline-table-of-contents-container"></div>
+          </div>
+        )}
         
         {/* Contenido del artículo */}
         <div class="article-content prose prose-lg max-w-none">
@@ -206,16 +293,60 @@ const currentUrl = Astro.url.pathname;
       
       {/* Sidebar */}
       <div class="lg:col-span-4">
-        <div class="toc-sticky">
-          {/* Tabla de contenidos mejorada */}
-          {showTableOfContents && (
-            <Card variant="default" padding="md" class="mb-6">
-              <h3 class="text-lg font-bold mb-4 text-[#2E2E2E]">Tabla de contenidos</h3>
-              <div class="table-of-contents text-sm">
-                <div id="table-of-contents-container"></div>
-              </div>
-            </Card>
-          )}
+        <div class="sidebar-sticky">
+          {/* Artículos más populares */}
+          <Card variant="default" padding="md" class="mb-6">
+            <h3 class="text-lg font-bold mb-4 text-[#4f46e5] uppercase tracking-wide">Más Popular</h3>
+            <div class="popular-articles-list">
+              {popularArticles.length > 0 ? (
+                popularArticles.slice(0, 5).map(article => (
+                  <div class="popular-article-item">
+                    <h4 class="popular-article-title">
+                      <a href={`/articulos/${article.slug || article.id}`}>
+                        {article.title}
+                      </a>
+                    </h4>
+                    <div class="popular-article-meta">
+                      {article.readingTime && `${article.readingTime} min lectura`}
+                      {article.category && ` • ${article.category}`}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                // Artículos de ejemplo si no hay datos
+                <div class="popular-article-item">
+                  <h4 class="popular-article-title">
+                    <a href="/articulos/golden-vs-labrador">Golden Retriever vs Labrador: ¿Cuál elegir?</a>
+                  </h4>
+                  <div class="popular-article-meta">12 min lectura • Razas</div>
+                </div>
+                <div class="popular-article-item">
+                  <h4 class="popular-article-title">
+                    <a href="/articulos/alimentacion-canina">Guía completa de alimentación canina</a>
+                  </h4>
+                  <div class="popular-article-meta">8 min lectura • Alimentación</div>
+                </div>
+                <div class="popular-article-item">
+                  <h4 class="popular-article-title">
+                    <a href="/articulos/entrenamiento-cachorros">Entrenamiento básico para cachorros</a>
+                  </h4>
+                  <div class="popular-article-meta">6 min lectura • Entrenamiento</div>
+                </div>
+                <div class="popular-article-item">
+                  <h4 class="popular-article-title">
+                    <a href="/articulos/salud-preventiva">Cuidados preventivos para tu mascota</a>
+                  </h4>
+                  <div class="popular-article-meta">10 min lectura • Salud</div>
+                </div>
+                <div class="popular-article-item">
+                  <h4 class="popular-article-title">
+                    <a href="/articulos/gatos-indoor">Guía para gatos de interior</a>
+                  </h4>
+                  <div class="popular-article-meta">7 min lectura • Gatos</div>
+                </div>
+              )}
+            </div>
+          </Card>
           
           {/* Compartir (versión sticky) */}
           <Card variant="default" padding="md" class="mb-6">
@@ -266,22 +397,20 @@ const currentUrl = Astro.url.pathname;
   </Container>
   
   <script>
-    // Script para generar la tabla de contenidos dinámicamente CON SCROLL SPY
+    // Script para generar la tabla de contenidos INLINE (como la tenías)
     document.addEventListener('DOMContentLoaded', () => {
       const articleContent = document.querySelector('.article-content');
-      const tocContainer = document.getElementById('table-of-contents-container');
+      const tocContainer = document.getElementById('inline-table-of-contents-container');
       
       if (articleContent && tocContainer) {
-        const headings = articleContent.querySelectorAll('h1, h2, h3, h4');
+        const headings = articleContent.querySelectorAll('h2, h3');
         
         if (headings.length > 0) {
           const toc = document.createElement('ul');
-          toc.className = 'space-y-1';
           
           headings.forEach((heading, index) => {
             // Añadir un ID al encabezado si no tiene uno
             if (!heading.id) {
-              // Crear ID basado en el texto del título
               const slug = heading.textContent
                 ?.toLowerCase()
                 .replace(/[^\w\s-]/g, '')
@@ -294,8 +423,7 @@ const currentUrl = Astro.url.pathname;
             const link = document.createElement('a');
             link.href = `#${heading.id}`;
             link.textContent = heading.textContent;
-            link.className = `toc-link ${heading.tagName === 'H3' || heading.tagName === 'H4' ? 'toc-h3' : ''} text-[#2E2E2E] hover:text-[#AFC2D5]`;
-            link.setAttribute('data-target', heading.id);
+            link.className = heading.tagName === 'H3' ? 'toc-h3' : '';
             
             // Smooth scroll
             link.addEventListener('click', (e) => {
@@ -311,50 +439,11 @@ const currentUrl = Astro.url.pathname;
           });
           
           tocContainer.appendChild(toc);
-          
-          // SCROLL SPY FUNCTIONALITY
-          const tocLinks = toc.querySelectorAll('.toc-link');
-          
-          function updateActiveLink() {
-            let current = '';
-            
-            headings.forEach((heading) => {
-              const rect = heading.getBoundingClientRect();
-              // Ajustar el offset para considerar el header sticky
-              if (rect.top <= 120) {
-                current = heading.id;
-              }
-            });
-            
-            tocLinks.forEach((link) => {
-              link.classList.remove('active');
-              const target = link.getAttribute('data-target');
-              if (target && target === current) {
-                link.classList.add('active');
-              }
-            });
-          }
-          
-          // Update active link on scroll
-          let ticking = false;
-          window.addEventListener('scroll', () => {
-            if (!ticking) {
-              requestAnimationFrame(() => {
-                updateActiveLink();
-                ticking = false;
-              });
-              ticking = true;
-            }
-          });
-          
-          // Initial update
-          updateActiveLink();
-          
         } else {
           // Si no hay encabezados, ocultar la tabla de contenidos
-          const tocCard = tocContainer.closest('.card');
-          if (tocCard && tocCard instanceof HTMLElement) {
-            tocCard.style.display = 'none';
+          const tocElement = tocContainer.closest('.inline-toc');
+          if (tocElement && tocElement instanceof HTMLElement) {
+            tocElement.style.display = 'none';
           }
         }
       }

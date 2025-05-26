@@ -1,51 +1,70 @@
 ---
-// src/pages/articulos/[slug].astro - CONECTADO CON CONTENT COLLECTIONS
+// src/pages/articulos/[slug].astro - CORREGIDO
 import { getCollection } from 'astro:content';
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 
 export async function getStaticPaths() {
-  // USAR TUS CONTENT COLLECTIONS EN LUGAR DE DATOS HARDCODEADOS
   const articulos = await getCollection('articulos');
   
   return articulos.map((articulo) => ({
     params: { slug: articulo.slug },
-    props: { 
-      article: {
-        id: articulo.slug,
-        title: articulo.data.title,
-        description: articulo.data.description,
-        image: '/images/articles/default.jpg', // Imagen por defecto
-        author: {
-          name: articulo.data.author || 'Editor',
-          avatar: '/images/authors/default.jpg',
-          bio: 'Especialista en cuidado de mascotas'
-        },
-        date: articulo.data.date.toISOString().split('T')[0],
-        readingTime: 5, // Por defecto
-        views: 0,
-        categories: articulo.data.tags || [],
-        content: articulo, // Pasar el objeto completo para renderizar
-        relatedArticles: [] // Por ahora vacío
-      }
-    }
+    props: { articulo }
   }));
 }
 
-const { article } = Astro.props;
-const { Content } = await article.content.render();
+const { articulo } = Astro.props;
+const { Content, headings } = await articulo.render();
+
+// Preparar datos para el layout con valores por defecto
+const articleData = {
+  title: articulo.data.title,
+  description: articulo.data.description,
+  author: {
+    name: articulo.data.author || 'Editor PataDigital',
+    avatar: '/images/authors/default.jpg',
+    bio: articulo.data.authorBio || 'Especialista en cuidado y bienestar de mascotas'
+  },
+  date: articulo.data.date.toISOString(),
+  readingTime: articulo.data.readingTime || 5,
+  categories: articulo.data.tags || [],
+  image: articulo.data.image || '/images/articles/default.jpg',
+  views: 0,
+  showTableOfContents: true,
+  popularArticles: [
+    {
+      title: "Golden Retriever vs Labrador: ¿Cuál elegir?",
+      slug: "golden-vs-labrador", 
+      readingTime: 12,
+      category: "Razas"
+    },
+    {
+      title: "Guía completa de alimentación canina",
+      slug: "alimentacion-canina",
+      readingTime: 8,
+      category: "Alimentación"
+    },
+    {
+      title: "Entrenamiento básico para cachorros",
+      slug: "entrenamiento-cachorros",
+      readingTime: 6,
+      category: "Entrenamiento"
+    },
+    {
+      title: "Cuidados preventivos para tu mascota",
+      slug: "salud-preventiva",
+      readingTime: 10,
+      category: "Salud"
+    },
+    {
+      title: "Guía para gatos de interior",
+      slug: "gatos-indoor",
+      readingTime: 7,
+      category: "Gatos"
+    }
+  ]
+};
 ---
 
-<ArticleLayout
-  title={article.title}
-  description={article.description}
-  image={article.image}
-  author={article.author}
-  date={article.date}
-  readingTime={article.readingTime}
-  categories={article.categories}
-  views={article.views}
-  relatedArticles={article.relatedArticles}
->
-  <!-- RENDERIZAR EL CONTENIDO MARKDOWN -->
+<ArticleLayout {...articleData}>
   <Content />
 </ArticleLayout>
