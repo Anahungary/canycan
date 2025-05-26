@@ -2,25 +2,38 @@
 import { z } from 'astro:content';
 
 export const articlesSchema = z.object({
-  // Campos básicos requeridos
-  title: z.string(),
-  slug: z.string(),
-  excerpt: z.string(),
-  image: z.string(),
-  date: z.date(),
-  author: z.string(),
-  categories: z.array(z.string()),
+  // Información básica
+  title: z.string().min(10).max(200),
+  slug: z.string().min(3).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/), // ← AHORA SÍ ESTÁ INCLUIDO
+  excerpt: z.string().min(50).max(300),
   
-  // Campos opcionales con defaults
+  // Imagen principal
+  image: z.string().min(1),
+  
+  // Fecha de publicación
+  date: z.date(),
+  
+  // Autor (como string que referencia el slug del autor)
+  author: z.string().min(1),
+  
+  // Categorías y etiquetas
+  categories: z.array(z.string()).min(1, "Debe tener al menos una categoría"),
   tags: z.array(z.string()).default([]),
-  readingTime: z.number().default(5),
+  
+  // Metadatos del contenido
+  readingTime: z.number().int().min(1),
   featured: z.boolean().default(false),
   showTableOfContents: z.boolean().default(true),
+  
+  // Estado de publicación
   status: z.enum(['draft', 'published', 'archived']).default('draft'),
-  seoTitle: z.string().optional(),
-  seoDescription: z.string().optional(),
-  views: z.number().default(0).optional(),
-  likes: z.number().default(0).optional(),
+  
+  // SEO
+  seoTitle: z.string().max(70).optional(),
+  seoDescription: z.string().max(160).optional(),
+  
+  views: z.number().int().nonnegative().default(0).optional(),
+  likes: z.number().int().nonnegative().default(0).optional(),
   publishedAt: z.date().optional(),
   updatedAt: z.date().optional()
 });
