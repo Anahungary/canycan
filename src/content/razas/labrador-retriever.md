@@ -1,6 +1,6 @@
 ---
-name: "Labrador Retriever"
-slug: "labrador-retriever"
+name: "doberman"
+slug: "doberman-negro"
 description: "El Labrador Retriever es una de las razas más populares del mundo, conocida por su temperamento amigable, inteligencia excepcional y adaptabilidad. Son excelentes perros de familia y destacan como perros de asistencia, terapia y búsqueda y rescate."
 images: 
   - "https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
