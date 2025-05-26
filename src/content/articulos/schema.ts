@@ -32,7 +32,6 @@ export const articlesSchema = z.object({
   seoTitle: z.string().max(70).optional(),
   seoDescription: z.string().max(160).optional(),
   
-  // Metadatos opcionales
   views: z.number().int().nonnegative().default(0).optional(),
   likes: z.number().int().nonnegative().default(0).optional(),
   publishedAt: z.date().optional(),
