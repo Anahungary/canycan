@@ -25,10 +25,26 @@ friendliness: 5
 grooming: 2
 training: 5
 hypoallergenic: false
+history: "El Labrador Retriever tiene sus orígenes en la isla de Terranova, Canadá, en el siglo XIX. Inicialmente se utilizaban como perros de trabajo para los pescadores."
+origins: "Los labradores descienden de los perros de agua de Terranova, que se cruzaron con perros de caza y retrievers británicos."
 temperament: ["Amigable", "Inteligente", "Leal"]
-healthIssues: []
+healthIssues: 
+  - name: "Displasia de cadera"
+    description: "Condición genética que puede afectar la movilidad"
+careGuide: "Los Labradores necesitan ejercicio diario regular, una dieta balanceada y cepillado semanal. Son perros muy sociables que requieren interacción constante con su familia."
 similarBreeds: []
 featured: true
 seoTitle: "Labrador Retriever - Características y cuidados"
 seoDescription: "Todo sobre el Labrador Retriever: temperamento, cuidados, entrenamiento y características de esta popular raza canina."
 ---
+
+## Historia del Labrador Retriever
+
+El Labrador Retriever es una raza con una rica historia que se remonta al siglo XIX en Terranova, Canadá.
+
+## Características principales
+
+- Excelente mascota familiar
+- Muy inteligente y fácil de entrenar
+- Necesita ejercicio regular
+- Pelo que requiere cepillado regular
