@@ -1,4 +1,4 @@
-# public/admin/config.yml
+# public/admin/config.yml - VERSIÓN CORREGIDA
 backend:
   name: git-gateway
   branch: main
@@ -7,7 +7,68 @@ media_folder: "public/images/uploads"
 public_folder: "/images/uploads"
 
 collections:
-  # Colección de artículos
+  # Colección de autores (DEBE IR PRIMERO)
+  - name: "authors"
+    label: "Autores"
+    folder: "src/content/autores"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Nombre", name: "name", widget: "string" }
+      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
+      - { label: "Avatar", name: "avatar", widget: "image" }
+      - { label: "Email", name: "email", widget: "string", required: false }
+      - { label: "Biografía", name: "bio", widget: "text" }
+      - { label: "Biografía corta", name: "shortBio", widget: "text", required: false }
+      - { label: "Rol", name: "role", widget: "string", required: false }
+      - { label: "Especialidades", name: "specialties", widget: "list", required: false }
+      - { label: "Sitio web", name: "website", widget: "string", required: false }
+      - label: "Redes sociales"
+        name: "socialMedia"
+        widget: "object"
+        required: false
+        fields:
+          - { label: "Twitter", name: "twitter", widget: "string", required: false }
+          - { label: "Instagram", name: "instagram", widget: "string", required: false }
+          - { label: "Facebook", name: "facebook", widget: "string", required: false }
+          - { label: "LinkedIn", name: "linkedin", widget: "string", required: false }
+      - { label: "Estado", name: "status", widget: "select", options: ["active", "inactive"], default: "active" }
+      - { label: "SEO Título", name: "seoTitle", widget: "string", required: false }
+      - { label: "SEO Descripción", name: "seoDescription", widget: "string", required: false }
+
+  # Colección de categorías (SEGUNDO)
+  - name: "categories"
+    label: "Categorías"
+    folder: "src/content/categorias"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Nombre", name: "name", widget: "string" }
+      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
+      - { label: "Descripción", name: "description", widget: "text" }
+      - { label: "Imagen", name: "image", widget: "image" }
+      - { label: "Color", name: "color", widget: "select", options: ["primary", "secondary", "success", "info"], default: "primary" }
+      - { label: "Categoría padre", name: "parentCategory", widget: "relation", collection: "categories", search_fields: ["name"], value_field: "slug", display_fields: ["name"], required: false }
+      - { label: "Orden", name: "order", widget: "number", min: 0, default: 0 }
+      - { label: "Mostrar en navegación", name: "showInNavigation", widget: "boolean", default: true }
+      - { label: "Mostrar en sidebar", name: "showInSidebar", widget: "boolean", default: true }
+      - { label: "SEO Título", name: "seoTitle", widget: "string", required: false }
+      - { label: "SEO Descripción", name: "seoDescription", widget: "string", required: false }
+
+  # Colección de etiquetas (TERCERO)
+  - name: "tags"
+    label: "Etiquetas"
+    folder: "src/content/etiquetas"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Nombre", name: "name", widget: "string" }
+      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
+      - { label: "Descripción", name: "description", widget: "text", required: false }
+      - { label: "Categorías relacionadas", name: "categories", widget: "relation", collection: "categories", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true, required: false }
+      - { label: "Destacado", name: "featured", widget: "boolean", default: false }
+
+  # Colección de artículos (AHORA CON RELACIONES CORRECTAS)
   - name: "articles"
     label: "Artículos"
     folder: "src/content/articulos"
@@ -19,8 +80,8 @@ collections:
       - { label: "Extracto", name: "excerpt", widget: "text" }
       - { label: "Imagen principal", name: "image", widget: "image" }
       - { label: "Fecha de publicación", name: "date", widget: "datetime" }
-      - { label: "Autor", name: "author", widget: "relation", collection: "authors", search_fields: ["name"], value_field: "slug", display_fields: ["name"] }
-      - { label: "Categorías", name: "categories", widget: "relation", collection: "categories", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true }
+      - { label: "Autor", name: "author", widget: "relation", collection: "authors", search_fields: ["name"], value_field: "slug", display_fields: ["name"], required: true }
+      - { label: "Categorías", name: "categories", widget: "relation", collection: "categories", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true, required: true }
       - { label: "Etiquetas", name: "tags", widget: "relation", collection: "tags", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true, required: false }
       - { label: "Contenido", name: "content", widget: "markdown" }
       - { label: "Tiempo de lectura (min)", name: "readingTime", widget: "number", min: 1 }
@@ -87,67 +148,6 @@ collections:
       - { label: "Guía de cuidados", name: "careGuide", widget: "markdown" }
       - { label: "Razas similares", name: "similarBreeds", widget: "relation", collection: "breeds", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true, required: false }
       - { label: "Destacado", name: "featured", widget: "boolean", default: false }
-      - { label: "SEO Título", name: "seoTitle", widget: "string", required: false }
-      - { label: "SEO Descripción", name: "seoDescription", widget: "string", required: false }
-
-  # Colección de categorías
-  - name: "categories"
-    label: "Categorías"
-    folder: "src/content/categorias"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Nombre", name: "name", widget: "string" }
-      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
-      - { label: "Descripción", name: "description", widget: "text" }
-      - { label: "Imagen", name: "image", widget: "image" }
-      - { label: "Color", name: "color", widget: "select", options: ["primary", "secondary", "success", "info"], default: "primary" }
-      - { label: "Categoría padre", name: "parentCategory", widget: "relation", collection: "categories", search_fields: ["name"], value_field: "slug", display_fields: ["name"], required: false }
-      - { label: "Orden", name: "order", widget: "number", min: 0, default: 0 }
-      - { label: "Mostrar en navegación", name: "showInNavigation", widget: "boolean", default: true }
-      - { label: "Mostrar en sidebar", name: "showInSidebar", widget: "boolean", default: true }
-      - { label: "SEO Título", name: "seoTitle", widget: "string", required: false }
-      - { label: "SEO Descripción", name: "seoDescription", widget: "string", required: false }
-
-  # Colección de etiquetas
-  - name: "tags"
-    label: "Etiquetas"
-    folder: "src/content/etiquetas"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Nombre", name: "name", widget: "string" }
-      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
-      - { label: "Descripción", name: "description", widget: "text", required: false }
-      - { label: "Categorías relacionadas", name: "categories", widget: "relation", collection: "categories", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true, required: false }
-      - { label: "Destacado", name: "featured", widget: "boolean", default: false }
-
-  # Colección de autores
-  - name: "authors"
-    label: "Autores"
-    folder: "src/content/autores"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Nombre", name: "name", widget: "string" }
-      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
-      - { label: "Avatar", name: "avatar", widget: "image" }
-      - { label: "Email", name: "email", widget: "string", required: false }
-      - { label: "Biografía", name: "bio", widget: "text" }
-      - { label: "Biografía corta", name: "shortBio", widget: "text", required: false }
-      - { label: "Rol", name: "role", widget: "string", required: false }
-      - { label: "Especialidades", name: "specialties", widget: "list", required: false }
-      - { label: "Sitio web", name: "website", widget: "string", required: false }
-      - label: "Redes sociales"
-        name: "socialMedia"
-        widget: "object"
-        required: false
-        fields:
-          - { label: "Twitter", name: "twitter", widget: "string", required: false }
-          - { label: "Instagram", name: "instagram", widget: "string", required: false }
-          - { label: "Facebook", name: "facebook", widget: "string", required: false }
-          - { label: "LinkedIn", name: "linkedin", widget: "string", required: false }
-      - { label: "Estado", name: "status", widget: "select", options: ["active", "inactive"], default: "active" }
       - { label: "SEO Título", name: "seoTitle", widget: "string", required: false }
       - { label: "SEO Descripción", name: "seoDescription", widget: "string", required: false }
 
