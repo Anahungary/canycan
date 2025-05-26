@@ -1,16 +1,29 @@
 ---
-title: "Cómo elegir el perro perfecto para tu familia"
-slug: "como-elegir-perro-perfecto-familia"
-excerpt: "Guía completa para encontrar la raza de perro ideal según tu estilo de vida, espacio disponible y experiencia como dueño. Descubre qué factores considerar antes de adoptar tu nuevo compañero canino."
-image: "https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-date: 2024-01-20T10:00:00.000Z
+title: "Bienvenidos a PataDigital"
+slug: "bienvenidos-patadigital"
+excerpt: "Descubre todo lo que necesitas saber sobre el cuidado, salud y bienestar de tus mascotas en nuestra revista digital especializada en perros y gatos."
+image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+date: 2024-01-01T10:00:00.000Z
 author: "manuel-bedoya"
-categories: ["consejos", "adopcion"]
-tags: ["adopcion", "familias", "consejos", "razas"]
-readingTime: 8
-featured: true
+categories: ["general"]
+tags: ["bienvenida", "mascotas"]
+readingTime: 3
+featured: false
 showTableOfContents: true
 status: "published"
-seoTitle: "Cómo elegir el perro perfecto para tu familia - Guía completa"
-seoDescription: "Descubre cómo elegir la raza de perro ideal para tu familia con nuestra guía completa. Consejos expertos para encontrar tu compañero perfecto."
+seoTitle: "Bienvenidos a PataDigital - Tu revista de mascotas"
+seoDescription: "Tu fuente confiable de información sobre cuidado, salud y bienestar de perros y gatos."
 ---
+
+# Bienvenidos a PataDigital
+
+Tu revista digital especializada en el maravilloso mundo de las mascotas.
+
+## ¿Qué encontrarás aquí?
+
+- Guías de cuidado para perros y gatos
+- Consejos de salud y bienestar
+- Información sobre razas
+- Tips de entrenamiento y comportamiento
+
+¡Comienza tu aventura con nosotros!

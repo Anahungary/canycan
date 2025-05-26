@@ -2,7 +2,7 @@
 import { defineCollection } from 'astro:content';
 import { articlesSchema } from './content/articulos/schema';
 import { breedsSchema } from './content/razas/schema';
-import { categoriesSchema } from './content/categorias/schema';
+import { categoriesSchema } from './content/categoria/schema';
 import { tagsSchema } from './content/etiquetas/schema';
 import { authorsSchema } from './content/autores/schema';
 import { pagesSchema } from './content/paginas/schema';
