@@ -8,10 +8,28 @@ import { authorsSchema } from './autores/schema';
 import { pagesSchema } from './paginas/schema';
 
 export const collections = {
-  'articulos': defineCollection({ schema: articlesSchema }),
-  'razas': defineCollection({ schema: breedsSchema }),
-  'categorias': defineCollection({ schema: categoriesSchema }),
-  'etiquetas': defineCollection({ schema: tagsSchema }),
-  'autores': defineCollection({ schema: authorsSchema }),
-  'paginas': defineCollection({ schema: pagesSchema }),
+  'articulos': defineCollection({ 
+    type: 'content',
+    schema: articlesSchema 
+  }),
+  'razas': defineCollection({ 
+    type: 'content',
+    schema: breedsSchema 
+  }),
+  'categorias': defineCollection({ 
+    type: 'content',
+    schema: categoriesSchema 
+  }),
+  'etiquetas': defineCollection({ 
+    type: 'content',
+    schema: tagsSchema 
+  }),
+  'autores': defineCollection({ 
+    type: 'content',
+    schema: authorsSchema 
+  }),
+  'paginas': defineCollection({ 
+    type: 'content',
+    schema: pagesSchema 
+  }),
 };

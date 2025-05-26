@@ -4,7 +4,6 @@ import { z } from 'astro:content';
 export const pagesSchema = z.object({
   title: z.string().min(3).max(100),
   slug: z.string().min(3).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-  content: z.string(),
   
   // SEO
   seoTitle: z.string().max(70).optional(),
