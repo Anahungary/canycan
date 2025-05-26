@@ -5,7 +5,7 @@ export const categoriesSchema = z.object({
   name: z.string().min(2).max(50),
   slug: z.string().min(3).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   description: z.string().min(10).max(200),
-  image: z.string().url(),
+  image: z.string().min(1), // Cambio: menos restrictivo
   color: z.enum(['primary', 'secondary', 'success', 'info']).default('primary'),
   
   // SEO

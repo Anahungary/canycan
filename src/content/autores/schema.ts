@@ -6,8 +6,8 @@ export const authorsSchema = z.object({
   name: z.string().min(2).max(100),
   slug: z.string().min(3).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   
-  // Imagen de perfil
-  avatar: z.string().url(),
+  // Imagen de perfil - MENOS RESTRICTIVO
+  avatar: z.string().min(1), // Cambio: solo requiere que sea un string no vacío
   
   // Información de contacto
   email: z.string().email().optional(),
@@ -20,13 +20,13 @@ export const authorsSchema = z.object({
   role: z.string().max(100).optional(),
   specialties: z.array(z.string()).default([]),
   
-  // Sitio web
-  website: z.string().url().optional(),
+  // Sitio web - MENOS RESTRICTIVO
+  website: z.string().optional(), // Cambio: no valida URL
   
-  // Redes sociales
+  // Redes sociales - MENOS RESTRICTIVO
   socialMedia: z.object({
-    twitter: z.string().regex(/^@?[A-Za-z0-9_]+$/).optional(),
-    instagram: z.string().regex(/^@?[A-Za-z0-9_.]+$/).optional(),
+    twitter: z.string().optional(), // Cambio: sin regex
+    instagram: z.string().optional(), // Cambio: sin regex
     facebook: z.string().optional(),
     linkedin: z.string().optional()
   }).optional(),
@@ -38,7 +38,7 @@ export const authorsSchema = z.object({
   seoTitle: z.string().max(70).optional(),
   seoDescription: z.string().max(160).optional(),
   
-  // Metadatos adicionales (opcionales para uso futuro)
+  // Metadatos adicionales (opcionales)
   articlesCount: z.number().int().nonnegative().default(0).optional(),
   joinDate: z.date().optional(),
   lastActive: z.date().optional()

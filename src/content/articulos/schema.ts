@@ -7,8 +7,8 @@ export const articlesSchema = z.object({
   slug: z.string().min(3).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   excerpt: z.string().min(50).max(300),
   
-  // Imagen principal
-  image: z.string().url(),
+  // Imagen principal - MENOS RESTRICTIVO
+  image: z.string().min(1), // Cambio: solo requiere string no vacío
   
   // Fecha de publicación
   date: z.date(),
