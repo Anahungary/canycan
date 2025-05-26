@@ -1,4 +1,4 @@
-# public/admin/config.yml - VERSIÓN CORREGIDA
+# public/admin/config.yml - VERSIÓN CORREGIDA FINAL
 backend:
   name: git-gateway
   branch: main
@@ -12,7 +12,7 @@ collections:
     label: "Autores"
     folder: "src/content/autores"
     create: true
-    slug: "{{slug}}"
+    slug: "{{fields.slug}}"  # ✅ CAMBIO CRÍTICO
     fields:
       - { label: "Nombre", name: "name", widget: "string" }
       - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
@@ -41,7 +41,7 @@ collections:
     label: "Categorías"
     folder: "src/content/categorias"
     create: true
-    slug: "{{slug}}"
+    slug: "{{fields.slug}}"  # ✅ CAMBIO CRÍTICO
     fields:
       - { label: "Nombre", name: "name", widget: "string" }
       - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
@@ -60,7 +60,7 @@ collections:
     label: "Etiquetas"
     folder: "src/content/etiquetas"
     create: true
-    slug: "{{slug}}"
+    slug: "{{fields.slug}}"  # ✅ CAMBIO CRÍTICO
     fields:
       - { label: "Nombre", name: "name", widget: "string" }
       - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
@@ -73,7 +73,7 @@ collections:
     label: "Artículos"
     folder: "src/content/articulos"
     create: true
-    slug: "{{slug}}"
+    slug: "{{fields.slug}}"  # ✅ CAMBIO CRÍTICO
     fields:
       - { label: "Título", name: "title", widget: "string" }
       - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
@@ -96,7 +96,7 @@ collections:
     label: "Razas"
     folder: "src/content/razas"
     create: true
-    slug: "{{slug}}"
+    slug: "{{fields.slug}}"  # ✅ CAMBIO CRÍTICO
     fields:
       - { label: "Nombre", name: "name", widget: "string" }
       - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
@@ -156,7 +156,7 @@ collections:
     label: "Páginas"
     folder: "src/content/paginas"
     create: true
-    slug: "{{slug}}"
+    slug: "{{fields.slug}}"  # ✅ CAMBIO CRÍTICO
     fields:
       - { label: "Título", name: "title", widget: "string" }
       - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
