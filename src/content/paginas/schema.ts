@@ -2,26 +2,16 @@
 import { z } from 'astro:content';
 
 export const pagesSchema = z.object({
-  title: z.string().min(3).max(100),
-  slug: z.string().min(3).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-  
-  // SEO
-  seoTitle: z.string().max(70).optional(),
-  seoDescription: z.string().max(160).optional(),
-  image: z.string().url().optional(),
-  
-  // Metadatos
+  title: z.string(),
+  slug: z.string(),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+  image: z.string().optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
-  
-  // Navegación
   showInNavigation: z.boolean().default(false),
   showInFooter: z.boolean().default(true),
-  navigationOrder: z.number().int().nonnegative().optional(),
-  
-  // Diseño
+  navigationOrder: z.number().optional(),
   layout: z.enum(['default', 'full-width', 'sidebar']).default('default'),
-  
-  // Estado
   status: z.enum(['draft', 'published', 'archived']).default('draft'),
 });
