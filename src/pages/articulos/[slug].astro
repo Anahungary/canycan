@@ -1,142 +1,38 @@
 ---
-// src/pages/articulos/[slug].astro - Página de artículo
+// src/pages/articulos/[slug].astro - CONECTADO CON CONTENT COLLECTIONS
+import { getCollection } from 'astro:content';
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 
-// En un entorno real, esto sería una consulta a la API o CMS
 export async function getStaticPaths() {
-  // Simular datos de artículos (en producción vendrían de la API o CMS)
-  const articles = [
-    {
-      id: 'como-elegir-comida-perro',
-      title: 'Cómo elegir la alimentación ideal para tu perro',
-      description: 'Guía completa para entender las necesidades nutricionales de tu perro según su edad, tamaño y actividad física, y elegir el mejor alimento.',
-      image: '/images/articles/dog-food-guide.jpg',
-      author: {
-        name: 'María Gómez',
-        avatar: '/images/authors/maria-gomez.jpg',
-        bio: 'Veterinaria especializada en nutrición animal con 10 años de experiencia. Colaboradora en varias revistas especializadas.'
-      },
-      date: '2023-09-15',
-      readingTime: 8,
-      views: 3240,
-      categories: ['Alimentación', 'Perros'],
-      content: `
-        <h2>¿Por qué es importante elegir bien la comida de tu perro?</h2>
-        <p>La alimentación es uno de los pilares fundamentales en la salud y bienestar de tu perro. Una nutrición adecuada no solo le proporciona la energía necesaria para sus actividades diarias, sino que también fortalece su sistema inmunológico, favorece un pelaje brillante, mantiene sus dientes y huesos fuertes, y puede prevenir numerosas enfermedades.</p>
-        
-        <p>Elegir correctamente significa entender las necesidades específicas de tu mascota según factores como:</p>
-        
-        <ul>
-          <li>Edad: un cachorro tiene necesidades nutricionales diferentes a un perro adulto o senior</li>
-          <li>Tamaño y raza: un Chihuahua no requiere la misma alimentación que un San Bernardo</li>
-          <li>Nivel de actividad: un perro de trabajo o deportista necesita más calorías que uno sedentario</li>
-          <li>Estado de salud: algunas condiciones médicas requieren dietas especiales</li>
-        </ul>
-        
-        <h2>Tipos de alimentación canina</h2>
-        
-        <h3>Alimento seco (croquetas)</h3>
-        <p>Es la opción más popular por su conveniencia y larga duración. Las ventajas incluyen:</p>
-        <ul>
-          <li>Ayuda a mantener la salud dental al reducir la placa</li>
-          <li>Es económico y fácil de almacenar</li>
-          <li>No requiere refrigeración</li>
-          <li>Hay muchas opciones específicas para cada necesidad</li>
-        </ul>
-        
-        <h3>Alimento húmedo (latas o sobres)</h3>
-        <p>Suele ser más apetecible para los perros. Sus ventajas son:</p>
-        <ul>
-          <li>Mayor contenido de agua, ideal para perros que no beben suficiente</li>
-          <li>Texturas y sabores más atractivos</li>
-          <li>Más fácil de masticar para perros mayores o con problemas dentales</li>
-        </ul>
-        
-        <h3>Dieta BARF (alimentación cruda)</h3>
-        <p>Consiste en alimentar a tu perro con carne cruda, huesos carnosos, vísceras, frutas y verduras. Los defensores argumentan que es la alimentación más natural para los cánidos, aunque requiere conocimientos sobre equilibrio nutricional y manejo seguro de alimentos crudos.</p>
-        
-        <h3>Comida casera</h3>
-        <h3>Comida casera</h3>
-        <p>Preparar la comida de tu perro te da control total sobre los ingredientes, pero es fundamental conocer las necesidades nutricionales específicas y consultar con un veterinario para asegurar una dieta equilibrada.</p>
-        
-        <h2>¿Cómo leer las etiquetas de alimentos para perros?</h2>
-        
-        <p>Aprender a interpretar la información nutricional es clave para elegir un buen alimento:</p>
-        
-        <h3>Lista de ingredientes</h3>
-        <p>Los ingredientes aparecen en orden de peso, de mayor a menor cantidad. Busca productos donde las proteínas animales (como pollo, cordero, pavo) aparezcan en primer lugar, no subproductos o cereales.</p>
-        
-        <h3>Análisis garantizado</h3>
-        <p>Muestra los porcentajes mínimos de proteína y grasa, y los máximos de fibra y humedad. Para la mayoría de los perros adultos sanos, busca alimentos con al menos 18% de proteína y 5% de grasa.</p>
-        
-        <h3>Declaración nutricional de AAFCO</h3>
-        <p>La Asociación Americana de Oficiales de Control de Alimentos establece estándares que indican si el alimento proporciona nutrición completa y equilibrada. Busca la declaración que indique que el alimento es "completo y balanceado" para la etapa de vida de tu perro.</p>
-        
-        <h2>Consideraciones especiales por etapa de vida</h2>
-        
-        <h3>Cachorros (hasta 1 año o 2 en razas grandes)</h3>
-        <p>Necesitan más proteínas, grasas, calcio y fósforo para su crecimiento. Busca alimentos específicos para cachorros que cumplan con los estándares de AAFCO para "crecimiento" o "todas las etapas de vida".</p>
-        
-        <h3>Adultos (1-7 años aproximadamente)</h3>
-        <p>Requieren una alimentación equilibrada que mantenga su salud. Las necesidades calóricas varían según actividad, metabolismo y estado de salud. Ajusta las porciones según su condición corporal.</p>
-        
-        <h3>Seniors (desde 7-8 años)</h3>
-        <p>Suelen necesitar menos calorías pero mantener o incluso aumentar la proteína de alta calidad. Pueden beneficiarse de suplementos como glucosamina para articulaciones y antioxidantes para combatir el envejecimiento celular.</p>
-        
-        <h2>Señales de una buena alimentación</h2>
-        
-        <p>Si tu perro está bien alimentado, notarás:</p>
-        <ul>
-          <li>Peso estable y adecuado para su raza y tamaño</li>
-          <li>Pelaje brillante y piel saludable</li>
-          <li>Energía apropiada para su edad</li>
-          <li>Heces firmes y regulares</li>
-          <li>Buena salud dental</li>
-        </ul>
-        
-        <h2>Consejos para realizar la transición a un nuevo alimento</h2>
-        
-        <p>Cambiar la dieta abruptamente puede causar problemas digestivos. Sigue estos pasos durante 7-10 días:</p>
-        <ul>
-          <li>Días 1-3: 75% alimento antiguo, 25% nuevo</li>
-          <li>Días 4-6: 50% alimento antiguo, 50% nuevo</li>
-          <li>Días 7-9: 25% alimento antiguo, 75% nuevo</li>
-          <li>Día 10: 100% alimento nuevo</li>
-        </ul>
-        
-        <p>Recuerda que cada perro es único, con necesidades particulares que pueden cambiar a lo largo de su vida. La consulta regular con tu veterinario es fundamental para ajustar la alimentación según las circunstancias específicas y asegurar una nutrición óptima para tu compañero canino.</p>
-      `,
-      relatedArticles: [
-        {
-          id: 'alergias-alimentarias-perros',
-          title: 'Cómo identificar y manejar alergias alimentarias en perros',
-          image: '/images/articles/dog-food-allergies.jpg',
-          readingTime: 6
-        },
-        {
-          id: 'comida-casera-recetas',
-          title: '5 recetas caseras saludables para tu perro',
-          image: '/images/articles/homemade-dog-food.jpg',
-          readingTime: 7
-        },
-        {
-          id: 'obesidad-canina',
-          title: 'Obesidad canina: prevención y tratamiento',
-          image: '/images/articles/dog-obesity.jpg',
-          readingTime: 5
-        }
-      ]
-    },
-    // Aquí irían más artículos...
-  ];
+  // USAR TUS CONTENT COLLECTIONS EN LUGAR DE DATOS HARDCODEADOS
+  const articulos = await getCollection('articulos');
   
-  return articles.map(article => ({
-    params: { slug: article.id },
-    props: { article }
+  return articulos.map((articulo) => ({
+    params: { slug: articulo.slug },
+    props: { 
+      article: {
+        id: articulo.slug,
+        title: articulo.data.title,
+        description: articulo.data.description,
+        image: '/images/articles/default.jpg', // Imagen por defecto
+        author: {
+          name: articulo.data.author || 'Editor',
+          avatar: '/images/authors/default.jpg',
+          bio: 'Especialista en cuidado de mascotas'
+        },
+        date: articulo.data.date.toISOString().split('T')[0],
+        readingTime: 5, // Por defecto
+        views: 0,
+        categories: articulo.data.tags || [],
+        content: articulo, // Pasar el objeto completo para renderizar
+        relatedArticles: [] // Por ahora vacío
+      }
+    }
   }));
 }
 
 const { article } = Astro.props;
+const { Content } = await article.content.render();
 ---
 
 <ArticleLayout
@@ -150,5 +46,6 @@ const { article } = Astro.props;
   views={article.views}
   relatedArticles={article.relatedArticles}
 >
-  <div set:html={article.content} />
+  <!-- RENDERIZAR EL CONTENIDO MARKDOWN -->
+  <Content />
 </ArticleLayout>
