@@ -2,7 +2,7 @@
 name: "Cuidado"
 slug: "cuidado"
 description: "Todo sobre nutrición, salud preventiva y bienestar físico y emocional de tu mascota."
-image: "/images/categories/care.jpg"
+image: "https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
 color: "success"
 order: 3
 showInNavigation: true

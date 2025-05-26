@@ -2,7 +2,7 @@
 name: "Salud"
 slug: "salud"
 description: "Prevención, cuidados y tratamiento de enfermedades comunes en mascotas."
-image: "/images/categories/health.jpg"
+image: "https://images.unsplash.com/photo-1576201836106-db1758fd1c97?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
 color: "success"
 order: 6
 showInNavigation: true
