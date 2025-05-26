@@ -69,28 +69,27 @@ collections:
       - { label: "Destacado", name: "featured", widget: "boolean", default: false }
 
   # Colección de artículos (AHORA CON RELACIONES CORRECTAS)
-  - name: "articles"
+  collections:
+  - name: "articulos"
     label: "Artículos"
     folder: "src/content/articulos"
     create: true
-    slug: "{{fields.slug}}"  # ✅ CAMBIO CRÍTICO
+    slug: "{{slug}}"
     fields:
-      - { label: "Título", name: "title", widget: "string" }
-      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
-      - { label: "Extracto", name: "excerpt", widget: "text" }
-      - { label: "Imagen principal", name: "image", widget: "image" }
-      - { label: "Fecha de publicación", name: "date", widget: "datetime" }
-      - { label: "Autor", name: "author", widget: "relation", collection: "authors", search_fields: ["name"], value_field: "slug", display_fields: ["name"], required: true }
-      - { label: "Categorías", name: "categories", widget: "relation", collection: "categories", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true, required: true }
-      - { label: "Etiquetas", name: "tags", widget: "relation", collection: "tags", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true, required: false }
-      - { label: "Contenido", name: "content", widget: "markdown" }
-      - { label: "Tiempo de lectura (min)", name: "readingTime", widget: "number", min: 1 }
-      - { label: "Destacado", name: "featured", widget: "boolean", default: false }
-      - { label: "Mostrar tabla de contenidos", name: "showTableOfContents", widget: "boolean", default: true }
-      - { label: "Estado", name: "status", widget: "select", options: ["draft", "published", "archived"], default: "draft" }
-      - { label: "SEO Título", name: "seoTitle", widget: "string", required: false }
-      - { label: "SEO Descripción", name: "seoDescription", widget: "string", required: false }
-
+      - {label: "Título", name: "title", widget: "string"}
+      - {label: "Descripción/Bajada", name: "description", widget: "text"}
+      - {label: "Fecha", name: "date", widget: "datetime"}
+      - {label: "Autor", name: "author", widget: "string"}
+      - {label: "Biografía del autor", name: "authorBio", widget: "text", required: false}
+      - {label: "Imagen principal", name: "image", widget: "image"}
+      - {label: "Categoría", name: "category", widget: "select", options: ["Razas", "Salud", "Comportamiento", "Alimentación", "Entrenamiento"]}
+      - {label: "Etiquetas", name: "tags", widget: "list"}
+      - {label: "Tiempo de lectura (minutos)", name: "readingTime", widget: "number"}
+      - {label: "Artículo destacado", name: "featured", widget: "boolean", default: false}
+      - {label: "Contenido", name: "body", widget: "markdown", 
+         hint: "Usa ![descripción](URL) para insertar imágenes en el texto"}
+      - {label: "Título SEO", name: "seoTitle", widget: "string", required: false}
+      - {label: "Descripción SEO", name: "seoDescription", widget: "text", required: false}
   # Colección de razas
   - name: "breeds"
     label: "Razas"
