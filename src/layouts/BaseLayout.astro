@@ -21,7 +21,7 @@ const {
 } = Astro.props;
 
 // URL canónica
-const siteUrl = import.meta.env.SITE || 'https://revista-mascotas.com';
+const siteUrl = import.meta.env.SITE || 'https://canicat.netlify.app';
 const canonical = canonicalUrl 
   ? (canonicalUrl.startsWith('http') ? canonicalUrl : `${siteUrl}${canonicalUrl}`) 
   : `${siteUrl}${Astro.url.pathname}`;
@@ -35,6 +35,9 @@ const canonical = canonicalUrl
     <title>{title} | PataDigital</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    
+    <!-- ✅ Netlify Identity Widget - AGREGADO -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -78,6 +81,8 @@ const canonical = canonicalUrl
     <Footer />
     
     <!-- Scripts -->
+    <!-- ✅ Script de Netlify Identity - AGREGADO -->
+    <script src="/scripts/netlify-identity.js"></script>
     <script src="/scripts/main.js" defer></script>
     <slot name="scripts" />
   </body>
