@@ -1,0 +1,177 @@
+---
+// src/components/TableOfContents.astro
+export interface Props {
+  headings: Array<{
+    depth: number;
+    slug: string;
+    text: string;
+  }>;
+}
+
+const { headings } = Astro.props;
+---
+
+<aside class="table-of-contents">
+  <div class="toc-container">
+    <h3 class="toc-title">Tabla de contenidos</h3>
+    <nav class="toc-nav">
+      <ul class="toc-list">
+        {headings.map((heading) => (
+          <li class={`toc-item depth-${heading.depth}`}>
+            <a 
+              href={`#${heading.slug}`} 
+              class="toc-link"
+              data-target={heading.slug}
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</aside>
+
+<style>
+  .table-of-contents {
+    position: sticky;
+    top: 2rem;
+    width: 280px;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+  }
+
+  .toc-container {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .toc-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #4299e1;
+  }
+
+  .toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .toc-item {
+    margin: 0.25rem 0;
+  }
+
+  .toc-link {
+    display: block;
+    color: #4a5568;
+    text-decoration: none;
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    border-left: 3px solid transparent;
+    padding-left: 0.75rem;
+    transition: all 0.2s ease;
+  }
+
+  .toc-link:hover {
+    color: #2d3748;
+    background-color: #edf2f7;
+    border-radius: 4px;
+  }
+
+  /* Estilo para el enlace activo */
+  .toc-link.active {
+    color: #2b6cb0;
+    font-weight: 600;
+    border-left-color: #4299e1;
+    background-color: #ebf8ff;
+    border-radius: 4px;
+  }
+
+  /* Indentación para diferentes niveles de títulos */
+  .depth-2 .toc-link {
+    padding-left: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .depth-3 .toc-link {
+    padding-left: 1.5rem;
+    font-size: 0.85rem;
+    color: #718096;
+  }
+
+  .depth-4 .toc-link {
+    padding-left: 2.25rem;
+    font-size: 0.8rem;
+    color: #a0aec0;
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .table-of-contents {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  // Scroll Spy functionality
+  function initScrollSpy() {
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    
+    function updateActiveLink() {
+      let current = '';
+      
+      headings.forEach((heading) => {
+        const rect = heading.getBoundingClientRect();
+        if (rect.top <= 100) {
+          current = heading.id;
+        }
+      });
+      
+      tocLinks.forEach((link) => {
+        link.classList.remove('active');
+        const target = link.getAttribute('data-target');
+        if (target && target === current) {
+          link.classList.add('active');
+        }
+      });
+    }
+    
+    // Smooth scroll when clicking TOC links
+    tocLinks.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('data-target');
+        
+        if (targetId) {
+          const targetElement = document.getElementById(targetId);
+          
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        }
+      });
+    });
+    
+    // Update active link on scroll
+    window.addEventListener('scroll', updateActiveLink);
+    
+    // Initial update
+    updateActiveLink();
+  }
+  
+  // Initialize when DOM is loaded
+  document.addEventListener('DOMContentLoaded', initScrollSpy);
+</script>
