@@ -30,12 +30,12 @@ Varias veces durante casi 20 años de investigación con peces en libertad, Alex
 
 “Hubo muchas ocasiones en las que nos pareció evidente que los peces nos reconocían”, recuerda.
 
-Pero aunque los *científicos parecían sos*pecharlo intuitivamente, ningún estudio analizaba este fenómeno en la naturaleza.
+Pero aunque los **científicos** *parecían sos*pecharlo intuitivamente, ningún estudio analizaba este fenómeno en la naturaleza.
 
 “Los peces son mucho más complicados de lo que creemos”, afirma Cait Newport, bióloga marina de la Universidad de Oxford (Reino Unido) que no participó en la nueva investigación.
 
-Para poner a prueba su corazonada, Jordan y sus colegas viajaron a la isla mediterránea francesa de Córcega, donde diseñaron experimentos con dos especies distintas de peces: la dorada ensillada (*O. melanura*) y la dorada negra (*S. cantharus*), dos especies comunes en el mar Mediterráneo. Durante un mes, el equipo realizó más de 30 inmersiones entre cuatro y ocho metros de profundidad.
+Para poner a prueba su corazonada, Jordan y sus colegas viajaron a la isla mediterránea francesa de Córcega, donde diseñaron experimentos con dos especies distintas de peces: la dorada ensillada **(O. melanura)** y la dorada negra **(S. cantharus)**, dos especies comunes en el mar Mediterráneo. Durante un mes, el equipo realizó más de 30 inmersiones entre cuatro y ocho metros de profundidad.
 
-Los resultados de su estudio, publicado recientemente en la revista *[Biology Letters](https://royalsocietypublishing.org/doi/10.1098/rsbl.2024.0558)*, sugieren que los peces podrían reconocer a los buceadores por el color de su equipo, de forma similar a como los buceadores se reconocen entre sí cuando sus rostros y otras partes del cuerpo quedan ocultos por el equipo de buceo.
+Los resultados de su estudio, publicado recientemente en la revista [Biology Letters](https://royalsocietypublishing.org/doi/10.1098/rsbl.2024.0558), sugieren que los peces podrían reconocer a los buceadores por el color de su equipo, de forma similar a como los buceadores se reconocen entre sí cuando sus rostros y otras partes del cuerpo quedan ocultos por el equipo de buceo.
 
 (Relacionado: *[Nuevos estudios concluyen que peces e invertebrados consumen los microplásticos del océano](https://www.nationalgeographic.es/medio-ambiente/2017/08/nuevos-estudios-concluyen-que-peces-e-invertebrados-consumen-los-microplasticos-del-oceano)*)
