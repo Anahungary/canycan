@@ -195,7 +195,7 @@ collections:
       - label: "Contenido"
         name: "body"
         widget: "markdown"
-        hint: "Para cursiva usa *texto*, para negrita usa **texto**. Evita mezclar asteriscos con guiones bajos."
+        hint: "⚠️ EVITA usar cursivas (*texto*) temporalmente por problemas de renderizado. Usa **negritas** y texto normal. Modo Raw recomendado."
         modes: ["rich_text", "raw"]
         show_raw: true
 
