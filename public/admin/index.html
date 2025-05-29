@@ -32,49 +32,79 @@
       background-color: #F6B89E !important;
     }
     
-    /* ✅ FIX PARA CURSIVAS Y MARKDOWN */
-    .Pane.vertical.Pane1 .NotchedOutline-root em,
+    /* ===== FIX COMPLETO PARA CURSIVAS ===== */
+    
+    /* 1. Resetear todos los estilos de cursiva problemáticos */
     .cms-editor-visual em,
-    .markdown-body em {
+    .cms-editor-visual i,
+    [data-slate-editor] em,
+    [data-slate-editor] i,
+    .markdown-body em,
+    .markdown-body i {
       font-style: italic !important;
-      font-weight: normal !important;
+      font-weight: inherit !important;
       background: none !important;
       text-decoration: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      transform: none !important;
+      position: static !important;
+      display: inline !important;
+      overflow: visible !important;
+      white-space: normal !important;
+      height: auto !important;
+      width: auto !important;
     }
     
-    /* Corregir estilos del editor Markdown */
-    .cms-editor-visual {
+    /* 2. Arreglar el contenedor del editor */
+    .cms-editor-visual,
+    [data-slate-editor] {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
       line-height: 1.6 !important;
+      overflow: visible !important;
     }
     
-    /* Separar claramente los modos del editor */
-    .cms-editor-visual strong {
-      font-weight: bold !important;
+    /* 3. Prevenir cortes de texto */
+    .cms-editor-visual *,
+    [data-slate-editor] * {
+      overflow: visible !important;
+      text-overflow: clip !important;
     }
     
-    .cms-editor-visual em {
+    /* 4. Asegurar que las cursivas se rendericen correctamente */
+    .cms-editor-visual em::before,
+    .cms-editor-visual em::after,
+    .cms-editor-visual i::before,
+    .cms-editor-visual i::after {
+      content: none !important;
+    }
+    
+    /* 5. Fix específico para Slate.js */
+    [data-slate-node="element"] em,
+    [data-slate-node="text"] em {
       font-style: italic !important;
+      display: inline !important;
     }
     
-    /* Prevenir conflictos con Slate.js */
-    [data-slate-editor] em {
+    /* 6. Vista previa del CMS */
+    .cms-preview-pane em,
+    .cms-preview-pane i {
       font-style: italic !important;
       font-weight: inherit !important;
     }
     
-    [data-slate-editor] strong {
+    /* 7. Botones del editor */
+    .cms-editor-visual strong {
       font-weight: bold !important;
       font-style: inherit !important;
     }
     
-    /* Mejorar la vista previa */
-    .cms-preview-pane em {
+    /* 8. Prevenir conflictos con otros estilos */
+    .NotchedOutline-root em,
+    .Pane.vertical.Pane1 em {
       font-style: italic !important;
-    }
-    
-    .cms-preview-pane strong {
-      font-weight: bold !important;
+      background: none !important;
+      transform: none !important;
     }
   </style>
   
@@ -104,7 +134,7 @@
       }
     }
     
-    console.log('✅ Netlify CMS cargado');
+    console.log('✅ Netlify CMS cargado con fix de cursivas');
   </script>
 </body>
 </html>
