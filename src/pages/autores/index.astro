@@ -1,0 +1,112 @@
+---
+// src/pages/autores/index.astro - Versión simple y funcional
+const autores = [
+  {
+    name: "Dra. Elena Martínez",
+    slug: "elena-martinez",
+    avatar: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    shortBio: "Veterinaria especializada en comportamiento canino",
+    role: "Veterinaria Senior",
+    specialties: ["Comportamiento Animal", "Psicología Canina", "Terapia Asistida"],
+    articlesCount: 12,
+    featured: true
+  },
+  {
+    name: "Dr. Carlos Ruiz",
+    slug: "carlos-ruiz", 
+    avatar: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    shortBio: "Alergólogo veterinario especialista en dermatología",
+    role: "Especialista en Alergias",
+    specialties: ["Alergias Alimentarias", "Dermatología Veterinaria", "Nutrición Clínica"],
+    articlesCount: 8,
+    featured: true
+  },
+  {
+    name: "Editor PataDigital",
+    slug: "editor-patadigital",
+    avatar: "https://images.unsplash.com/photo-1566492031773-4f4e44671d66?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    shortBio: "Equipo editorial especializado en mascotas",
+    role: "Editor Principal",
+    specialties: ["Investigación", "Contenido Editorial", "Comunicación"],
+    articlesCount: 25,
+    featured: false
+  }
+];
+---
+
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nuestros Expertos - PataDigital</title>
+  <meta name="description" content="Conoce al equipo de veterinarios y expertos que crean el contenido de PataDigital" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50">
+  <div class="container mx-auto px-4 py-8">
+    <header class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">Nuestros Expertos</h1>
+      <p class="text-xl text-gray-600">Conoce al equipo de profesionales detrás de PataDigital</p>
+    </header>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {autores.map((autor) => (
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+          <div class="p-6 text-center">
+            <img 
+              src={autor.avatar} 
+              alt={autor.name}
+              class="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+            />
+            
+            <h2 class="text-xl font-bold text-gray-900 mb-2">{autor.name}</h2>
+            <p class="text-blue-600 font-medium mb-2">{autor.role}</p>
+            <p class="text-gray-600 text-sm mb-4">{autor.shortBio}</p>
+            
+            <div class="mb-4">
+              <h3 class="text-sm font-semibold text-gray-700 mb-2">Especialidades:</h3>
+              <div class="flex flex-wrap gap-2 justify-center">
+                {autor.specialties.map((specialty) => (
+                  <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                    {specialty}
+                  </span>
+                ))}
+              </div>
+            </div>
+            
+            <div class="flex items-center justify-between text-sm text-gray-500">
+              <span>{autor.articlesCount} artículos</span>
+              {autor.featured && (
+                <span class="text-yellow-500">⭐ Destacado</span>
+              )}
+            </div>
+            
+            <div class="mt-4">
+              <a 
+                href={`/autores/${autor.slug}/`}
+                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-sm"
+              >
+                Ver perfil →
+              </a>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+    
+    <div class="text-center mt-12">
+      <div class="bg-white rounded-lg p-8 shadow-sm">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">¿Quieres colaborar con nosotros?</h2>
+        <p class="text-gray-600 mb-6">Si eres veterinario, especialista en comportamiento animal o tienes experiencia relevante, nos encantaría conocerte.</p>
+        <a 
+          href="/contacto/" 
+          class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+        >
+          Contactar →
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

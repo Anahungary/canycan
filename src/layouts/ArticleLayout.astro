@@ -1,11 +1,13 @@
 ---
-// ArticleLayout.astro - Layout para páginas de artículos con TOC original
+// ArticleLayout.astro - VERSIÓN FINAL LIMPIA SIN TOC
 import BaseLayout from './BaseLayout.astro';
 import ArticleMeta from '../components/blog/ArticleMeta.astro';
 import ShareButtons from '../components/blog/ShareButtons.astro';
 import Container from '../components/ui/Container.astro';
 import Card from '../components/ui/Card.astro';
 import { Image } from 'astro:assets';
+import '../styles/article.css';
+
 
 interface Author {
   name: string;
@@ -22,9 +24,8 @@ interface Props {
   readingTime: number;
   categories: string[];
   views?: number;
-  relatedArticles?: any[]; // Artículos relacionados
-  showTableOfContents?: boolean;
-  popularArticles?: any[]; // 5 artículos populares para sidebar
+  relatedArticles?: any[];
+  popularArticles?: any[];
 }
 
 const { 
@@ -37,11 +38,9 @@ const {
   categories,
   views,
   relatedArticles = [],
-  showTableOfContents = true,
   popularArticles = []
 } = Astro.props;
 
-// URL canónica para compartir
 const currentUrl = Astro.url.pathname;
 ---
 
@@ -52,333 +51,208 @@ const currentUrl = Astro.url.pathname;
   canonicalUrl={currentUrl}
   bodyClass="article-page"
 >
-  <!-- Estilos para títulos más grandes -->
-  <style>
-    /* TÍTULOS MÁS GRANDES */
-    .article-content.prose h1 {
-      font-size: 2.5rem !important;
-      font-weight: 800 !important;
-      line-height: 1.2 !important;
-      margin: 2rem 0 1.5rem 0 !important;
-      color: #1a202c !important;
-      scroll-margin-top: 6rem;
-    }
-    
-    .article-content.prose h2 {
-      font-size: 2rem !important;
-      font-weight: 700 !important;
-      line-height: 1.3 !important;
-      margin: 2rem 0 1rem 0 !important;
-      color: #2d3748 !important;
-      border-bottom: 2px solid #e2e8f0 !important;
-      padding-bottom: 0.5rem !important;
-      scroll-margin-top: 6rem;
-    }
-    
-    .article-content.prose h3 {
-      font-size: 1.6rem !important;
-      font-weight: 600 !important;
-      line-height: 1.4 !important;
-      margin: 1.5rem 0 0.8rem 0 !important;
-      color: #2d3748 !important;
-      scroll-margin-top: 6rem;
-    }
-    
-    .article-content.prose h4 {
-      font-size: 1.3rem !important;
-      font-weight: 600 !important;
-      color: #4a5568 !important;
-      margin: 1.2rem 0 0.6rem 0 !important;
-      scroll-margin-top: 6rem;
-    }
-    
-    /* Párrafos más grandes */
-    .article-content.prose p {
-      font-size: 1.125rem !important;
-      line-height: 1.8 !important;
-      margin-bottom: 1.5rem !important;
-    }
-    
-    /* TOC original - inline en el contenido */
-    .inline-toc {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 1.5rem;
-      margin: 2rem 0;
-    }
-    
-    .inline-toc h2 {
-      font-size: 1.2rem !important;
-      font-weight: 700 !important;
-      margin: 0 0 1rem 0 !important;
-      padding: 0 !important;
-      border: none !important;
-      color: #2d3748 !important;
-    }
-    
-    .inline-toc ul {
-      margin: 0 !important;
-      padding: 0 !important;
-      list-style: none !important;
-    }
-    
-    .inline-toc li {
-      margin: 0.5rem 0 !important;
-      padding-left: 0 !important;
-    }
-    
-    .inline-toc a {
-      color: #4a5568 !important;
-      text-decoration: none !important;
-      display: block !important;
-      padding: 0.5rem 0 !important;
-      transition: color 0.2s ease !important;
-    }
-    
-    .inline-toc a:hover {
-      color: #2d3748 !important;
-    }
-    
-    .inline-toc .toc-h3 {
-      margin-left: 1.5rem !important;
-      font-size: 0.9rem !important;
-      color: #718096 !important;
-    }
-    
-    /* Sidebar styles */
-    .sidebar-sticky {
-      position: sticky;
-      top: 6rem;
-      max-height: calc(100vh - 8rem);
-      overflow-y: auto;
-    }
-    
-    .popular-articles-list {
-      counter-reset: article-counter;
-    }
-    
-    .popular-article-item {
-      counter-increment: article-counter;
-      position: relative;
-      padding-left: 2.5rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid #f1f5f9;
-      padding-bottom: 1.5rem;
-    }
-    
-    .popular-article-item:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-    
-    .popular-article-item::before {
-      content: counter(article-counter);
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 1.5rem;
-      height: 1.5rem;
-      background: #4299e1;
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-    
-    .popular-article-title {
-      font-size: 0.95rem !important;
-      font-weight: 600 !important;
-      line-height: 1.4 !important;
-      margin: 0 0 0.5rem 0 !important;
-    }
-    
-    .popular-article-title a {
-      color: #2d3748 !important;
-      text-decoration: none !important;
-    }
-    
-    .popular-article-title a:hover {
-      color: #4299e1 !important;
-    }
-    
-    .popular-article-meta {
-      font-size: 0.8rem;
-      color: #718096;
-    }
-  </style>
+ 
 
-  <div class="article-hero py-8 md:py-12 bg-white border-b border-gray-100">
-    <Container size="md">
-      <ArticleMeta 
-        title={title}
-        author={author}
-        date={date}
-        readingTime={readingTime}
-        categories={categories}
-        views={views}
-        showAuthorBio={false}
-      />
-    </Container>
-  </div>
-  
-  <Container size="md" class="py-8">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-      {/* Contenido principal */}
-      <article class="lg:col-span-8">
-        {/* Imagen destacada */}
-        <div class="mb-8 rounded-lg overflow-hidden">
-          <Image 
-            src={image} 
-            alt={title}
-            width={1200}
-            height={630}
-            class="w-full h-auto"
-          />
+  <!-- HEADER DEL ARTÍCULO -->
+  <div class="article-header py-12 md:py-20">
+    <Container size="lg">
+      <div class="max-w-4xl mx-auto">
+        <!-- Categorías -->
+        <div class="article-badges mb-6">
+          {categories.map(category => (
+            <a href={`/categorias/${category.toLowerCase()}`} class="badge badge-category">
+              {category}
+            </a>
+          ))}
+          <span class="badge badge-reading-time">
+            {readingTime} min lectura
+          </span>
         </div>
+
+        <!-- Título principal -->
+        <h1 class="article-title">{title}</h1>
         
-        {/* Tabla de contenidos inline (como la tenías) */}
-        {showTableOfContents && (
-          <div class="inline-toc">
-            <h2>Tabla de contenidos</h2>
-            <div id="inline-table-of-contents-container"></div>
-          </div>
-        )}
-        
-        {/* Contenido del artículo */}
-        <div class="article-content prose prose-lg max-w-none">
-          <slot />
-        </div>
-        
-        {/* Autor (bio) */}
-        <Card variant="default" padding="md" class="mt-12">
-          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <!-- Subtítulo/Descripción -->
+        <p class="article-subtitle">{description}</p>
+
+        <!-- Metadata mejorada -->
+        <div class="article-meta-enhanced">
+          <div class="author-info">
             {author.avatar ? (
               <Image 
                 src={author.avatar} 
                 alt={author.name}
-                width={80}
-                height={80}
-                class="w-16 h-16 rounded-full"
+                width={40}
+                height={40}
+                class="author-avatar"
               />
             ) : (
-              <div class="w-16 h-16 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white text-xl font-bold">
+              <div class="author-avatar bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
                 {author.name.charAt(0)}
               </div>
             )}
-            <div>
-              <h3 class="text-lg font-bold">{author.name}</h3>
-              {author.bio && (
-                <p class="text-gray-600 mt-1">{author.bio}</p>
-              )}
+            <div class="author-details">
+              <h4>{author.name}</h4>
+              <p>{new Date(date).toLocaleDateString('es-ES', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}</p>
             </div>
           </div>
-        </Card>
-        
-        {/* Botones para compartir */}
-        <div class="mt-8 border-t border-gray-200 pt-8">
-          <h3 class="text-lg font-bold mb-4">Compartir artículo</h3>
+
+          {views && (
+            <div class="text-sm text-gray-600">
+              {views.toLocaleString()} visualizaciones
+            </div>
+          )}
+
+          <!-- Botones de compartir horizontal -->
           <ShareButtons 
             url={currentUrl} 
             title={title} 
             vertical={false} 
-            showLabel={true}
+            showLabel={false}
           />
+        </div>
+      </div>
+    </Container>
+  </div>
+  
+  <Container size="lg" class="py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <!-- Contenido principal -->
+      <article class="lg:col-span-9">
+        <!-- Imagen principal -->
+        <div class="article-hero-image">
+          <Image 
+            src={image} 
+            alt={title}
+            width={1200}
+            height={675}
+            class="w-full h-auto"
+          />
+        </div>
+        
+        <!-- Contenido del artículo -->
+        <div class="article-content">
+          <slot />
+        </div>
+        
+        <!-- Autor destacado -->
+        <div class="author-spotlight">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            {author.avatar ? (
+              <Image 
+                src={author.avatar} 
+                alt={author.name}
+                width={100}
+                height={100}
+                class="w-20 h-20 rounded-full border-4 border-white shadow-lg"
+              />
+            ) : (
+              <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold border-4 border-white shadow-lg">
+                {author.name.charAt(0)}
+              </div>
+            )}
+            <div class="flex-1">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">{author.name}</h3>
+              {author.bio && (
+                <p class="text-gray-600 leading-relaxed">{author.bio}</p>
+              )}
+              <div class="mt-4">
+                <ShareButtons 
+                  url={currentUrl} 
+                  title={`Artículo de ${author.name}: ${title}`} 
+                  vertical={false} 
+                  showLabel={true}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </article>
       
-      {/* Sidebar */}
-      <div class="lg:col-span-4">
+      <!-- Sidebar -->
+      <div class="lg:col-span-3">
         <div class="sidebar-sticky">
-          {/* Artículos más populares */}
-          <Card variant="default" padding="md" class="mb-6">
-            <h3 class="text-lg font-bold mb-4 text-[#4f46e5] uppercase tracking-wide">Más Popular</h3>
-            <div class="popular-articles-list">
+          <!-- Artículos populares -->
+          <div class="sidebar-card">
+            <h3 class="text-lg font-bold mb-4 text-gray-900">Más leídos</h3>
+            <div class="space-y-4">
               {popularArticles.length > 0 ? (
-                popularArticles.slice(0, 5).map(article => (
-                  <div class="popular-article-item">
-                    <h4 class="popular-article-title">
-                      <a href={`/articulos/${article.slug || article.id}`}>
+                popularArticles.slice(0, 5).map((article, index) => (
+                  <div class="flex items-start space-x-3 group">
+                    <div class="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">
+                      {index + 1}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <a 
+                        href={`/articulos/${article.slug || article.id}`}
+                        class="block text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2"
+                      >
                         {article.title}
                       </a>
-                    </h4>
-                    <div class="popular-article-meta">
-                      {article.readingTime && `${article.readingTime} min lectura`}
-                      {article.category && ` • ${article.category}`}
+                      <p class="text-xs text-gray-500 mt-1">
+                        {article.readingTime} min • {article.category}
+                      </p>
                     </div>
                   </div>
                 ))
               ) : (
-                // Artículos de ejemplo si no hay datos
-                <div class="popular-article-item">
-                  <h4 class="popular-article-title">
-                    <a href="/articulos/golden-vs-labrador">Golden Retriever vs Labrador: ¿Cuál elegir?</a>
-                  </h4>
-                  <div class="popular-article-meta">12 min lectura • Razas</div>
-                </div>
-                <div class="popular-article-item">
-                  <h4 class="popular-article-title">
-                    <a href="/articulos/alimentacion-canina">Guía completa de alimentación canina</a>
-                  </h4>
-                  <div class="popular-article-meta">8 min lectura • Alimentación</div>
-                </div>
-                <div class="popular-article-item">
-                  <h4 class="popular-article-title">
-                    <a href="/articulos/entrenamiento-cachorros">Entrenamiento básico para cachorros</a>
-                  </h4>
-                  <div class="popular-article-meta">6 min lectura • Entrenamiento</div>
-                </div>
-                <div class="popular-article-item">
-                  <h4 class="popular-article-title">
-                    <a href="/articulos/salud-preventiva">Cuidados preventivos para tu mascota</a>
-                  </h4>
-                  <div class="popular-article-meta">10 min lectura • Salud</div>
-                </div>
-                <div class="popular-article-item">
-                  <h4 class="popular-article-title">
-                    <a href="/articulos/gatos-indoor">Guía para gatos de interior</a>
-                  </h4>
-                  <div class="popular-article-meta">7 min lectura • Gatos</div>
-                </div>
+                <>
+                  <div class="flex items-start space-x-3 group">
+                    <div class="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">1</div>
+                    <div class="flex-1 min-w-0">
+                      <a href="/articulos/golden-vs-labrador" class="block text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+                        Golden Retriever vs Labrador: ¿Cuál elegir?
+                      </a>
+                      <p class="text-xs text-gray-500 mt-1">12 min • Razas</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start space-x-3 group">
+                    <div class="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">2</div>
+                    <div class="flex-1 min-w-0">
+                      <a href="/articulos/alimentacion-canina" class="block text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+                        Guía completa de alimentación canina
+                      </a>
+                      <p class="text-xs text-gray-500 mt-1">8 min • Alimentación</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start space-x-3 group">
+                    <div class="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">3</div>
+                    <div class="flex-1 min-w-0">
+                      <a href="/articulos/entrenamiento-cachorros" class="block text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+                        Entrenamiento básico para cachorros
+                      </a>
+                      <p class="text-xs text-gray-500 mt-1">6 min • Entrenamiento</p>
+                    </div>
+                  </div>
+                </>
               )}
             </div>
-          </Card>
+          </div>
           
-          {/* Compartir (versión sticky) */}
-          <Card variant="default" padding="md" class="mb-6">
-            <h3 class="text-lg font-bold mb-4">Compartir</h3>
-            <ShareButtons 
-              url={currentUrl} 
-              title={title} 
-              vertical={true} 
-              showLabel={false}
-            />
-          </Card>
-          
-          {/* Artículos relacionados */}
+          <!-- Artículos relacionados -->
           {relatedArticles.length > 0 && (
-            <Card variant="default" padding="md">
-              <h3 class="text-lg font-bold mb-4">Artículos relacionados</h3>
+            <div class="sidebar-card">
+              <h3 class="text-lg font-bold mb-4 text-gray-900">Artículos relacionados</h3>
               <div class="space-y-4">
                 {relatedArticles.map(article => (
-                  <div class="flex items-start space-x-3">
+                  <div class="flex items-start space-x-3 group">
                     <a href={`/articulos/${article.id}`} class="flex-shrink-0">
                       <Image 
                         src={article.image} 
                         alt={article.title}
                         width={80}
                         height={60}
-                        class="w-20 h-16 object-cover rounded"
+                        class="w-20 h-16 object-cover rounded-lg"
                       />
                     </a>
-                    <div>
+                    <div class="flex-1 min-w-0">
                       <a 
                         href={`/articulos/${article.id}`} 
-                        class="text-sm font-medium hover:text-[#AFC2D5] line-clamp-2"
+                        class="block text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2"
                       >
                         {article.title}
                       </a>
@@ -389,64 +263,62 @@ const currentUrl = Astro.url.pathname;
                   </div>
                 ))}
               </div>
-            </Card>
+            </div>
           )}
         </div>
       </div>
     </div>
   </Container>
-  
+
   <script>
-    // Script para generar la tabla de contenidos INLINE (como la tenías)
+    // Script limpio sin errores TypeScript
     document.addEventListener('DOMContentLoaded', () => {
-      const articleContent = document.querySelector('.article-content');
-      const tocContainer = document.getElementById('inline-table-of-contents-container');
       
-      if (articleContent && tocContainer) {
-        const headings = articleContent.querySelectorAll('h2, h3');
+      // Progress bar de lectura
+      function createReadingProgress() {
+        const progressBar = document.createElement('div');
+        progressBar.className = 'reading-progress';
+        progressBar.innerHTML = '<div class="reading-progress-bar"></div>';
+        document.body.appendChild(progressBar);
         
-        if (headings.length > 0) {
-          const toc = document.createElement('ul');
+        function updateProgress() {
+          const scrolled = window.scrollY;
+          const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+          const progress = (scrolled / maxScroll) * 100;
           
-          headings.forEach((heading, index) => {
-            // Añadir un ID al encabezado si no tiene uno
-            if (!heading.id) {
-              const slug = heading.textContent
-                ?.toLowerCase()
-                .replace(/[^\w\s-]/g, '')
-                .replace(/[\s_-]+/g, '-')
-                .replace(/^-+|-+$/g, '') || `heading-${index}`;
-              heading.id = slug;
-            }
-            
-            const listItem = document.createElement('li');
-            const link = document.createElement('a');
-            link.href = `#${heading.id}`;
-            link.textContent = heading.textContent;
-            link.className = heading.tagName === 'H3' ? 'toc-h3' : '';
-            
-            // Smooth scroll
-            link.addEventListener('click', (e) => {
-              e.preventDefault();
-              heading.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-              });
-            });
-            
-            listItem.appendChild(link);
-            toc.appendChild(listItem);
-          });
-          
-          tocContainer.appendChild(toc);
-        } else {
-          // Si no hay encabezados, ocultar la tabla de contenidos
-          const tocElement = tocContainer.closest('.inline-toc');
-          if (tocElement && tocElement instanceof HTMLElement) {
-            tocElement.style.display = 'none';
+          const progressBarElement = document.querySelector('.reading-progress-bar') as HTMLElement;
+          if (progressBarElement) {
+            progressBarElement.style.width = `${Math.min(100, Math.max(0, progress))}%`;
           }
         }
+        
+        window.addEventListener('scroll', updateProgress);
+        updateProgress();
       }
+      
+      // Mejoras de lectura
+      const articleContentEl = document.querySelector('.article-content');
+      if (articleContentEl) {
+        // Mejorar enlaces externos
+        const externalLinks = articleContentEl.querySelectorAll('a[href^="http"]') as NodeListOf<HTMLAnchorElement>;
+        externalLinks.forEach(link => {
+          link.setAttribute('target', '_blank');
+          link.setAttribute('rel', 'noopener noreferrer');
+        });
+        
+        // Lazy loading para imágenes
+        const images = articleContentEl.querySelectorAll('img') as NodeListOf<HTMLImageElement>;
+        images.forEach(img => {
+          img.loading = 'lazy';
+        });
+      }
+      
+      createReadingProgress();
+      
+      // Añadir indicador de scroll suave
+      document.documentElement.style.scrollBehavior = 'smooth';
+      
+      console.log('✅ ArticleLayout cargado correctamente');
     });
   </script>
 </BaseLayout>

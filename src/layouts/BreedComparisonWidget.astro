@@ -1,0 +1,64 @@
+---
+// src/components/breeds/BreedComparisonWidget.astro
+import Button from '../components/ui/Button.astro';
+
+interface Props {
+  currentBreed: {
+    name: string;
+    energyLevel: number;
+    friendliness: number;
+    grooming: number;
+    training: number;
+  };
+}
+
+const { currentBreed } = Astro.props;
+---
+
+<div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
+  <h3 class="text-xl font-bold mb-6 text-gray-900 flex items-center">
+    <span class="text-2xl mr-3">⚖️</span>
+    Comparar con otras razas
+  </h3>
+  
+  <!-- Widget de comparación rápida -->
+  <div class="space-y-4 mb-6">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="text-center p-4 bg-blue-50 rounded-lg">
+        <div class="text-2xl font-bold text-blue-600">{currentBreed.energyLevel}/5</div>
+        <div class="text-sm text-blue-800">Energía</div>
+      </div>
+      <div class="text-center p-4 bg-green-50 rounded-lg">
+        <div class="text-2xl font-bold text-green-600">{currentBreed.friendliness}/5</div>
+        <div class="text-sm text-green-800">Sociabilidad</div>
+      </div>
+      <div class="text-center p-4 bg-purple-50 rounded-lg">
+        <div class="text-2xl font-bold text-purple-600">{currentBreed.grooming}/5</div>
+        <div class="text-sm text-purple-800">Cuidados</div>
+      </div>
+      <div class="text-center p-4 bg-orange-50 rounded-lg">
+        <div class="text-2xl font-bold text-orange-600">{currentBreed.training}/5</div>
+        <div class="text-sm text-orange-800">Entrenamiento</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Botones de acción -->
+  <div class="space-y-3">
+    <Button 
+      href="/comparador-razas" 
+      variant="primary" 
+      class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700"
+    >
+      🔍 Comparar con otras razas
+    </Button>
+    
+    <Button 
+      href="/tu-raza-ideal" 
+      variant="outline" 
+      class="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+    >
+      🎯 ¿Es ideal para mí?
+    </Button>
+  </div>
+</div>

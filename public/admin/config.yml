@@ -1,27 +1,45 @@
-# public/admin/config.yml - VERSIÓN CORREGIDA FINAL
+# public/admin/config.yml - CONFIGURACIÓN COMPLETA CMS NETLIFY
 backend:
   name: git-gateway
   branch: main
 
+# Configuración de medios
 media_folder: "public/images/uploads"
 public_folder: "/images/uploads"
 
+# Configuración del sitio
+site_url: https://tu-revista.netlify.app
+display_url: https://tu-revista.netlify.app
+logo_url: /images/logo.png
+
+# Configuración del editor
+editor:
+  preview: true
+
+# Configuración de búsqueda
+search: true
+
 collections:
-  # Colección de autores (DEBE IR PRIMERO)
-  - name: "authors"
-    label: "Autores"
+  # 👤 AUTORES
+  - name: "autores"
+    label: "👤 Autores"
     folder: "src/content/autores"
     create: true
-    slug: "{{fields.slug}}"  # ✅ CAMBIO CRÍTICO
+    slug: "{{slug}}"
+    identifier_field: "name"
+    summary: "{{name}} - {{role}}"
+    sortable_fields: ['name', 'role', 'status']
     fields:
-      - { label: "Nombre", name: "name", widget: "string" }
-      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
-      - { label: "Avatar", name: "avatar", widget: "image" }
+      - { label: "Nombre completo", name: "name", widget: "string", required: true }
+      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Solo minúsculas, números y guiones"], required: true }
+      - { label: "Avatar", name: "avatar", widget: "image", required: false }
       - { label: "Email", name: "email", widget: "string", required: false }
-      - { label: "Biografía", name: "bio", widget: "text" }
+      - { label: "Biografía completa", name: "bio", widget: "text", required: true }
       - { label: "Biografía corta", name: "shortBio", widget: "text", required: false }
-      - { label: "Rol", name: "role", widget: "string", required: false }
+      - { label: "Rol/Título", name: "role", widget: "string", required: false, default: "Editor" }
       - { label: "Especialidades", name: "specialties", widget: "list", required: false }
+      - { label: "Años de experiencia", name: "experience", widget: "string", required: false }
+      - { label: "Credenciales", name: "credentials", widget: "list", required: false }
       - { label: "Sitio web", name: "website", widget: "string", required: false }
       - label: "Redes sociales"
         name: "socialMedia"
@@ -32,141 +50,356 @@ collections:
           - { label: "Instagram", name: "instagram", widget: "string", required: false }
           - { label: "Facebook", name: "facebook", widget: "string", required: false }
           - { label: "LinkedIn", name: "linkedin", widget: "string", required: false }
+          - { label: "YouTube", name: "youtube", widget: "string", required: false }
       - { label: "Estado", name: "status", widget: "select", options: ["active", "inactive"], default: "active" }
+      - { label: "Autor destacado", name: "featured", widget: "boolean", default: false }
+      - { label: "Número de artículos", name: "articlesCount", widget: "number", default: 0 }
       - { label: "SEO Título", name: "seoTitle", widget: "string", required: false }
-      - { label: "SEO Descripción", name: "seoDescription", widget: "string", required: false }
+      - { label: "SEO Descripción", name: "seoDescription", widget: "text", required: false }
+      - { label: "Contenido adicional", name: "body", widget: "markdown", required: false }
 
-  # Colección de categorías (SEGUNDO)
-  - name: "categories"
-    label: "Categorías"
+  # 📂 CATEGORÍAS
+  - name: "categorias"
+    label: "📂 Categorías"
     folder: "src/content/categorias"
     create: true
-    slug: "{{fields.slug}}"  # ✅ CAMBIO CRÍTICO
+    slug: "{{slug}}"
+    identifier_field: "name"
+    summary: "{{name}} ({{order}})"
+    sortable_fields: ['name', 'order', 'featured']
     fields:
-      - { label: "Nombre", name: "name", widget: "string" }
-      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
-      - { label: "Descripción", name: "description", widget: "text" }
-      - { label: "Imagen", name: "image", widget: "image" }
-      - { label: "Color", name: "color", widget: "select", options: ["primary", "secondary", "success", "info"], default: "primary" }
-      - { label: "Categoría padre", name: "parentCategory", widget: "relation", collection: "categories", search_fields: ["name"], value_field: "slug", display_fields: ["name"], required: false }
+      - { label: "Nombre", name: "name", widget: "string", required: true }
+      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Solo minúsculas, números y guiones"], required: true }
+      - { label: "Descripción", name: "description", widget: "text", required: true }
+      - { label: "Imagen", name: "image", widget: "image", required: false }
+      - { label: "Ícono (emoji)", name: "icon", widget: "string", required: false, default: "📁" }
+      - { label: "Color", name: "color", widget: "select", 
+          options: [
+            { label: "Azul (Primario)", value: "primary" },
+            { label: "Coral (Secundario)", value: "secondary" },
+            { label: "Verde (Éxito)", value: "success" },
+            { label: "Azul claro (Info)", value: "info" },
+            { label: "Amarillo (Advertencia)", value: "warning" },
+            { label: "Rojo (Peligro)", value: "danger" }
+          ], default: "primary" }
+      - { label: "Categoría padre", name: "parentCategory", widget: "relation", collection: "categorias", search_fields: ["name"], value_field: "slug", display_fields: ["name"], required: false }
+      - { label: "Subcategorías", name: "subcategories", widget: "list", required: false }
       - { label: "Orden", name: "order", widget: "number", min: 0, default: 0 }
       - { label: "Mostrar en navegación", name: "showInNavigation", widget: "boolean", default: true }
       - { label: "Mostrar en sidebar", name: "showInSidebar", widget: "boolean", default: true }
+      - { label: "Categoría destacada", name: "featured", widget: "boolean", default: false }
+      - { label: "Número de artículos", name: "articleCount", widget: "number", default: 0 }
       - { label: "SEO Título", name: "seoTitle", widget: "string", required: false }
-      - { label: "SEO Descripción", name: "seoDescription", widget: "string", required: false }
+      - { label: "SEO Descripción", name: "seoDescription", widget: "text", required: false }
+      - { label: "Contenido", name: "body", widget: "markdown", required: false }
 
-  # Colección de etiquetas (TERCERO)
-  - name: "tags"
-    label: "Etiquetas"
+  # 🏷️ ETIQUETAS
+  - name: "etiquetas"
+    label: "🏷️ Etiquetas"
     folder: "src/content/etiquetas"
     create: true
-    slug: "{{fields.slug}}"  # ✅ CAMBIO CRÍTICO
+    slug: "{{slug}}"
+    identifier_field: "name"
+    summary: "{{name}}"
     fields:
-      - { label: "Nombre", name: "name", widget: "string" }
-      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
+      - { label: "Nombre", name: "name", widget: "string", required: true }
+      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Solo minúsculas, números y guiones"], required: true }
       - { label: "Descripción", name: "description", widget: "text", required: false }
-      - { label: "Categorías relacionadas", name: "categories", widget: "relation", collection: "categories", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true, required: false }
-      - { label: "Destacado", name: "featured", widget: "boolean", default: false }
+      - { label: "Color", name: "color", widget: "color", required: false }
+      - { label: "Categorías relacionadas", name: "categories", widget: "relation", collection: "categorias", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true, required: false }
+      - { label: "Etiqueta destacada", name: "featured", widget: "boolean", default: false }
+      - { label: "Contador de uso", name: "count", widget: "number", default: 0 }
+      - { label: "Contenido", name: "body", widget: "markdown", required: false }
 
-  # Colección de artículos (AHORA CON RELACIONES CORRECTAS)
-  collections:
+  # 📰 ARTÍCULOS
   - name: "articulos"
-    label: "Artículos"
+    label: "📰 Artículos"
     folder: "src/content/articulos"
     create: true
     slug: "{{slug}}"
+    identifier_field: "title"
+    summary: "{{title}} - {{author}} ({{date}})"
+    sortable_fields: ['title', 'date', 'author', 'category', 'status', 'featured']
+    view_filters:
+      - label: "Borradores"
+        field: status
+        pattern: "draft"
+      - label: "Publicados"
+        field: status
+        pattern: "published"
+      - label: "Destacados"
+        field: featured
+        pattern: true
     fields:
-      - {label: "Título", name: "title", widget: "string"}
-      - {label: "Descripción/Bajada", name: "description", widget: "text"}
-      - {label: "Fecha", name: "date", widget: "datetime"}
-      - {label: "Autor", name: "author", widget: "string"}
-      - {label: "Biografía del autor", name: "authorBio", widget: "text", required: false}
-      - {label: "Imagen principal", name: "image", widget: "image"}
-      - {label: "Categoría", name: "category", widget: "select", options: ["Razas", "Salud", "Comportamiento", "Alimentación", "Entrenamiento"]}
-      - {label: "Etiquetas", name: "tags", widget: "list"}
-      - {label: "Tiempo de lectura (minutos)", name: "readingTime", widget: "number"}
-      - {label: "Artículo destacado", name: "featured", widget: "boolean", default: false}
-      - {label: "Contenido", name: "body", widget: "markdown", 
-         hint: "Usa ![descripción](URL) para insertar imágenes en el texto"}
-      - {label: "Título SEO", name: "seoTitle", widget: "string", required: false}
-      - {label: "Descripción SEO", name: "seoDescription", widget: "text", required: false}
-  # Colección de razas
-  - name: "breeds"
-    label: "Razas"
+      # Información básica
+      - { label: "Título", name: "title", widget: "string", required: true }
+      - { label: "Descripción/Bajada", name: "description", widget: "text", required: true }
+      - { label: "Extracto", name: "excerpt", widget: "text", required: false }
+      
+      # Fechas
+      - { label: "Fecha de publicación", name: "date", widget: "datetime", required: true }
+      - { label: "Fecha de actualización", name: "updatedAt", widget: "datetime", required: false }
+      - { label: "Fecha de publicación programada", name: "publishedAt", widget: "datetime", required: false }
+      
+      # Autor
+      - { label: "Autor", name: "author", widget: "relation", collection: "autores", search_fields: ["name"], value_field: "slug", display_fields: ["name", "role"], required: true }
+      - { label: "Biografía personalizada del autor", name: "authorBio", widget: "text", required: false }
+      - { label: "Colaboradores", name: "contributors", widget: "relation", collection: "autores", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true, required: false }
+      
+      # Clasificación
+      - { label: "Categoría", name: "category", widget: "relation", collection: "categorias", search_fields: ["name"], value_field: "slug", display_fields: ["name"], required: true }
+      - { label: "Etiquetas", name: "tags", widget: "relation", collection: "etiquetas", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true, required: false }
+      
+      # Media
+      - { label: "Imagen principal", name: "image", widget: "image", required: true }
+      - { label: "Texto alternativo de imagen", name: "imageAlt", widget: "string", required: false }
+      - label: "Galería de imágenes"
+        name: "gallery"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Imagen", name: "url", widget: "image" }
+          - { label: "Texto alternativo", name: "alt", widget: "string" }
+          - { label: "Leyenda", name: "caption", widget: "string", required: false }
+      
+      # Metadatos
+      - { label: "Tiempo de lectura (minutos)", name: "readingTime", widget: "number", min: 1, default: 5 }
+      - { label: "Dificultad", name: "difficulty", widget: "select", options: ["beginner", "intermediate", "advanced"], required: false }
+      - { label: "Contador de palabras", name: "wordCount", widget: "number", required: false }
+      
+      # Estado
+      - { label: "Estado", name: "status", widget: "select", options: ["draft", "published", "archived"], default: "draft" }
+      - { label: "Artículo destacado", name: "featured", widget: "boolean", default: false }
+      - { label: "Trending", name: "trending", widget: "boolean", default: false }
+      - { label: "Contenido premium", name: "premium", widget: "boolean", default: false }
+      
+      # Engagement (campos informativos)
+      - { label: "Visualizaciones", name: "views", widget: "number", default: 0, required: false }
+      - { label: "Me gusta", name: "likes", widget: "number", default: 0, required: false }
+      - { label: "Compartidos", name: "shares", widget: "number", default: 0, required: false }
+      
+      # Artículos relacionados
+      - { label: "Artículos relacionados", name: "relatedArticles", widget: "relation", collection: "articulos", search_fields: ["title"], value_field: "slug", display_fields: ["title"], multiple: true, required: false }
+      
+      # SEO
+      - { label: "SEO Título", name: "seoTitle", widget: "string", required: false }
+      - { label: "SEO Descripción", name: "seoDescription", widget: "text", required: false }
+      - { label: "URL canónica", name: "canonicalUrl", widget: "string", required: false }
+      - { label: "No indexar", name: "noindex", widget: "boolean", default: false }
+      - { label: "Tipo de artículo", name: "articleType", widget: "select", options: ["Article", "NewsArticle", "BlogPosting"], default: "Article" }
+      - { label: "Palabras clave", name: "keywords", widget: "list", required: false }
+      
+      # Contenido
+      - { label: "Contenido", name: "body", widget: "markdown", 
+          hint: "Usa ![descripción](URL) para insertar imágenes. Para testimonios usa: > \"Tu testimonio...\" > **Nombre** > Cargo" }
+
+  # 🐕 RAZAS
+  - name: "razas"
+    label: "🐕 Razas"
     folder: "src/content/razas"
     create: true
-    slug: "{{fields.slug}}"  # ✅ CAMBIO CRÍTICO
+    slug: "{{slug}}"
+    identifier_field: "name"
+    summary: "{{name}} ({{type}}) - {{size}}"
+    sortable_fields: ['name', 'type', 'size', 'featured', 'popular']
+    view_filters:
+      - label: "Perros"
+        field: type
+        pattern: "dog"
+      - label: "Gatos"
+        field: type
+        pattern: "cat"
+      - label: "Destacadas"
+        field: featured
+        pattern: true
     fields:
-      - { label: "Nombre", name: "name", widget: "string" }
-      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
-      - { label: "Descripción", name: "description", widget: "text" }
-      - { label: "Imágenes", name: "images", widget: "list", field: { label: "Imagen", name: "image", widget: "image" } }
-      - { label: "Tipo", name: "type", widget: "select", options: [{ label: "Perro", value: "dog" }, { label: "Gato", value: "cat" }] }
-      - { label: "Tamaño", name: "size", widget: "select", options: [{ label: "Pequeño", value: "small" }, { label: "Mediano", value: "medium" }, { label: "Grande", value: "large" }] }
-      - label: "Peso (kg)"
+      # Información básica
+      - { label: "Nombre de la raza", name: "name", widget: "string", required: true }
+      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Solo minúsculas, números y guiones"], required: true }
+      - { label: "Descripción", name: "description", widget: "text", required: true }
+      
+      # Clasificación
+      - { label: "Tipo", name: "type", widget: "select", options: [
+          { label: "🐕 Perro", value: "dog" },
+          { label: "🐱 Gato", value: "cat" }
+        ], required: true }
+      - { label: "Grupo (solo perros)", name: "group", widget: "string", required: false, 
+          hint: "Ej: Working, Herding, Sporting, Terrier" }
+      - { label: "Tamaño", name: "size", widget: "select", options: [
+          { label: "Extra pequeño", value: "tiny" },
+          { label: "Pequeño", value: "small" },
+          { label: "Mediano", value: "medium" },
+          { label: "Grande", value: "large" },
+          { label: "Gigante", value: "giant" }
+        ], required: true }
+      
+      # Media
+      - label: "Imágenes"
+        name: "images"
+        widget: "list"
+        required: true
+        fields:
+          - { label: "Imagen", name: "url", widget: "image" }
+          - { label: "Texto alternativo", name: "alt", widget: "string" }
+          - { label: "Leyenda", name: "caption", widget: "string", required: false }
+          - { label: "Imagen principal", name: "isPrimary", widget: "boolean", default: false }
+      
+      # Características físicas
+      - label: "Peso"
         name: "weight"
         widget: "object"
         fields:
-          - { label: "Mínimo", name: "min", widget: "number", min: 0.1, step: 0.1 }
-          - { label: "Máximo", name: "max", widget: "number", min: 0.1, step: 0.1 }
-      - label: "Altura (cm)"
+          - { label: "Peso mínimo", name: "min", widget: "number", step: 0.1 }
+          - { label: "Peso máximo", name: "max", widget: "number", step: 0.1 }
+          - { label: "Unidad", name: "unit", widget: "select", options: ["kg", "lbs"], default: "kg" }
+      
+      - label: "Altura (opcional)"
         name: "height"
         widget: "object"
         required: false
         fields:
-          - { label: "Mínimo", name: "min", widget: "number", min: 1, step: 1 }
-          - { label: "Máximo", name: "max", widget: "number", min: 1, step: 1 }
-      - label: "Esperanza de vida (años)"
+          - { label: "Altura mínima", name: "min", widget: "number", step: 1 }
+          - { label: "Altura máxima", name: "max", widget: "number", step: 1 }
+          - { label: "Unidad", name: "unit", widget: "select", options: ["cm", "inches"], default: "cm" }
+      
+      - label: "Esperanza de vida"
         name: "lifespan"
         widget: "object"
         fields:
-          - { label: "Mínimo", name: "min", widget: "number", min: 1, step: 1 }
-          - { label: "Máximo", name: "max", widget: "number", min: 1, step: 1 }
-      - label: "Características"
+          - { label: "Años mínimos", name: "min", widget: "number", min: 1, max: 25 }
+          - { label: "Años máximos", name: "max", widget: "number", min: 1, max: 25 }
+      
+      # Características de comportamiento
+      - label: "Características (1-5)"
         name: "traits"
-        widget: "list"
+        widget: "object"
         fields:
-          - { label: "Nombre", name: "name", widget: "string" }
-          - { label: "Valor (1-5)", name: "value", widget: "number", min: 1, max: 5, step: 1 }
-          - { label: "Descripción", name: "description", widget: "text" }
-      - { label: "Buena convivencia con", name: "goodWith", widget: "select", options: ["children", "dogs", "cats", "seniors", "apartments"], multiple: true }
-      - { label: "Nivel de energía (1-5)", name: "energyLevel", widget: "number", min: 1, max: 5, step: 1 }
-      - { label: "Sociabilidad (1-5)", name: "friendliness", widget: "number", min: 1, max: 5, step: 1 }
-      - { label: "Necesidad de cuidados (1-5)", name: "grooming", widget: "number", min: 1, max: 5, step: 1 }
-      - { label: "Facilidad de entrenamiento (1-5)", name: "training", widget: "number", min: 1, max: 5, step: 1 }
-      - { label: "Hipoalergénico", name: "hypoallergenic", widget: "boolean", default: false }
-      - { label: "Historia", name: "history", widget: "markdown" }
-      - { label: "Orígenes", name: "origins", widget: "markdown" }
-      - { label: "Temperamento", name: "temperament", widget: "list" }
-      - label: "Problemas de salud"
+          - { label: "Nivel de energía", name: "energyLevel", widget: "number", min: 1, max: 5 }
+          - { label: "Amigabilidad", name: "friendliness", widget: "number", min: 1, max: 5 }
+          - { label: "Facilidad de entrenamiento", name: "trainability", widget: "number", min: 1, max: 5 }
+          - { label: "Necesidades de aseo", name: "groomingNeeds", widget: "number", min: 1, max: 5 }
+          - { label: "Nivel de ladridos (solo perros)", name: "barkingLevel", widget: "number", min: 1, max: 5, required: false }
+          - { label: "Nivel de muda", name: "sheddingLevel", widget: "number", min: 1, max: 5 }
+          - { label: "Necesidades de ejercicio", name: "exerciseNeeds", widget: "number", min: 1, max: 5 }
+          - { label: "Necesidades sociales", name: "socialNeeds", widget: "number", min: 1, max: 5 }
+          - { label: "Instinto protector", name: "protectiveness", widget: "number", min: 1, max: 5, required: false }
+          - { label: "Adaptabilidad", name: "adaptability", widget: "number", min: 1, max: 5 }
+          - { label: "Nivel de juego", name: "playfulness", widget: "number", min: 1, max: 5 }
+      
+      # Compatibilidad
+      - label: "Buena convivencia con"
+        name: "goodWith"
+        widget: "object"
+        fields:
+          - { label: "Niños", name: "children", widget: "boolean", default: false }
+          - { label: "Otros perros", name: "dogs", widget: "boolean", default: false }
+          - { label: "Gatos", name: "cats", widget: "boolean", default: false }
+          - { label: "Personas mayores", name: "seniors", widget: "boolean", default: false }
+          - { label: "Apartamentos", name: "apartments", widget: "boolean", default: false }
+          - { label: "Extraños", name: "strangers", widget: "boolean", default: false }
+      
+      # Información detallada
+      - { label: "Temperamento", name: "temperament", widget: "list", hint: "Ej: Amigable, Leal, Inteligente" }
+      - { label: "Orígenes", name: "origins", widget: "text", required: true }
+      - { label: "Historia", name: "history", widget: "markdown", required: true }
+      
+      # Cuidados
+      - label: "Guía de cuidados"
+        name: "careGuide"
+        widget: "object"
+        fields:
+          - { label: "Alimentación", name: "feeding", widget: "text" }
+          - { label: "Aseo", name: "grooming", widget: "text" }
+          - { label: "Ejercicio", name: "exercise", widget: "text" }
+          - { label: "Entrenamiento", name: "training", widget: "text" }
+          - { label: "Salud", name: "health", widget: "text" }
+      
+      # Problemas de salud
+      - label: "Problemas de salud comunes"
         name: "healthIssues"
         widget: "list"
         fields:
           - { label: "Nombre", name: "name", widget: "string" }
           - { label: "Descripción", name: "description", widget: "text" }
-      - { label: "Guía de cuidados", name: "careGuide", widget: "markdown" }
-      - { label: "Razas similares", name: "similarBreeds", widget: "relation", collection: "breeds", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true, required: false }
-      - { label: "Destacado", name: "featured", widget: "boolean", default: false }
+          - { label: "Severidad", name: "severity", widget: "select", options: ["low", "medium", "high"] }
+          - { label: "Prevención", name: "prevention", widget: "text", required: false }
+      
+      # Características especiales
+      - { label: "Hipoalergénico", name: "hypoallergenic", widget: "boolean", default: false }
+      - { label: "Raza rara", name: "rare", widget: "boolean", default: false }
+      
+      # Costos (opcional)
+      - label: "Costos aproximados (opcional)"
+        name: "costs"
+        widget: "object"
+        required: false
+        fields:
+          - label: "Costo inicial"
+            name: "initial"
+            widget: "object"
+            required: false
+            fields:
+              - { label: "Mínimo", name: "min", widget: "number" }
+              - { label: "Máximo", name: "max", widget: "number" }
+              - { label: "Moneda", name: "currency", widget: "string", default: "USD" }
+          - label: "Costo mensual"
+            name: "monthly"
+            widget: "object"
+            required: false
+            fields:
+              - { label: "Mínimo", name: "min", widget: "number" }
+              - { label: "Máximo", name: "max", widget: "number" }
+              - { label: "Moneda", name: "currency", widget: "string", default: "USD" }
+      
+      # Razas relacionadas
+      - { label: "Razas similares", name: "similarBreeds", widget: "relation", collection: "razas", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true, required: false }
+      
+      # Estado
+      - { label: "Raza destacada", name: "featured", widget: "boolean", default: false }
+      - { label: "Raza popular", name: "popular", widget: "boolean", default: false }
+      
+      # SEO
       - { label: "SEO Título", name: "seoTitle", widget: "string", required: false }
-      - { label: "SEO Descripción", name: "seoDescription", widget: "string", required: false }
+      - { label: "SEO Descripción", name: "seoDescription", widget: "text", required: false }
+      
+      # Contenido
+      - { label: "Contenido adicional", name: "body", widget: "markdown", required: false }
 
-  # Colección de páginas
-  - name: "pages"
-    label: "Páginas"
+  # 📄 PÁGINAS
+  - name: "paginas"
+    label: "📄 Páginas"
     folder: "src/content/paginas"
     create: true
-    slug: "{{fields.slug}}"  # ✅ CAMBIO CRÍTICO
+    slug: "{{slug}}"
+    identifier_field: "title"
+    summary: "{{title}} ({{status}})"
+    sortable_fields: ['title', 'status', 'createdAt']
     fields:
-      - { label: "Título", name: "title", widget: "string" }
-      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Slug debe ser minúsculas, números y guiones"] }
-      - { label: "Contenido", name: "content", widget: "markdown" }
-      - { label: "Fecha de creación", name: "createdAt", widget: "datetime" }
-      - { label: "Fecha de actualización", name: "updatedAt", widget: "datetime" }
+      - { label: "Título", name: "title", widget: "string", required: true }
+      - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*, "Solo minúsculas, números y guiones"], required: true }
+      - { label: "Descripción", name: "description", widget: "text", required: false }
+      
+      # Fechas
+      - { label: "Fecha de creación", name: "createdAt", widget: "datetime", required: true }
+      - { label: "Fecha de actualización", name: "updatedAt", widget: "datetime", required: true }
+      
+      # Configuración
+      - { label: "Layout", name: "layout", widget: "select", options: ["default", "full-width", "sidebar", "landing"], default: "default" }
+      - { label: "Template personalizado", name: "template", widget: "string", required: false }
+      
+      # Navegación
       - { label: "Mostrar en navegación", name: "showInNavigation", widget: "boolean", default: false }
       - { label: "Mostrar en footer", name: "showInFooter", widget: "boolean", default: true }
       - { label: "Orden en navegación", name: "navigationOrder", widget: "number", required: false }
-      - { label: "Diseño", name: "layout", widget: "select", options: ["default", "full-width", "sidebar"], default: "default" }
+      
+      # Estado
       - { label: "Estado", name: "status", widget: "select", options: ["draft", "published", "archived"], default: "draft" }
+      
+      # SEO
       - { label: "SEO Título", name: "seoTitle", widget: "string", required: false }
-      - { label: "SEO Descripción", name: "seoDescription", widget: "string", required: false }
+      - { label: "SEO Descripción", name: "seoDescription", widget: "text", required: false }
       - { label: "Imagen SEO", name: "image", widget: "image", required: false }
+      - { label: "No indexar", name: "noindex", widget: "boolean", default: false }
+      
+      # Contenido
+      - { label: "Contenido", name: "body", widget: "markdown", required: true }

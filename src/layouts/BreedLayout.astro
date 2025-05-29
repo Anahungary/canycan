@@ -1,429 +1,582 @@
 ---
-// src/layouts/BreedLayout.astro - Layout para página de detalle de raza
+// src/layouts/BreedLayout.astro - CON SISTEMA DE ACORDEÓN PARA SECCIONES H2
 import BaseLayout from './BaseLayout.astro';
 import Container from '../components/ui/Container.astro';
-import Badge from '../components/ui/Badge.astro';
 import Button from '../components/ui/Button.astro';
-import Card from '../components/ui/Card.astro';
-import { Image } from 'astro:assets';
-import type { BreedDetailProps } from '../types/breeds';
-import { marked } from 'marked';
+import Badge from '../components/ui/Badge.astro';
 
+interface Props {
+  breed: any;
+}
 
-interface Props extends BreedDetailProps {}
+const { breed } = Astro.props;
 
-const { 
-  id,
-  name, 
-  images, 
-  description, 
-  type, 
-  size, 
-  weight, 
-  height,
-  lifespan,
-  traits,
-  goodWith,
-  energyLevel,
-  friendliness,
-  grooming,
-  training,
-  hypoallergenic,
-  history,
-  origins,
-  temperament,
-  healthIssues,
-  similarBreeds,
-  careGuide
-} = Astro.props;
-
-
-const getComplexityLabel = (grooming: number): string => {
-  if (grooming <= 2) return 'Baja';
-  if (grooming <= 3) return 'Media';
-  return 'Alta';
+// Funciones de utilidad con tipos
+const getStars = (rating: number | undefined) => {
+  if (!rating) return '☆☆☆☆☆';
+  return '★'.repeat(rating) + '☆'.repeat(5 - rating);
 };
 
-const getEnergyLabel = (energyLevel: number): string => {
-  if (energyLevel <= 2) return 'Bajo';
-  if (energyLevel <= 3) return 'Medio';
-  return 'Alto';
+const getSizeText = (size: string) => {
+  switch(size) {
+    case 'small': return 'Pequeño';
+    case 'medium': return 'Mediano';
+    case 'large': return 'Grande';
+    default: return 'Mediano';
+  }
 };
 
-const getExperienceLabel = (training: number): string => {
-  if (training <= 2) return 'Principiante';
-  if (training <= 3) return 'Intermedio';
-  return 'Avanzado';
+const getTypeColor = (type: string) => {
+  return type === 'dog' ? 'blue' : 'orange';
 };
 
-const getGroomingLabel = (grooming: number): string => {
-  if (grooming <= 2) return 'poco mantenimiento';
-  if (grooming <= 3) return 'mantenimiento moderado';
-  return 'mantenimiento frecuente';
-};
-
-// Mapeo de tamaños a texto descriptivo
-const sizeMap: Record<string, string> = {
-  small: 'Pequeño',
-  medium: 'Mediano',
-  large: 'Grande'
-};
-
-// Función para renderizar estrellas de calificación
-const renderRating = (rating: number): string => {
-  return Array.from({ length: 5 }, (_, i) => {
-    const filled = i < rating;
-    return filled ? '★' : '☆';
-  }).join('');
-};
-
-// Paleta de colores según el tipo
-const typeColor = type === 'dog' ? 'bg-[#AFC2D5]' : 'bg-[#F6B89E]';
-const typeText = type === 'dog' ? 'text-[#AFC2D5]' : 'text-[#F6B89E]';
-const typeBgLight = type === 'dog' ? 'bg-[#AFC2D5] bg-opacity-10' : 'bg-[#F6B89E] bg-opacity-10';
+const typeColor = getTypeColor(breed.type);
 ---
 
-<BaseLayout
-  title={`${name} - Raza de ${type === 'dog' ? 'perro' : 'gato'}`}
-  description={description.slice(0, 160) + '...'}
-  ogImage={images[0]}
-  bodyClass="breed-page"
+<BaseLayout 
+  title={`${breed.name} - Guía completa de la raza`}
+  description={breed.description || `Todo sobre ${breed.name}: características, cuidados y temperamento`}
 >
-  {/* Hero */}
-  <div class={`py-8 ${typeBgLight}`}>
+  <!-- Hero Simple y Elegante -->
+  <section class={`bg-gradient-to-br ${typeColor === 'blue' ? 'from-blue-200 to-indigo-100' : 'from-blue-200 to-indigo-100'} py-16`}>
     <Container>
-      <div class="flex flex-col md:flex-row gap-8">
-        {/* Galería de imágenes */}
-        <div class="md:w-1/2">
-          <div class="relative rounded-lg overflow-hidden mb-4 h-80">
-            <Image 
-              src={images[0]} 
-              alt={name}
-              width={800}
-              height={600}
-              class="w-full h-full object-cover"
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        
+        <!-- Información principal -->
+        <div class="text-indigo-950 order-2 lg:order-1">
+          <!-- Badges -->
+          <div class="flex flex-wrap gap-3 mb-6">
+            <Badge variant="primary" class="bg-indigo-950 bg-opacity-20 text-white px-4 py-2 text-sm font-medium">
+              {breed.type === 'dog' ? '🐕 Perro' : '🐱 Gato'}
+            </Badge>
+            <Badge variant="primary" class="bg-indigo-950 bg-opacity-20 text-white px-4 py-2 text-sm font-medium">
+              📏 {getSizeText(breed.size)}
+            </Badge>
+            {breed.hypoallergenic && (
+              <Badge variant="success" class="bg-green-500 bg-opacity-80 text-white px-4 py-2 text-sm font-medium">
+                ✨ Hipoalergénico
+              </Badge>
+            )}
+          </div>
+          
+          <!-- Título -->
+          <h1 class="text-4xl md:text-5xl font-bold mb-4">{breed.name}</h1>
+          <p class="text-xl text-indigo-950 text-opacity-90 mb-8 leading-relaxed">
+            {breed.description || `Descubre todo sobre la raza ${breed.name}`}
+          </p>
+          
+          <!-- Características principales -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white bg-opacity-20 rounded-xl p-4 text-center">
+              <div class="text-2xl font-bold mb-1">{breed.energyLevel}/5</div>
+              <div class="text-sm opacity-90">Energía</div>
+            </div>
+            <div class="bg-white bg-opacity-20 rounded-xl p-4 text-center">
+              <div class="text-2xl font-bold mb-1">{breed.friendliness}/5</div>
+              <div class="text-sm opacity-90">Amigable</div>
+            </div>
+            <div class="bg-white bg-opacity-20 rounded-xl p-4 text-center">
+              <div class="text-2xl font-bold mb-1">{breed.grooming}/5</div>
+              <div class="text-sm opacity-90">Cuidados</div>
+            </div>
+            <div class="bg-white bg-opacity-20 rounded-xl p-4 text-center">
+              <div class="text-2xl font-bold mb-1">{breed.training}/5</div>
+              <div class="text-sm opacity-90">Entrena.</div>
+            </div>
+          </div>
+          
+          <!-- Botones -->
+          <div class="flex flex-wrap gap-4">
+            <Button 
+              href="/comparador-razas" 
+              variant="primary" 
+              size="lg"
+              class="bg-indigo-900 text-yellow-200 hover:bg-yellow-200 hover:text-indigo-900 px-6 py-3 font-semibold"
+            >
+              🔍 Comparar razas
+            </Button>
+            <Button 
+              href="/tu-raza-ideal" 
+              variant="outline" 
+              size="lg"
+              class="border-indigo-900 text-indigo-900 hover:bg-white hover:bg-opacity-10 px-6 py-3 font-semibold"
+            >
+              🎯 ¿Es para mí?
+            </Button>
+          </div>
+        </div>
+        
+        <!-- Imagen -->
+        <div class="order-1 lg:order-2">
+          <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+            <img 
+              src={breed.image || `/images/breeds/default-${breed.type}.jpg`} 
+              alt={breed.name}
+              class="w-full  object-cover"
             />
-            <div class={`absolute top-4 left-4 ${typeColor} text-white px-3 py-1 rounded-full text-sm`}>
-              {type === 'dog' ? 'Perro' : 'Gato'}
-            </div>
-          </div>
-          
-          {images.length > 1 && (
-            <div class="grid grid-cols-4 gap-2">
-              {images.slice(1, 5).map((image, index) => (
-                <div class="aspect-square rounded-md overflow-hidden">
-                  <Image 
-                    src={image} 
-                    alt={`${name} imagen ${index + 2}`}
-                    width={200}
-                    height={200}
-                    class="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        
-        {/* Información básica */}
-        <div class="md:w-1/2">
-          <h1 class="text-3xl md:text-4xl font-bold mb-3">{name}</h1>
-          <p class="text-gray-600 mb-6">{description}</p>
-          
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white p-3 rounded-lg border border-gray-200 text-center">
-              <span class="text-gray-500 text-sm">Tamaño</span>
-              <div class="font-bold">{sizeMap[size]}</div>
-            </div>
-            
-            <div class="bg-white p-3 rounded-lg border border-gray-200 text-center">
-              <span class="text-gray-500 text-sm">Peso</span>
-              <div class="font-bold">{weight.min}-{weight.max} kg</div>
-            </div>
-            
-            <div class="bg-white p-3 rounded-lg border border-gray-200 text-center">
-              <span class="text-gray-500 text-sm">Esperanza de vida</span>
-              <div class="font-bold">{lifespan.min}-{lifespan.max} años</div>
-            </div>
-          </div>
-          
-          <div class="mb-6">
-            <h2 class="text-lg font-bold mb-2">Características principales</h2>
-            <div class="space-y-3">
-              <div class="flex justify-between items-center">
-                <span>Nivel de energía</span>
-                <span class="text-amber-500 font-medium">{renderRating(energyLevel)}</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span>Sociabilidad</span>
-                <span class="text-amber-500 font-medium">{renderRating(friendliness)}</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span>Necesidad de cuidados</span>
-                <span class="text-amber-500 font-medium">{renderRating(grooming)}</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span>Facilidad de entrenamiento</span>
-                <span class="text-amber-500 font-medium">{renderRating(training)}</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="mb-6">
-            <h2 class="text-lg font-bold mb-2">Convivencia óptima con</h2>
-            <div class="flex flex-wrap gap-2">
-              {goodWith.map(trait => (
-                <Badge variant="info" size="md">{
-                  trait === 'children' ? 'Niños' :
-                  trait === 'dogs' ? 'Perros' :
-                  trait === 'cats' ? 'Gatos' :
-                  trait === 'seniors' ? 'Adultos mayores' :
-                  trait === 'apartments' ? 'Apartamentos' : trait
-                }</Badge>
-              ))}
-            </div>
-          </div>
-          
-          <div class="flex flex-wrap gap-3 mt-8">
-            <Button href="#cuidados" variant="primary">
-              Guía de cuidados
-            </Button>
-            <Button href="#salud" variant="outline">
-              Problemas de salud
-            </Button>
-            <Button href={`/comparador-razas?add=${id}`} variant="secondary">
-              Comparar con otras razas
-            </Button>
           </div>
         </div>
       </div>
     </Container>
-  </div>
-  
-  {/* Navegación en página */}
-  <div class="sticky top-[72px] z-10 bg-white border-y border-gray-200 py-2">
+  </section>
+
+  <!-- Puntuaciones detalladas -->
+  <section class="py-12 bg-gray-50">
     <Container>
-      <div class="flex gap-x-6 overflow-x-auto pb-1 -mx-2 px-2 scrollbar-hide">
-        <a href="#historia" class="text-sm font-medium whitespace-nowrap py-2 hover:text-[#AFC2D5]">Historia</a>
-        <a href="#temperamento" class="text-sm font-medium whitespace-nowrap py-2 hover:text-[#AFC2D5]">Temperamento</a>
-        <a href="#cuidados" class="text-sm font-medium whitespace-nowrap py-2 hover:text-[#AFC2D5]">Cuidados</a>
-        <a href="#salud" class="text-sm font-medium whitespace-nowrap py-2 hover:text-[#AFC2D5]">Salud</a>
-        <a href="#razas-similares" class="text-sm font-medium whitespace-nowrap py-2 hover:text-[#AFC2D5]">Razas similares</a>
-      </div>
-    </Container>
-  </div>
-  
-  {/* Contenido principal */}
-  <div class="py-10">
-    <Container>
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Columna principal */}
-        <div class="lg:col-span-2 space-y-10">
-          {/* Historia y orígenes */}
-          <section id="historia" class="scroll-mt-24">
-            <h2 class="text-2xl font-bold mb-4">Historia y orígenes</h2>
-            <Card padding="md">
-              <div class="prose max-w-none">
-                <p>{history}</p>
-                {origins && (
-                  <div class="mt-4">
-                    <h3 class="text-lg font-bold">Orígenes</h3>
-                    <p>{origins}</p>
-                  </div>
-                )}
-              </div>
-            </Card>
-          </section>
-          
-          {/* Temperamento */}
-          <section id="temperamento" class="scroll-mt-24">
-            <h2 class="text-2xl font-bold mb-4">Temperamento</h2>
-            <Card padding="md">
-              <div class="flex flex-wrap gap-2 mb-4">
-                {temperament.map(trait => (
-                  <Badge variant="primary" size="md" class="text-white">{trait} </Badge>
-                ))}
-              </div>
-              
-              <div class="mt-6 space-y-6">
-                {traits.map(trait => (
-                  <div>
-                    <div class="flex justify-between mb-1">
-                      <h3 class="font-medium">{trait.name}</h3>
-                      <span class="text-amber-500">{renderRating(trait.value)}</span>
-                    </div>
-                    <p class="text-gray-600 text-sm">{trait.description}</p>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </section>
-          
-          {/* Cuidados */}
-          <section id="cuidados" class="scroll-mt-24">
-  <h2 class="text-2xl font-bold mb-4">Guía de cuidados</h2>
-  <Card padding="md">
-    <div class="prose max-w-none" set:html={marked(careGuide)}></div>
-  </Card>
-</section>
-          
-          {/* Problemas de salud */}
-          <section id="salud" class="scroll-mt-24">
-            <h2 class="text-2xl font-bold mb-4">Problemas de salud comunes</h2>
-            <Card padding="md">
-              <div class="space-y-4">
-                {healthIssues.map(issue => (
-                  <div>
-                    <h3 class="font-bold text-lg">{issue.name}</h3>
-                    <p class="text-gray-600">{issue.description}</p>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </section>
-          
-          {/* Razas similares */}
-          <section id="razas-similares" class="scroll-mt-24">
-            <h2 class="text-2xl font-bold mb-4">Razas similares</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {similarBreeds.map(breed => (
-                <a href={`/razas/${breed.id}`} class="flex items-center bg-white rounded-lg border border-gray-200 p-3 hover:shadow-md transition-shadow duration-200">
-                  <div class="w-16 h-16 rounded-full overflow-hidden mr-3">
-                    <Image 
-                      src={breed.image} 
-                      alt={breed.name}
-                      width={64}
-                      height={64}
-                      class="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div>
-                    <h3 class="font-bold">{breed.name}</h3>
-                    <p class="text-sm text-gray-600">{breed.type === 'dog' ? 'Perro' : 'Gato'}, {sizeMap[breed.size]}</p>
-                  </div>
-                </a>
-              ))}
-            </div>
-          </section>
-        </div>
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold mb-8 text-gray-900">📊 Características detalladas</h2>
         
-        {/* Sidebar */}
-        <div class="lg:col-span-1">
-          <div class="sticky top-[140px]">
-            <Card variant="highlight" padding="md" class="mb-6">
-              <h3 class="text-lg font-bold mb-3">Características clave</h3>
-              <div class="space-y-3">
-                <div class="flex justify-between">
-                  <span>Hipoalergénico:</span>
-                  <span class="font-medium">{hypoallergenic ? 'Sí' : 'No'}</span>
-                </div>
-                
-                {height && (
-                  <div class="flex justify-between">
-                    <span>Altura:</span>
-                    <span class="font-medium">{height.min}-{height.max} cm</span>
-                  </div>
-                )}
-                
-                <div class="flex justify-between">
-                  <span>Tamaño:</span>
-                  <span class="font-medium">{sizeMap[size]}</span>
-                </div>
-                
-                <div class="flex justify-between">
-                  <span>Complejidad de cuidados:</span>
-                  <span class="font-medium">{getComplexityLabel(grooming)}</span>
-                </div>
-                
-                <div class="flex justify-between">
-                  <span>Nivel de ejercicio:</span>
-                  <span class="font-medium">{getEnergyLabel(energyLevel)}</span>
-                </div>
-                
-                <div class="flex justify-between">
-                  <span>Experiencia requerida:</span>
-                  <span class="font-medium">{getExperienceLabel(training)}</span>
-                </div>
+        <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+          <div class="space-y-6">
+            <!-- Energía -->
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="font-semibold text-lg flex items-center">
+                  <span class="mr-3">⚡</span>Nivel de energía
+                </span>
+                <span class="text-yellow-500 text-xl">{getStars(breed.energyLevel)}</span>
               </div>
-              
-              <div class="mt-6">
-                <Button 
-                  href={`/comparador-razas?add=${id}`} 
-                  variant="primary" 
-                  fullWidth={true}
-                >
-                  Comparar con otras razas
-                </Button>
+              <div class="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  class={`${typeColor === 'blue' ? 'bg-blue-500' : 'bg-orange-500'} h-3 rounded-full transition-all duration-500`}
+                  style={`width: ${(breed.energyLevel / 5) * 100}%`}
+                ></div>
               </div>
-            </Card>
+            </div>
             
-            <Card variant="default" padding="md">
-              <h3 class="text-lg font-bold mb-3">¿Esta raza es para ti?</h3>
-              <div class="space-y-3">
-                <div class="flex items-start">
-                  <div class={`w-6 h-6 rounded-full ${typeColor} flex items-center justify-center text-white flex-shrink-0 mt-0.5`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <p class="ml-3 text-sm">Necesita {getGroomingLabel(grooming)}</p>
-                </div>
-                
-                <div class="flex items-start">
-                  <div class={`w-6 h-6 rounded-full ${typeColor} flex items-center justify-center text-white flex-shrink-0 mt-0.5`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <p class="ml-3 text-sm">{
-                    friendliness >= 4 ? 'Excelente para familias' :
-                    friendliness >= 3 ? 'Bueno para familias' : 'Mejor para adultos'
-                  }</p>
-                </div>
-                
-                <div class="flex items-start">
-                  <div class={`w-6 h-6 rounded-full ${typeColor} flex items-center justify-center text-white flex-shrink-0 mt-0.5`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <p class="ml-3 text-sm">{
-                    hypoallergenic ? 'Adecuado para personas con alergias' : 'No recomendado para personas con alergias'
-                  }</p>
-                </div>
+            <!-- Amigabilidad -->
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="font-semibold text-lg flex items-center">
+                  <span class="mr-3">🤝</span>Amigabilidad
+                </span>
+                <span class="text-yellow-500 text-xl">{getStars(breed.friendliness)}</span>
               </div>
-            </Card>
+              <div class="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  class="bg-green-500 h-3 rounded-full transition-all duration-500"
+                  style={`width: ${(breed.friendliness / 5) * 100}%`}
+                ></div>
+              </div>
+            </div>
+            
+            <!-- Cuidados -->
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="font-semibold text-lg flex items-center">
+                  <span class="mr-3">✂️</span>Necesidad de cuidados
+                </span>
+                <span class="text-yellow-500 text-xl">{getStars(breed.grooming)}</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  class="bg-purple-500 h-3 rounded-full transition-all duration-500"
+                  style={`width: ${(breed.grooming / 5) * 100}%`}
+                ></div>
+              </div>
+            </div>
+            
+            <!-- Entrenamiento -->
+            <div>
+              <div class="flex justify-between items-center mb-3">
+                <span class="font-semibold text-lg flex items-center">
+                  <span class="mr-3">🎯</span>Facilidad de entrenamiento
+                </span>
+                <span class="text-yellow-500 text-xl">{getStars(breed.training)}</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  class="bg-indigo-500 h-3 rounded-full transition-all duration-500"
+                  style={`width: ${(breed.training / 5) * 100}%`}
+                ></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </Container>
-  </div>
+  </section>
+      
+  <!-- Temperamento -->
+  {breed.temperament && breed.temperament.length > 0 && (
+    <section class="py-12 bg-white">
+      <Container>
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-3xl font-bold mb-6 text-gray-900">🧠 Temperamento</h2>
+          <div class={`${typeColor === 'blue' ? 'bg-blue-50 border-blue-200' : 'bg-orange-50 border-orange-200'} rounded-xl p-8 border`}>
+            <div class="flex flex-wrap gap-3">
+              {breed.temperament.map((trait: string) => (
+                <span class={`bg-white ${typeColor === 'blue' ? 'text-blue-800' : 'text-orange-800'} px-4 py-2 rounded-full font-medium shadow-sm`}>
+                  {trait}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Container>
+    </section>
+  )}
   
-  <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const navLinks = document.querySelectorAll('a[href^="#"]');
+  <!-- Ideal para -->
+  {breed.goodWith && breed.goodWith.length > 0 && (
+    <section class="py-12 bg-gray-50">
+      <Container>
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-3xl font-bold mb-6 text-gray-900">👥 Ideal para</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {breed.goodWith.map((situation: string) => (
+              <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                <div class="text-3xl mb-2">
+                  {situation === 'children' ? '👶' : 
+                   situation === 'dogs' ? '🐕' :
+                   situation === 'cats' ? '🐱' :
+                   situation === 'seniors' ? '👴' :
+                   situation === 'apartments' ? '🏢' : '👥'}
+                </div>
+                <div class="font-semibold text-green-800">
+                  {situation === 'children' ? 'Familias con niños' :
+                   situation === 'dogs' ? 'Hogares con perros' :
+                   situation === 'cats' ? 'Hogares con gatos' :
+                   situation === 'seniors' ? 'Personas mayores' :
+                   situation === 'apartments' ? 'Apartamentos' : situation}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Container>
+    </section>
+  )}
 
-    navLinks.forEach((link) => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
+  <!-- CONTENIDO MARKDOWN CON ACORDEÓN -->
+  <section class="py-12 bg-white">
+    <Container>
+      <div class="max-w-4xl mx-auto">
+        <div id="accordion-content" class="accordion-content">
+          <slot />
+        </div>
+      </div>
+    </Container>
+  </section>
 
-        const targetId = link.getAttribute('href');
-        if (targetId) {
-          const targetElement = document.querySelector(targetId);
-          if (targetElement) {
-            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  <!-- CTA final -->
+  <section class="py-12 bg-gray-50">
+    <Container>
+      <div class="max-w-4xl mx-auto text-center">
+        <div class={`${typeColor === 'blue' ? 'bg-gradient-to-r from-slate-200 to-zinc-200' : 'bg-gradient-to-r from-slate-200 to-zinc-200'} rounded-xl p-8 text-black`}>
+          <h2 class="text-2xl font-bold mb-4">¿Te gusta esta raza?</h2>
+          <p class="mb-6 text-black opacity-90">Compárala con otras razas para encontrar tu mascota ideal</p>
+          <Button 
+            href="/comparador-razas" 
+            variant="secondary"
+            class="bg-indigo-50  text-indigo-900 hover:bg-gray-100 font-semibold px-8 py-3"
+          >
+            Comparar razas
+          </Button>
+        </div>
+      </div>
+    </Container>
+  </section>
+</BaseLayout>
 
-            // Compensar scroll por navbar fija
-            setTimeout(() => {
-              window.scrollBy(0, -120);
-            }, 10);
+<style>
+  /* ✨ ESTILOS PARA ACORDEÓN INTERACTIVO ✨ */
+  .accordion-content {
+    max-width: none;
+  }
 
-            history.pushState(null, '', targetId);
-          }
+  /* TÍTULO H1 PRINCIPAL - SIN ACORDEÓN, MÁS GRANDE */
+  .accordion-content :global(h1) {
+    @apply bg-gradient-to-r from-amber-100 to-yellow-100 border-l-8 border-amber-500 rounded-2xl p-8 mb-8 shadow-lg;
+    @apply text-3xl md:text-4xl font-bold text-amber-900 leading-tight;
+    margin-top: 0;
+  }
+
+  .accordion-content :global(h1::before) {
+    content: "⭐ ";
+    @apply mr-4 text-5xl;
+  }
+
+  /* PÁRRAFO DESPUÉS DEL H1 - DESTACADO */
+  .accordion-content :global(h1 + p) {
+    @apply bg-amber-50 border border-amber-200 rounded-xl p-6 text-amber-900 text-lg md:text-xl leading-relaxed mb-8;
+    @apply font-medium;
+  }
+
+  /* Títulos H2 como botones de acordeón */
+  .accordion-content :global(h2) {
+    @apply bg-gradient-to-r from-blue-100 to-indigo-100 border border-blue-200 rounded-xl p-6 mb-4  cursor-pointer select-none transition-all duration-300;
+    @apply text-2xl font-bold text-blue-900 flex items-center justify-between ;
+    position: relative;
+    margin-top: 2rem;
+  }
+
+  /* Iconos específicos para cada sección */
+  .accordion-content :global(h2:nth-of-type(1)::before) {
+    content: "🏛️ ";
+    @apply mr-3 text-3xl;
+  }
+  
+  .accordion-content :global(h2:nth-of-type(2)::before) {
+    content: "📏 ";
+    @apply mr-3 text-3xl;
+  }
+  
+  .accordion-content :global(h2:nth-of-type(3)::before) {
+    content: "🧠 ";
+    @apply mr-3 text-3xl;
+  }
+  
+  .accordion-content :global(h2:nth-of-type(4)::before) {
+    content: "⚡ ";
+    @apply mr-3 text-3xl;
+  }
+  
+  .accordion-content :global(h2:nth-of-type(5)::before) {
+    content: "🎯 ";
+    @apply mr-3 text-3xl;
+  }
+  
+  .accordion-content :global(h2:nth-of-type(6)::before) {
+    content: "🍽️ ";
+    @apply mr-3 text-3xl;
+  }
+  
+  .accordion-content :global(h2:nth-of-type(7)::before) {
+    content: "✂️ ";
+    @apply mr-3 text-3xl;
+  }
+  
+  .accordion-content :global(h2:nth-of-type(8)::before) {
+    content: "🎯 ";
+    @apply mr-3 text-3xl;
+  }
+  
+  .accordion-content :global(h2:nth-of-type(9)::before) {
+    content: "🏠 ";
+    @apply mr-3 text-3xl;
+  }
+  
+  .accordion-content :global(h2:nth-of-type(10)::before) {
+    content: "💼 ";
+    @apply mr-3 text-3xl;
+  }
+  
+  .accordion-content :global(h2:nth-of-type(11)::before) {
+    content: "💰 ";
+    @apply mr-3 text-3xl;
+  }
+  
+  .accordion-content :global(h2:nth-of-type(12)::before) {
+    content: "💡 ";
+    @apply mr-3 text-3xl;
+  }
+  
+  .accordion-content :global(h2:nth-of-type(13)::before) {
+    content: "📝 ";
+    @apply mr-3 text-3xl;
+  }
+
+  /* Flecha indicadora */
+  .accordion-content :global(h2::after) {
+    content: "▼";
+    @apply text-2xl text-blue-600 transition-transform duration-300;
+    transform: rotate(0deg);
+  }
+
+  .accordion-content :global(h2.active::after) {
+    transform: rotate(180deg);
+  }
+
+  /* Contenido de las secciones */
+  .accordion-content :global(.section-content) {
+    @apply bg-blue-50 border-l-4 border-blue-300 rounded-b-xl overflow-hidden;
+    max-height: 0;
+    opacity: 0;
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+    transition:  ease-in-out, opacity 0.3s ease-in-out;
+  }
+
+  .accordion-content :global(.section-content.active) {
+    max-height: 2000px;
+    opacity: 1;
+    @apply p-8;
+  }
+
+  /* Estilos para el contenido dentro de las secciones */
+  .accordion-content :global(.section-content h3) {
+    @apply text-lg font-semibold text-blue-800 mb-3 mt-6;
+  }
+
+  .accordion-content :global(.section-content h4) {
+    @apply text-base font-medium text-blue-700 mb-2 mt-4;
+  }
+
+  .accordion-content :global(.section-content p) {
+    @apply text-blue-900 mb-4 leading-relaxed text-base;
+  }
+
+  .accordion-content :global(.section-content ul) {
+    @apply mb-4 pl-4;
+  }
+
+  .accordion-content :global(.section-content ol) {
+    @apply mb-4 pl-4;
+  }
+
+  .accordion-content :global(.section-content li) {
+    @apply text-blue-900 mb-2 text-base leading-relaxed;
+    list-style: disc;
+    list-style-position: inside;
+  }
+
+  .accordion-content :global(.section-content ol li) {
+    list-style: decimal;
+    list-style-position: inside;
+  }
+
+  .accordion-content :global(.section-content strong) {
+    @apply font-bold text-blue-800;
+  }
+
+  .accordion-content :global(.section-content em) {
+    @apply italic text-blue-800;
+  }
+
+  /* Alternancia de colores para diferentes secciones */
+  .accordion-content :global(h2:nth-of-type(even)) {
+    @apply bg-gradient-to-r from-green-100 to-teal-100 border-green-200 text-green-900;
+  }
+
+  .accordion-content :global(h2:nth-of-type(even)::after) {
+    @apply text-green-600;
+  }
+
+  .accordion-content :global(h2:nth-of-type(even) + .section-content) {
+    @apply bg-green-50 border-green-300;
+  }
+
+  .accordion-content :global(h2:nth-of-type(even) + .section-content h3) {
+    @apply text-green-800;
+  }
+
+  .accordion-content :global(h2:nth-of-type(even) + .section-content h4) {
+    @apply text-green-700;
+  }
+
+  .accordion-content :global(h2:nth-of-type(even) + .section-content p) {
+    @apply text-green-900;
+  }
+
+  .accordion-content :global(h2:nth-of-type(even) + .section-content li) {
+    @apply text-green-900;
+  }
+
+  .accordion-content :global(h2:nth-of-type(even) + .section-content strong) {
+    @apply text-green-800;
+  }
+
+  .accordion-content :global(h2:nth-of-type(even) + .section-content em) {
+    @apply text-green-800;
+  }
+
+  /* Responsivo */
+  @media (max-width: 768px) {
+    .accordion-content :global(h2) {
+      @apply text-lg p-4;
+    }
+    
+    .accordion-content :global(.section-content.active) {
+      @apply p-6;
+    }
+    
+    .accordion-content :global(h2::before) {
+      @apply mr-2 text-2xl;
+    }
+    
+    .accordion-content :global(h2::after) {
+      @apply text-xl;
+    }
+  }
+</style>
+
+<script>
+  // 🎯 FUNCIONALIDAD DEL ACORDEÓN
+  document.addEventListener('DOMContentLoaded', function() {
+    const accordionContainer = document.getElementById('accordion-content');
+    if (!accordionContainer) return;
+
+    // Procesar el contenido markdown y crear acordeón
+    processMarkdownContent();
+
+    function processMarkdownContent() {
+      if (!accordionContainer) return;
+      const h2Elements = accordionContainer.querySelectorAll('h2');
+      
+      h2Elements.forEach((h2, index) => {
+        // Crear contenedor para el contenido de la sección
+        const sectionContent = document.createElement('div');
+        sectionContent.className = 'section-content';
+        
+        // Recopilar todo el contenido hasta el siguiente H2
+        let nextElement = h2.nextElementSibling;
+        const contentElements: Element[] = [];
+        
+        while (nextElement && nextElement.tagName !== 'H2') {
+          contentElements.push(nextElement);
+          nextElement = nextElement.nextElementSibling;
+        }
+        
+        // Mover el contenido al contenedor de sección
+        contentElements.forEach(element => {
+          sectionContent.appendChild(element);
+        });
+        
+        // Insertar el contenedor después del H2
+        if (h2.parentNode) {
+          h2.parentNode.insertBefore(sectionContent, h2.nextSibling);
+        }
+        
+        // Agregar evento click al H2
+        h2.addEventListener('click', function() {
+          toggleSection(h2, sectionContent);
+        });
+        
+        // Si es la primera sección, mantenerla abierta por defecto
+        if (index === 0) {
+          h2.classList.add('active');
+          sectionContent.classList.add('active');
         }
       });
-    });
+    }
+
+    function toggleSection(h2: Element, sectionContent: Element) {
+      const isActive = sectionContent.classList.contains('active');
+      
+      if (isActive) {
+        // Cerrar sección
+        h2.classList.remove('active');
+        sectionContent.classList.remove('active');
+      } else {
+        // Opcional: Cerrar otras secciones (acordeón exclusivo)
+        // accordionContainer.querySelectorAll('.section-content.active').forEach(content => {
+        //   content.classList.remove('active');
+        //   content.previousElementSibling.classList.remove('active');
+        // });
+        
+        // Abrir sección actual
+        h2.classList.add('active');
+        sectionContent.classList.add('active');
+      }
+    }
+
+    // Smooth scroll cuando se abre una sección
+    function smoothScrollToSection(element: Element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
   });
 </script>
-
-</BaseLayout>

@@ -1,24 +1,31 @@
-# netlify.toml - Configuración específica para tu setup
+# netlify.toml - Configuración optimizada para Astro + Netlify CMS
 [build]
   publish = "dist"
   command = "npm run build"
 
 [build.environment]
   NODE_VERSION = "18"
-  NPM_FLAGS = "--legacy-peer-deps" # Si hay conflictos de dependencias
+  NPM_FLAGS = "--legacy-peer-deps"
 
-# Redireccionamientos
+# Redireccionamientos específicos para tu sitio
 [[redirects]]
   from = "/admin/*"
   to = "/admin/index.html"
   status = 200
 
+# Redirección para páginas del blog (si usas routing dinámico)
+[[redirects]]
+  from = "/blog/*"
+  to = "/blog/[...slug]"
+  status = 200
+
+# Redirección catch-all para 404 (debe ir al final)
 [[redirects]]
   from = "/*"
   to = "/404.html"
   status = 404
 
-# Headers para optimización
+# Headers de seguridad y optimización
 [[headers]]
   for = "/*"
   [headers.values]
@@ -26,8 +33,22 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://identity.netlify.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;"
 
+# Cache para assets estáticos
 [[headers]]
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Cache para imágenes
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# Headers específicos para Netlify CMS
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"

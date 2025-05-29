@@ -1,0 +1,128 @@
+---
+// src/pages/categorias/[slug].astro
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const categorias = await getCollection('categorias').catch(() => []);
+  
+  return categorias.map((categoria: any) => ({
+    params: { slug: categoria.slug },
+    props: { categoria }
+  }));
+}
+
+const { categoria } = Astro.props;
+
+if (!categoria) {
+  return Astro.redirect('/404');
+}
+
+// Buscar artículos de esta categoría
+const todosLosArticulos = await getCollection('articulos').catch(() => []);
+const articulosCategoria = todosLosArticulos.filter((articulo: any) => {
+  const tags = articulo.data.tags || [];
+  const category = articulo.data.category || '';
+  return tags.includes(categoria.slug) || 
+         category.toLowerCase().includes(categoria.data.name.toLowerCase()) ||
+         tags.some((tag: string) => tag.toLowerCase().includes(categoria.data.name.toLowerCase()));
+});
+
+const { Content } = await categoria.render();
+---
+
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{categoria.data.name} - PataDigital</title>
+  <meta name="description" content={categoria.data.description} />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header de la categoría -->
+    <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+      <div class="flex items-center gap-4 mb-4">
+        <span class="text-5xl">{categoria.data.icon || '📁'}</span>
+        <div>
+          <h1 class="text-4xl font-bold text-gray-900">{categoria.data.name}</h1>
+          <p class="text-xl text-gray-600 mt-2">{categoria.data.description}</p>
+        </div>
+      </div>
+      
+      <div class="prose max-w-none mt-6">
+        <Content />
+      </div>
+    </div>
+    
+    <!-- Artículos de la categoría -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">
+        Artículos de {categoria.data.name} ({articulosCategoria.length})
+      </h2>
+      
+      {articulosCategoria.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {articulosCategoria.map((articulo) => (
+            <article class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+              <div class="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                {articulo.data.image ? (
+                  <img 
+                    src={articulo.data.image} 
+                    alt={articulo.data.title}
+                    class="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span class="text-gray-400 text-lg">📄</span>
+                )}
+              </div>
+              
+              <div class="p-6">
+                <h3 class="text-lg font-bold mb-2">
+                  <a href={`/articulos/${articulo.slug}/`} class="hover:text-blue-600">
+                    {articulo.data.title}
+                  </a>
+                </h3>
+                
+                <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                  {articulo.data.description}
+                </p>
+                
+                <div class="flex items-center justify-between text-sm text-gray-500">
+                  <span>{articulo.data.author || 'Editor'}</span>
+                  <span>{articulo.data.readingTime || 5} min lectura</span>
+                </div>
+                
+                <div class="mt-4">
+                  <a 
+                    href={`/articulos/${articulo.slug}/`}
+                    class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium text-sm"
+                  >
+                    Leer más →
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="bg-white rounded-lg p-8 text-center">
+          <p class="text-gray-500 text-lg">No hay artículos en esta categoría aún.</p>
+          <p class="text-gray-400 mt-2">¡Pronto agregaremos más contenido!</p>
+        </div>
+      )}
+    </div>
+    
+    <!-- Navegación -->
+    <div class="flex justify-center">
+      <a 
+        href="/categorias/" 
+        class="inline-flex items-center px-6 py-3 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors"
+      >
+        ← Ver todas las categorías
+      </a>
+    </div>
+  </div>
+</body>
+</html>
