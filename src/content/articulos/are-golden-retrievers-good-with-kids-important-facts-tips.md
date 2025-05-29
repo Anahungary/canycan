@@ -49,7 +49,7 @@ Image Credit: Gaby Campo, Shutterstock
 
 ## Golden Retriever Exercise Level
 
-Another factor that makes Golden Retrievers great family dogs is that they’re [very active dogs](https://www.dogster.com/dog-breeds/are-golden-retrievers-hyper-dogs/). They pack a friendly and playful temperament in with boundless energy to play with your kids. Golden Retrievers can play gently but endlessly with their families.
+Another factor that makes ***Golden Retrievers great family*** dogs is that they’re [very active dogs](https://www.dogster.com/dog-breeds/are-golden-retrievers-hyper-dogs/). They pack a friendly and playful temperament in with boundless energy to play with your kids. Golden Retrievers can play gently but endlessly with their families.
 
 ## Are Golden Retrievers Good First Dogs?
 
