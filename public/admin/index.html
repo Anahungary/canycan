@@ -4,7 +4,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel de Administración - PataDigital</title>
+  
+  <!-- ✅ CONTENT SECURITY POLICY CORREGIDA -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://identity.netlify.com https://unpkg.com https://cdn.jsdelivr.net;
+    style-src 'self' 'unsafe-inline' https://unpkg.com;
+    img-src 'self' data: https: blob:;
+    font-src 'self' https:;
+    connect-src 'self' https: wss:;
+    frame-src 'self' https:;
+    object-src 'none';
+    base-uri 'self';
+  ">
+  
   <link rel="stylesheet" href="https://unpkg.com/netlify-cms@^2.0.0/dist/cms.css" />
+  
   <style>
     /* Personalización del CMS */
     :root {
@@ -67,9 +82,48 @@
         z-index: 1000 !important;
       }
     }
+    
+    /* Loading indicator */
+    .loading-indicator {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: none;
+    }
+    
+    .loading-indicator.show {
+      display: block;
+    }
+    
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
+  <!-- Loading indicator -->
+  <div id="loading-indicator" class="loading-indicator show">
+    <div class="spinner"></div>
+    <p>Cargando Panel de Administración...</p>
+  </div>
+
   <!-- Netlify Identity Widget -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   
@@ -77,6 +131,14 @@
   <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
   
   <script>
+    // Ocultar loading indicator cuando el CMS esté listo
+    const hideLoading = () => {
+      const loading = document.getElementById('loading-indicator');
+      if (loading) {
+        loading.classList.remove('show');
+      }
+    };
+
     // Configuración de Netlify Identity
     if (window.netlifyIdentity) {
       window.netlifyIdentity.on("init", user => {
@@ -102,132 +164,114 @@
       }
     }
     
-    // Personalización del CMS
-    CMS.registerPreviewStyle('/admin/preview-styles.css');
-    
-    // Widget personalizado para slug
-    CMS.registerWidget('slug', {
-      controlComponent: CMS.widgets.string.controlComponent,
-      previewComponent: CMS.widgets.string.previewComponent,
-      schema: {
-        properties: {
-          default: { type: 'string' }
-        }
-      }
+    // Esperar a que el CMS esté completamente cargado
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ocultar loading después de un tiempo
+      setTimeout(hideLoading, 2000);
     });
     
-    // Template personalizado para artículos
-    CMS.registerPreviewTemplate('articulos', ({ entry, widgetFor, widgetsFor }) => {
-      const title = entry.getIn(['data', 'title']);
-      const description = entry.getIn(['data', 'description']);
-      const image = entry.getIn(['data', 'image']);
-      const author = entry.getIn(['data', 'author']);
-      const date = entry.getIn(['data', 'date']);
-      const body = widgetFor('body');
-      
-      return `
-        <div class="cms-preview-pane">
-          <div style="margin-bottom: 2rem;">
-            <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; color: #2E2E2E;">${title}</h1>
-            <p style="font-size: 1.25rem; color: #666; margin-bottom: 1rem;">${description}</p>
-            <div style="color: #888; font-size: 0.9rem; margin-bottom: 2rem;">
-              Por ${author} • ${new Date(date).toLocaleDateString('es-ES')}
-            </div>
-            ${image ? `<img src="${image}" alt="${title}" style="width: 100%; border-radius: 8px; margin-bottom: 2rem;">` : ''}
-          </div>
-          <div style="font-size: 1.1rem; line-height: 1.7; color: #333;">
-            ${body}
-          </div>
+    // ✅ CONFIGURACIÓN DEL CMS CON MANEJO DE ERRORES
+    try {
+      // Personalización del CMS
+      if (typeof CMS !== 'undefined') {
+        // Registrar estilos de preview
+        CMS.registerPreviewStyle('/admin/preview-styles.css');
+        
+        // Widget personalizado para slug
+        CMS.registerWidget('slug', {
+          controlComponent: CMS.widgets.string.controlComponent,
+          previewComponent: CMS.widgets.string.previewComponent,
+          schema: {
+            properties: {
+              default: { type: 'string' }
+            }
+          }
+        });
+        
+        // Template personalizado para artículos
+        CMS.registerPreviewTemplate('articulos', ({ entry, widgetFor }) => {
+          const title = entry.getIn(['data', 'title']);
+          const description = entry.getIn(['data', 'description']);
+          const image = entry.getIn(['data', 'image']);
+          const author = entry.getIn(['data', 'author']);
+          const date = entry.getIn(['data', 'date']);
+          const body = widgetFor('body');
           
-          <!-- Ejemplos de testimonios -->
-          <div style="margin-top: 3rem; padding: 2rem; background: #f8fafc; border-radius: 12px; border-left: 4px solid #0ea5e9;">
-            <h3 style="color: #0ea5e9; margin-bottom: 1rem;">💡 Formato de testimonios:</h3>
-            <div style="font-size: 0.9rem; color: #64748b; line-height: 1.6;">
-              <p><strong>Formato simple:</strong></p>
-              <code style="background: white; padding: 0.5rem; border-radius: 4px; display: block; margin: 0.5rem 0;">
-                > "Tu testimonio aquí..."<br>
-                > <br>
-                > **Nombre Apellido**<br>
-                > <br>
-                > Cargo/contexto
-              </code>
-            </div>
-          </div>
-        </div>
-      `;
-    });
-    
-    // Template personalizado para razas
-    CMS.registerPreviewTemplate('razas', ({ entry, widgetFor, widgetsFor }) => {
-      const name = entry.getIn(['data', 'name']);
-      const description = entry.getIn(['data', 'description']);
-      const type = entry.getIn(['data', 'type']);
-      const size = entry.getIn(['data', 'size']);
-      const images = entry.getIn(['data', 'images']);
-      const body = widgetFor('body');
-      
-      return `
-        <div class="cms-preview-pane">
-          <div style="margin-bottom: 2rem;">
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-              <h1 style="font-size: 2.5rem; font-weight: bold; margin: 0; color: #2E2E2E;">${name}</h1>
-              <span style="background: #AFC2D5; color: white; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem;">
-                ${type === 'dog' ? '🐕 Perro' : '🐱 Gato'} • ${size}
-              </span>
-            </div>
-            <p style="font-size: 1.25rem; color: #666; margin-bottom: 1rem;">${description}</p>
-            ${images && images.size > 0 ? `
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-                ${images.map(img => `<img src="${img.get('url')}" alt="${img.get('alt')}" style="width: 100%; border-radius: 8px;">`).join('')}
+          return `
+            <div class="cms-preview-pane">
+              <div style="margin-bottom: 2rem;">
+                <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; color: #2E2E2E;">${title || 'Título del artículo'}</h1>
+                <p style="font-size: 1.25rem; color: #666; margin-bottom: 1rem;">${description || 'Descripción del artículo'}</p>
+                <div style="color: #888; font-size: 0.9rem; margin-bottom: 2rem;">
+                  Por ${author || 'Autor'} • ${date ? new Date(date).toLocaleDateString('es-ES') : 'Fecha'}
+                </div>
+                ${image ? `<img src="${image}" alt="${title}" style="width: 100%; border-radius: 8px; margin-bottom: 2rem;">` : ''}
               </div>
-            ` : ''}
-          </div>
-          <div style="font-size: 1.1rem; line-height: 1.7; color: #333;">
-            ${body}
-          </div>
-        </div>
-      `;
-    });
-    
-    // Funciones de utilidad
-    CMS.registerEventListener({
-      name: 'prePublish',
-      handler: ({ entry, author }) => {
-        // Validaciones antes de publicar
-        const title = entry.get('title');
-        const slug = entry.get('slug');
+              <div style="font-size: 1.1rem; line-height: 1.7; color: #333;">
+                ${body || 'Contenido del artículo...'}
+              </div>
+            </div>
+          `;
+        });
         
-        if (!title || title.length < 10) {
-          throw new Error('El título debe tener al menos 10 caracteres');
-        }
+        // Template personalizado para razas
+        CMS.registerPreviewTemplate('razas', ({ entry, widgetFor }) => {
+          const name = entry.getIn(['data', 'name']);
+          const description = entry.getIn(['data', 'description']);
+          const type = entry.getIn(['data', 'type']);
+          const size = entry.getIn(['data', 'size']);
+          const images = entry.getIn(['data', 'images']);
+          const body = widgetFor('body');
+          
+          return `
+            <div class="cms-preview-pane">
+              <div style="margin-bottom: 2rem;">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                  <h1 style="font-size: 2.5rem; font-weight: bold; margin: 0; color: #2E2E2E;">${name || 'Nombre de la raza'}</h1>
+                  <span style="background: #AFC2D5; color: white; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem;">
+                    ${type === 'dog' ? '🐕 Perro' : type === 'cat' ? '🐱 Gato' : '🐾 Mascota'} • ${size || 'Tamaño'}
+                  </span>
+                </div>
+                <p style="font-size: 1.25rem; color: #666; margin-bottom: 1rem;">${description || 'Descripción de la raza'}</p>
+                ${images && images.size > 0 ? `
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    ${images.map(img => `<img src="${img.get('url')}" alt="${img.get('alt')}" style="width: 100%; border-radius: 8px;">`).join('')}
+                  </div>
+                ` : ''}
+              </div>
+              <div style="font-size: 1.1rem; line-height: 1.7; color: #333;">
+                ${body || 'Información adicional sobre la raza...'}
+              </div>
+            </div>
+          `;
+        });
         
-        if (!slug || !/^[a-z0-9-]+$/.test(slug)) {
-          throw new Error('El slug debe contener solo letras minúsculas, números y guiones');
-        }
+        // Función de validación antes de publicar
+        CMS.registerEventListener({
+          name: 'prePublish',
+          handler: ({ entry }) => {
+            const title = entry.get('title');
+            const slug = entry.get('slug');
+            
+            if (!title || title.length < 10) {
+              throw new Error('El título debe tener al menos 10 caracteres');
+            }
+            
+            if (!slug || !/^[a-z0-9-]+$/.test(slug)) {
+              throw new Error('El slug debe contener solo letras minúsculas, números y guiones');
+            }
+            
+            return entry;
+          }
+        });
         
-        return entry;
+        console.log('✅ Netlify CMS configurado correctamente');
+        hideLoading();
       }
-    });
-    
-    // Configuración de auto-save
-    CMS.init({
-      config: {
-        backend: {
-          name: 'git-gateway',
-          branch: 'main'
-        },
-        load_config_file: true,
-        media_folder: 'public/images/uploads',
-        public_folder: '/images/uploads',
-        local_backend: false, // Cambiar a true para desarrollo local
-        publish_mode: 'editorial_workflow', // Habilita workflow de revisión
-        editor: {
-          preview: true
-        }
-      }
-    });
-    
-    console.log('✅ Netlify CMS inicializado correctamente');
+    } catch (error) {
+      console.error('Error al configurar CMS:', error);
+      hideLoading();
+    }
   </script>
 </body>
 </html>
