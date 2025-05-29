@@ -1,9 +1,8 @@
-// src/content/config.ts - CONFIGURACIÓN PRINCIPAL
+// src/content/config.ts - SIN RAZAS
 import { defineCollection } from 'astro:content';
 
-// Importar todos los schemas
+// Importar schemas (SIN razas)
 import { articulosSchema } from './articulos/schema';
-import { razasSchema } from './razas/schema';
 import { autoresSchema } from './autores/schema';
 import { categoriasSchema } from './categorias/schema';
 import { etiquetasSchema } from './etiquetas/schema';
@@ -13,11 +12,6 @@ import { paginasSchema } from './paginas/schema';
 const articulosCollection = defineCollection({
   type: 'content',
   schema: articulosSchema,
-});
-
-const razasCollection = defineCollection({
-  type: 'content',
-  schema: razasSchema,
 });
 
 const autoresCollection = defineCollection({
@@ -40,10 +34,9 @@ const paginasCollection = defineCollection({
   schema: paginasSchema,
 });
 
-// Exportar todas las colecciones
+// Exportar colecciones SIN razas
 export const collections = {
   articulos: articulosCollection,
-  razas: razasCollection,
   autores: autoresCollection,
   categorias: categoriasCollection,
   etiquetas: etiquetasCollection,
