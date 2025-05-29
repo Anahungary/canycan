@@ -45,8 +45,6 @@ Golden Retrievers are friendly dogs that will try and be friends with other dogs
 
 Image Credit: Gaby Campo, Shutterstock
 
- 
-
 [3rd party ad content](https://283e7bffaeab25384f9621230279cc2a.safeframe.googlesyndication.com/safeframe/1-0-45/html/container.html)
 
 ## Golden Retriever Exercise Level
@@ -59,6 +57,6 @@ Golden Retrievers are popular as first dogs because of their natures. They’re 
 
 The combination of their easygoing temperament and how easy they are to train makes them great [dogs for first-time owners](https://www.dogster.com/dog-breeds/golden-retrievers-good-for-first-time-owners/). These traits also make them a good fit for parents who may have less time to dedicate to training and rearing their dogs.
 
-Golden Retrievers also have low grooming requirements despite their long and luscious coats. Depending on how often they go outdoors or visit the dog park, Golden Retrievers *usually* only need to be bathed about once a month or any time they start to smell a bit strange. They need to be brushed a few times a week, but this chore doesn’t require much time. It can also help get your kids acquainted with the less fun parts of pet ownership.
+Golden Retrievers also have low grooming requirements despite their long and luscious coats. Depending on how **often they go outdoors or visit the d**og park, Golden Retrievers *usually* only need to be bathed about once a month or any time they start to smell a bit strange. They need to be brushed a few times a week, but this chore doesn’t require much time. It can also help get your kids acquainted with the less fun parts of pet ownership.
 
 Golden Retrievers are also healthy dogs that will generally stay with your family for a long time. Of course, there’s always the chance of freak accidents or illness, but an excellent veterinary practice will be able to help you keep your Golden Retriever healthy.
