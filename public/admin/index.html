@@ -31,6 +31,51 @@
     .css-1pcez15:hover {
       background-color: #F6B89E !important;
     }
+    
+    /* ✅ FIX PARA CURSIVAS Y MARKDOWN */
+    .Pane.vertical.Pane1 .NotchedOutline-root em,
+    .cms-editor-visual em,
+    .markdown-body em {
+      font-style: italic !important;
+      font-weight: normal !important;
+      background: none !important;
+      text-decoration: none !important;
+    }
+    
+    /* Corregir estilos del editor Markdown */
+    .cms-editor-visual {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+      line-height: 1.6 !important;
+    }
+    
+    /* Separar claramente los modos del editor */
+    .cms-editor-visual strong {
+      font-weight: bold !important;
+    }
+    
+    .cms-editor-visual em {
+      font-style: italic !important;
+    }
+    
+    /* Prevenir conflictos con Slate.js */
+    [data-slate-editor] em {
+      font-style: italic !important;
+      font-weight: inherit !important;
+    }
+    
+    [data-slate-editor] strong {
+      font-weight: bold !important;
+      font-style: inherit !important;
+    }
+    
+    /* Mejorar la vista previa */
+    .cms-preview-pane em {
+      font-style: italic !important;
+    }
+    
+    .cms-preview-pane strong {
+      font-weight: bold !important;
+    }
   </style>
   
   <script>

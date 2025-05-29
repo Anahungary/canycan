@@ -1,4 +1,4 @@
-# public/admin/config.yml - CONFIGURACIÓN SIN RAZAS
+# public/admin/config.yml - CONFIGURACIÓN CORREGIDA
 backend:
   name: git-gateway
   branch: main
@@ -8,8 +8,8 @@ media_folder: "public/images/uploads"
 public_folder: "/images/uploads"
 
 # Configuración del sitio
-site_url: https://tu-revista.netlify.app
-display_url: https://tu-revista.netlify.app
+site_url: https://canicat.netlify.app
+display_url: https://canicat.netlify.app
 logo_url: /images/logo.png
 
 # Configuración del editor
@@ -73,15 +73,17 @@ collections:
       - { label: "Descripción", name: "description", widget: "text", required: true }
       - { label: "Imagen", name: "image", widget: "image", required: false }
       - { label: "Ícono (emoji)", name: "icon", widget: "string", required: false, default: "📁" }
-      - { label: "Color", name: "color", widget: "select", 
-          options: [
-            { label: "Azul (Primario)", value: "primary" },
-            { label: "Coral (Secundario)", value: "secondary" },
-            { label: "Verde (Éxito)", value: "success" },
-            { label: "Azul claro (Info)", value: "info" },
-            { label: "Amarillo (Advertencia)", value: "warning" },
-            { label: "Rojo (Peligro)", value: "danger" }
-          ], default: "primary" }
+      - label: "Color"
+        name: "color"
+        widget: "select"
+        default: "primary"
+        options:
+          - { label: "Azul (Primario)", value: "primary" }
+          - { label: "Coral (Secundario)", value: "secondary" }
+          - { label: "Verde (Éxito)", value: "success" }
+          - { label: "Azul claro (Info)", value: "info" }
+          - { label: "Amarillo (Advertencia)", value: "warning" }
+          - { label: "Rojo (Peligro)", value: "danger" }
       - { label: "Categoría padre", name: "parentCategory", widget: "relation", collection: "categorias", search_fields: ["name"], value_field: "slug", display_fields: ["name"], required: false }
       - { label: "Subcategorías", name: "subcategories", widget: "list", required: false }
       - { label: "Orden", name: "order", widget: "number", min: 0, default: 0 }
@@ -189,9 +191,13 @@ collections:
       - { label: "Tipo de artículo", name: "articleType", widget: "select", options: ["Article", "NewsArticle", "BlogPosting"], default: "Article" }
       - { label: "Palabras clave", name: "keywords", widget: "list", required: false }
       
-      # Contenido
-      - { label: "Contenido", name: "body", widget: "markdown", 
-          hint: "Usa ![descripción](URL) para insertar imágenes. Para testimonios usa: > \"Tu testimonio...\" > **Nombre** > Cargo" }
+      # Contenido - CONFIGURACIÓN MEJORADA PARA CURSIVAS
+      - label: "Contenido"
+        name: "body"
+        widget: "markdown"
+        hint: "Para cursiva usa *texto*, para negrita usa **texto**. Evita mezclar asteriscos con guiones bajos."
+        modes: ["rich_text", "raw"]
+        show_raw: true
 
   # 📄 PÁGINAS
   - name: "paginas"

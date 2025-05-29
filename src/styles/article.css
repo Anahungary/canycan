@@ -133,6 +133,36 @@
       margin-bottom: 0 !important;
     }
 
+    /* TEXTO EN CURSIVA - MEJORADO */
+    .article-content em {
+      font-style: italic !important;
+      color: #4b5563 !important;
+      font-weight: inherit !important;
+      background: none !important;
+      text-decoration: none !important;
+    }
+    
+    /* Cursiva dentro de párrafos */
+    .article-content p em {
+      font-style: italic !important;
+      color: #4b5563 !important;
+      font-weight: inherit !important;
+    }
+    
+    /* Cursiva dentro de listas */
+    .article-content li em {
+      font-style: italic !important;
+      color: #4b5563 !important;
+    }
+    
+    /* Cursiva combinada con negrita */
+    .article-content strong em,
+    .article-content em strong {
+      font-style: italic !important;
+      font-weight: bold !important;
+      color: #111827 !important;
+    }
+
     
 
     /* TÍTULOS JERÁRQUICOS CON MÁS ESPACIADO */
