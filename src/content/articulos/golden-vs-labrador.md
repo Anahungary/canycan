@@ -4,8 +4,8 @@ description: "Análisis completo de las dos razas más populares para familias. 
 date: 2024-01-22T10:00:00.000Z
 author: "elena-martinez"
 authorBio: "Veterinaria especializada en comportamiento canino con 15 años de experiencia. Madre de dos niños y propietaria de un Golden Retriever llamado Bruno."
-tags: ["razas", "familias", "perros", "comparativa", "golden-retriever", "labrador"]
-category: "razas"
+tags: ["ansiedad-separacion", "comportamiento", "perros"]
+category: "comportamiento"
 featured: true
 image: "https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
 imageAlt: "Comparación lado a lado de Golden Retriever y Labrador Retriever"
@@ -23,7 +23,7 @@ articleType: "Article"
 
 Como veterinaria especializada en comportamiento canino y madre de dos niños, he tenido la oportunidad de trabajar con cientos de familias en esta misma situación. En este análisis detallado, **te ayudo a descubrir cuál de estas dos razas excepcionales se adapta mejor a tu hogar**.
 
-![Comparación lado a lado de Golden Retriever y Labrador Retriever](https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80)
+![Comparación lado a lado de Golden Retriever y Labrador Retriever](/images/articulos/goldedenvslabrador.webp)
 
 *Golden Retriever (izquierda) y Labrador Retriever (derecha) - dos de las razas más queridas del mundo*
 
@@ -117,7 +117,7 @@ Tanto Goldens como Labradores son **excepcionales con niños**, pero cada uno br
 
 ✅ **Excelentes motivadores** - Animan a los niños a ser más activos
 
-![Golden Retriever jugando con niños en el parque](https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80)
+![Golden Retriever jugando con niños en el parque](/images/articulos/goldel_and_girl.webp)
 
 *Los Golden Retrievers son conocidos por su paciencia infinita con los niños*
 
