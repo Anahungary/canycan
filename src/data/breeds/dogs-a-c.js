@@ -734,7 +734,7 @@ export const dogsAC = [
 },
 {
   id: 'caniche-enano',
-  name: 'Poodle mini (tacita de te)',
+  name: 'Mini Poodle (tacita de te)',
   image: '/images/breeds/Poodle-mini.webp',
   description: 'Inteligente, vivaz y elegante. Excelente para entrenamiento y convivencia familiar. Muy adaptable.',
   size: 'small',

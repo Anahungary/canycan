@@ -1,15 +1,27 @@
 ---
-// src/pages/index.astro - Versión con hero mejorado y artículos destacados
+// src/pages/index.astro - VERSIÓN QUE CARGA ARTÍCULOS REALES AUTOMÁTICAMENTE
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Container from '../components/ui/Container.astro';
 import HeroBanner from '../components/home/HeroBanner.astro';
-import FeaturedSection from '../components/home/FeaturedSection.astro';
-import CategoryFeature from '../components/home/CategoryFeature.astro';
 import Button from '../components/ui/Button.astro';
 import Card from '../components/ui/Card.astro';
 import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 
-// Datos simulados para el banner principal
+// 🔍 CARGAR TODOS LOS ARTÍCULOS REALES QUE EXISTEN
+let allArticles: any[] = [];
+try {
+  allArticles = await getCollection('articulos');
+  // Filtrar solo artículos publicados y ordenar por fecha
+  allArticles = allArticles
+    .filter((article: any) => article.data.status === 'published')
+    .sort((a: any, b: any) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+} catch (error) {
+  console.log('No se pudieron cargar los artículos:', error);
+  allArticles = [];
+}
+
+// Datos del hero principal
 const heroData = {
   title: 'La guía definitiva para el bienestar de tu perro',
   subtitle: 'Descubre todo lo que necesitas para mantener a tu mejor amigo feliz, sano y en perfecta forma',
@@ -17,164 +29,76 @@ const heroData = {
   category: 'Guía Completa',
   badges: ['Salud', 'Nutrición', 'Ejercicio'],
   primaryCTA: { text: 'Leer artículo', url: '/articulos/guia-bienestar-perros' },
-  secondaryCTA: { text: 'Explorar razas', url: '/comparador-razas' }
+  secondaryCTA: { text: 'Explorar razas', url: 'https://cani2.netlify.app/razas/' }
 };
 
-// Datos simulados para las secciones Dog Care y Dog Life
-const dogCareArticles = [
-  {
-    id: 'nutricion-personalizada',
-    title: 'Nutrición personalizada: la alimentación ideal según la edad y tamaño',
-    excerpt: 'Una alimentación adecuada puede aumentar significativamente la longevidad y calidad de vida de tu mascota.',
-    image: '/images/articles/dog-nutrition.jpg',
-    category: 'Alimentación',
-    readingTime: 7
-  },
-  {
-    id: 'rutina-ejercicios',
-    title: '5 ejercicios diarios que mantendrán a tu perro en forma',
-    excerpt: 'Actividades físicas y mentales que evitarán el sedentarismo y el aburrimiento de tu mascota.',
-    image: '/images/articles/dog-exercise.jpg',
-    category: 'Actividad Física',
-    readingTime: 5
-  },
-  {
-    id: 'salud-dental-casera',
-    title: 'Cuidados dentales caseros: guía completa para prevenir problemas',
-    excerpt: 'Previene problemas de salud serios con una rutina dental adecuada para tu perro.',
-    image: '/images/articles/dental-care.jpg',
-    category: 'Salud',
-    readingTime: 6
-  }
-];
-
-const dogLifeArticles = [
-  {
-    id: 'lenguaje-corporal',
-    title: 'Aprende a leer el lenguaje corporal de tu perro',
-    excerpt: 'Las señales sutiles que indican exactamente cómo se siente tu mascota en cada momento.',
-    image: '/images/articles/body-language.jpg',
-    category: 'Comportamiento',
-    readingTime: 8
-  },
-  {
-    id: 'viajes-con-mascota',
-    title: 'Viajando con tu perro: preparativos y consejos esenciales',
-    excerpt: 'Todo lo que necesitas saber para que tus vacaciones sean perfectas también para tu mejor amigo.',
-    image: '/images/articles/traveling-with-dogs.jpg',
-    category: 'Lifestyle',
-    readingTime: 9
-  },
-  {
-    id: 'socializacion-efectiva',
-    title: 'Guía de socialización para perros de todas las edades',
-    excerpt: 'Nunca es tarde para que tu perro aprenda a relacionarse mejor con otros perros y personas.',
-    image: '/images/articles/dog-socialization.jpg',
-    category: 'Comportamiento',
-    readingTime: 7
-  }
-];
-
-// Datos simulados para razas destacadas
+// 🐕 RAZAS ALEATORIAS (simulando las de cani2.netlify.app)
 const featuredBreeds = [
-  {
-    id: 'labrador-retriever',
-    name: 'Labrador Retriever',
-    image: '/images/breeds/labrador-retriever.jpg',
-    type: 'perro',
-    description: 'Amigable, activo y excelente con familias'
-  },
-  {
-    id: 'bulldog-frances',
-    name: 'Bulldog Francés',
-    image: '/images/breeds/french-bulldog.jpg',
-    type: 'perro',
-    description: 'Compañero juguetón ideal para apartamentos'
-  },
-  {
-    id: 'maine-coon',
-    name: 'Maine Coon',
-    image: '/images/breeds/maine-coon.jpg',
-    type: 'gato',
-    description: 'El gigante amable del mundo felino'
-  },
   {
     id: 'golden-retriever',
     name: 'Golden Retriever',
-    image: '/images/breeds/golden-retriever.jpg',
+    image: '/images/breeds/golden_retriever.jpg',
     type: 'perro',
-    description: 'Leal, inteligente y perfecto para familias activas'
+    description: 'Leal, inteligente y perfecto para familias activas',
+    traits: { energy: 4, friendliness: 5, training: 5 }
+  },
+  {
+    id: 'border-collie',
+    name: 'Border Collie',
+    image: '/images/breeds/border_collie.jpg',
+    type: 'perro',
+    description: 'El más inteligente, ideal para dueños experimentados',
+    traits: { energy: 5, friendliness: 4, training: 5 }
+  },
+  {
+    id: 'beagle',
+    name: 'Beagle',
+    image: '/images/breeds/beagle.jpg',
+    type: 'perro',
+    description: 'Amigable, compacto y excelente con niños',
+    traits: { energy: 4, friendliness: 5, training: 3 }
+  },
+  {
+    id: 'boston-terrier',
+    name: 'Boston Terrier',
+    image: '/images/breeds/boston_terrier.jpg',
+    type: 'perro',
+    description: 'Compañero urbano inteligente y cariñoso',
+    traits: { energy: 3, friendliness: 4, training: 4 }
   }
 ];
 
-// Artículos recientes
-const recentArticles = [
-  {
-    id: 'adopcion-responsable',
-    title: 'Adopción responsable: guía completa para dar un nuevo hogar',
-    excerpt: 'Todo lo que debes saber antes, durante y después de adoptar una mascota.',
-    image: '/images/articles/adoption-guide.jpg',
-    category: 'Adopción',
-    date: '2023-09-18',
-    author: {
-      name: 'María Gómez',
-      avatar: '/images/authors/maria-gomez.jpg'
-    },
-    readingTime: 9
-  },
-  {
-    id: 'tecnicas-cepillado',
-    title: 'Técnicas de cepillado según el tipo de pelo de tu mascota',
-    excerpt: 'Cómo mantener un pelaje sano y radiante con los cuidados adecuados.',
-    image: '/images/articles/grooming-techniques.jpg',
-    category: 'Cuidados',
-    date: '2023-09-15',
-    author: {
-      name: 'Carlos Ruiz',
-      avatar: '/images/authors/carlos-ruiz.jpg'
-    },
-    readingTime: 6
-  },
-  {
-    id: 'juguetes-interactivos',
-    title: 'Los mejores juguetes interactivos para estimulación mental',
-    excerpt: 'Mantén a tu mascota mental y físicamente activa con estos juguetes recomendados.',
-    image: '/images/articles/interactive-toys.jpg',
-    category: 'Juegos',
-    date: '2023-09-12',
-    author: {
-      name: 'Laura Martín',
-      avatar: '/images/authors/laura-martin.jpg'
-    },
-    readingTime: 5
-  },
-  {
-    id: 'problemas-comportamiento',
-    title: 'Cómo identificar y corregir problemas de comportamiento en perros',
-    excerpt: 'Desde la agresividad hasta la ansiedad por separación, soluciones prácticas para comportamientos problemáticos.',
-    image: '/images/articles/dog-behavior.jpg',
-    category: 'Comportamiento',
-    date: '2023-09-10',
-    author: {
-      name: 'Carlos Ruiz',
-      avatar: '/images/authors/carlos-ruiz.jpg'
-    },
-    readingTime: 8
-  },
-  {
-    id: 'vacunas-esenciales',
-    title: 'Calendario de vacunación: lo que todo dueño responsable debe saber',
-    excerpt: 'Guía completa de las vacunas necesarias para perros y gatos según su edad y condiciones.',
-    image: '/images/articles/pet-vaccination.jpg',
-    category: 'Salud',
-    date: '2023-09-08',
-    author: {
-      name: 'María Gómez',
-      avatar: '/images/authors/maria-gomez.jpg'
-    },
-    readingTime: 7
-  }
-];
+// 📖 ARTÍCULOS RECIENTES POR CATEGORÍAS (de los artículos reales)
+const getArticlesByCategory = (category: string, limit = 2) => {
+  return allArticles
+    .filter((article: any) => 
+      article.data.category?.toLowerCase().includes(category.toLowerCase()) ||
+      article.data.tags?.some((tag: string) => tag.toLowerCase().includes(category.toLowerCase()))
+    )
+    .slice(0, limit);
+};
+
+const recentArticlesByCategory = {
+  comportamiento: getArticlesByCategory('comportamiento'),
+  entrenamiento: getArticlesByCategory('entrenamiento'),
+  cuidado: getArticlesByCategory('cuidado'),
+  nuevos_duenos: getArticlesByCategory('nuevos')
+};
+
+// Función para formatear fecha
+const formatDate = (date: string | Date) => {
+  return new Date(date).toLocaleDateString('es-ES', {day: 'numeric', month: 'short'});
+};
+
+// Función para obtener color de categoría
+const getCategoryColor = (category: string | undefined) => {
+  const cat = category?.toLowerCase() || '';
+  if (cat.includes('entrenamiento')) return 'bg-[#AFC2D5]/20 text-[#436280]';
+  if (cat.includes('comportamiento')) return 'bg-[#F6B89E]/20 text-[#B25E42]';
+  if (cat.includes('cuidado')) return 'bg-[#C8D6B9]/20 text-[#5A7251]';
+  if (cat.includes('nuevos')) return 'bg-purple-100 text-purple-800';
+  return 'bg-gray-100 text-gray-700';
+};
 ---
 
 <BaseLayout
@@ -182,14 +106,13 @@ const recentArticles = [
   description="Descubre consejos, guías, comparativas de razas y todo lo que necesitas para el bienestar de tus mascotas."
   bodyClass="homepage"
 >
-  {/* Hero + Artículos destacados lado a lado con diseño simétrico */}
+  {/* Hero + Artículos destacados REALES */}
   <section class="bg-gradient-to-br from-[#F4F4F4] to-[#E6ECF2] py-12">
     <Container fluid={true} size="xl">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-        {/* Hero Banner a la izquierda (ocupa 1/2 del espacio) */}
+        {/* Hero Banner */}
         <div class="relative overflow-hidden rounded-2xl shadow-2xl h-full">
-          {/* Imagen con overlay mejorado */}
-          <div class="relative h-full  min-h-[680px] overflow-hidden">
+          <div class="relative h-full min-h-[680px] overflow-hidden">
             <Image 
               src={heroData.image} 
               alt={heroData.title}
@@ -197,17 +120,13 @@ const recentArticles = [
               height={800}
               class="w-full h-full object-cover"
             />
-            {/* Overlay con gradiente más sofisticado */}
             <div class="absolute inset-0 bg-gradient-to-tr from-black via-black/40 to-transparent"></div>
             
-            {/* Contenido superpuesto */}
             <div class="absolute inset-0 flex flex-col justify-end p-8 z-10">
-              {/* Categoría y badges con mejor contraste */}
               <div class="flex flex-wrap gap-2 mb-4">
                 <span class="bg-[#AFC2D5] text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
                   {heroData.category}
                 </span>
-                
                 {heroData.badges.map((badge) => (
                   <span class="bg-white/80 text-[#2E2E2E] px-3 py-1 rounded-full text-xs font-medium">
                     {badge}
@@ -215,7 +134,7 @@ const recentArticles = [
                 ))}
               </div>
               
-              <h1 class="text-3xl md:text-4xl font-bold text-white mb-3 z-50 drop-shadow-md " style="color: white;">
+              <h1 class="text-3xl md:text-4xl font-bold text-white mb-3 drop-shadow-md">
                 {heroData.title}
               </h1>
               
@@ -228,7 +147,7 @@ const recentArticles = [
                   href={heroData.primaryCTA.url}
                   variant="primary" 
                   size="lg"
-                  class="bg-red-600 text-[#2E2E2E] hover:bg-gray-100 border border-white shadow-md"
+                  class="bg-white text-[#2E2E2E] hover:bg-gray-100 border border-white shadow-md"
                 >
                   {heroData.primaryCTA.text}
                 </Button>
@@ -246,74 +165,91 @@ const recentArticles = [
           </div>
         </div>
 
-        {/* Artículos destacados a la derecha (ocupa 1/2 del espacio) */}
+        {/* TODOS LOS ARTÍCULOS REALES QUE EXISTEN */}
         <div class="bg-white rounded-2xl shadow-2xl p-6 flex flex-col h-full">
-          <h2 class="text-xl font-bold text-[#2E2E2E] mb-6 pb-2 border-b border-gray-100">
-            Artículos destacados
-          </h2>
+          <div class="flex items-center justify-between mb-6 pb-2 border-b border-gray-100">
+            <h2 class="text-xl font-bold text-[#2E2E2E]">
+              {allArticles.length > 0 ? `Todos los artículos (${allArticles.length})` : 'Artículos destacados'}
+            </h2>
+            <Button href="/blog" variant="text" size="sm">Ver blog</Button>
+          </div>
           
-          <div class="flex flex-col space-y-4 flex-grow">
-            {/* Mostramos 5 artículos en lugar de 3 */}
-            {recentArticles.slice(0, 4).map((article, index) => (
-              <a href={`/articulos/${article.id}`} class="group">
-                <Card variant="default" padding="none">
-                  <div class="flex items-center">
-                    {/* Imagen del artículo con borde redondeado */}
-                    <div class="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden">
-                      <Image 
-                        src={article.image} 
-                        alt={article.title}
-                        width={96}
-                        height={96}
-                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    
-                    {/* Contenido del artículo con mejores estilos */}
-                    <div class="p-3 flex-1">
-                      {/* Categoría con mejor contraste y diseño */}
-                      <span class={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                        index % 3 === 0 ? 'bg-[#AFC2D5]/20 text-[#436280]' : 
-                        index % 3 === 1 ? 'bg-[#F6B89E]/20 text-[#B25E42]' : 
-                        'bg-[#C8D6B9]/20 text-[#5A7251]'
-                      }`}>
-                        {article.category}
-                      </span>
-                      
-                      {/* Título con mejor limitación de líneas */}
-                      <h3 class="text-sm font-bold text-[#2E2E2E] group-hover:text-[#AFC2D5] transition-colors mt-1 line-clamp-2">
-                        {article.title}
-                      </h3>
-                      
-                      {/* Información adicional */}
-                      <div class="flex items-center mt-1 text-xs text-gray-500">
-                        <span>{article.readingTime} min lectura</span>
-                        {article.date && (
-                          <>
-                            <span class="mx-2">•</span>
-                            <span>{new Date(article.date).toLocaleDateString('es-ES', {day: 'numeric', month: 'short'})}</span>
-                          </>
-                        )}
+          {allArticles.length > 0 ? (
+            <div class="flex-grow overflow-y-auto max-h-[600px] pr-2">
+              <div class="space-y-3">
+                {allArticles.map((article: any) => (
+                  <a href={`/articulos/${article.slug}`} class="group">
+                    <Card variant="default" padding="none" class="hover:shadow-md transition-shadow">
+                      <div class="flex items-center p-3">
+                        <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
+                          {article.data.image ? (
+                            <Image 
+                              src={article.data.image} 
+                              alt={article.data.title}
+                              width={64}
+                              height={64}
+                              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div class="w-full h-full flex items-center justify-center text-gray-400">
+                              📄
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div class="ml-3 flex-1 min-w-0">
+                          <div class="flex items-center gap-2 mb-1">
+                            <span class={`text-xs font-medium px-2 py-0.5 rounded-full ${getCategoryColor(article.data.category)}`}>
+                              {article.data.category || 'General'}
+                            </span>
+                            <span class="text-xs text-gray-400">•</span>
+                            <span class="text-xs text-gray-500">{article.data.readingTime || 5} min</span>
+                          </div>
+                          
+                          <h3 class="text-sm font-bold text-[#2E2E2E] group-hover:text-[#AFC2D5] transition-colors line-clamp-2 mb-1">
+                            {article.data.title}
+                          </h3>
+                          
+                          {article.data.description && (
+                            <p class="text-xs text-gray-600 line-clamp-2 mb-1">
+                              {article.data.description}
+                            </p>
+                          )}
+                          
+                          <div class="flex items-center text-xs text-gray-500">
+                            <span>{article.data.author || 'Editor'}</span>
+                            <span class="mx-1">•</span>
+                            <span>{formatDate(article.data.date)}</span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </Card>
-              </a>
-            ))}
-            
-            {/* Botón para ver todos los artículos */}
-            <div class="text-right pt-2 mt-auto">
-              <Button href="/blog" variant="primary" size="sm">
-                Ver todos los artículos
-              </Button>
+                    </Card>
+                  </a>
+                ))}
+              </div>
             </div>
+          ) : (
+            <div class="flex-grow flex items-center justify-center text-center py-12">
+              <div>
+                <p class="text-gray-500 mb-4">No hay artículos disponibles aún</p>
+                <Button href="/admin/" variant="primary" size="sm">
+                  Crear artículo
+                </Button>
+              </div>
+            </div>
+          )}
+          
+          <div class="text-center pt-4 mt-4 border-t border-gray-100">
+            <Button href="/blog" variant="primary" size="sm">
+              Ver todos en el blog
+            </Button>
           </div>
         </div>
       </div>
     </Container>
   </section>
   
-  {/* Razas destacadas */}
+  {/* Razas destacadas - ENLACE A CANI2.NETLIFY.APP */}
   <section class="py-12 bg-white">
     <Container>
       <div class="text-center mb-10">
@@ -325,7 +261,7 @@ const recentArticles = [
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {featuredBreeds.map(breed => (
-          <a href={`/razas/${breed.id}`} class="group">
+          <a href="/razas/" class="group" target="_blank" rel="noopener">
             <Card variant="default" padding="none">
               <div class="relative h-48">
                 <Image 
@@ -341,7 +277,18 @@ const recentArticles = [
               </div>
               <div class="p-4">
                 <h3 class="text-lg font-bold group-hover:text-[#AFC2D5] transition-colors">{breed.name}</h3>
-                <p class="text-sm text-gray-600 mt-1">{breed.description}</p>
+                <p class="text-sm text-gray-600 mt-1 mb-3">{breed.description}</p>
+                
+                <div class="space-y-1 text-xs">
+                  <div class="flex justify-between">
+                    <span>Energía:</span>
+                    <span>{'★'.repeat(breed.traits.energy)}{'☆'.repeat(5-breed.traits.energy)}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span>Amistad:</span>
+                    <span>{'★'.repeat(breed.traits.friendliness)}{'☆'.repeat(5-breed.traits.friendliness)}</span>
+                  </div>
+                </div>
               </div>
             </Card>
           </a>
@@ -349,55 +296,228 @@ const recentArticles = [
       </div>
       
       <div class="text-center mt-8">
-        <Button href="/comparador-razas" variant="primary" size="lg">
+        <a 
+          href="/razas/" 
+          target="_blank" 
+          rel="noopener"
+          class="inline-flex items-center px-6 py-3 bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white rounded-lg text-lg font-medium transition-colors duration-200"
+        >
           Ir al comparador de razas
+        </a>
+      </div>
         </Button>
       </div>
-    </section>
+    </Container>
+  </section>
     
-    
-    
-    {/* Artículos recientes */}
-    <section class="py-12 bg-white">
-      <Container>
-        <FeaturedSection
-          title="Artículos recientes"
-          description="Mantente al día con nuestro contenido más actualizado"
-          articles={recentArticles}
-          viewAllUrl="/blog"
-          layout="grid"
-          columns={3}
-        />
-      </Container>
-    </section>
-    
-    {/* Newsletter y CTA */}
-    <section class="py-16 bg-[#C8D6B9] bg-opacity-20">
-      <Container>
-        <div class="max-w-3xl mx-auto text-center">
-          <h2 class="text-3xl font-bold mb-4">Únete a nuestra comunidad</h2>
-          <p class="text-lg text-gray-700 mb-8">
-            Suscríbete para recibir consejos, artículos y novedades sobre el cuidado de mascotas directamente en tu correo.
-          </p>
+  {/* Artículos recientes POR SECCIONES - DINÁMICO */}
+  <section class="py-12 bg-[#FAFAFA]">
+    <Container>
+      <div class="text-center mb-12">
+        <h2 class="text-2xl font-bold mb-3">Artículos recientes por tema</h2>
+        <p class="text-gray-600">Mantente al día con el contenido más actualizado en cada área</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Comportamiento */}
+        <div class="bg-white rounded-xl p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-[#2E2E2E] flex items-center">
+              🧠 <span class="ml-2">Comportamiento</span>
+            </h3>
+            <Button href="/comportamiento" variant="text" size="sm">Ver más</Button>
+          </div>
           
-          <div class="max-w-md mx-auto">
-            <form class="flex flex-col md:flex-row gap-3">
-              <input
-                type="email"
-                placeholder="Tu correo electrónico"
-                class="flex-grow px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#AFC2D5] focus:border-transparent"
-                required
-              />
-              <Button type="submit" variant="primary" size="lg" class="whitespace-nowrap">
-                Suscribirme
-              </Button>
-            </form>
-            <p class="text-xs text-gray-500 mt-3">
-              Prometemos no hacer spam. Puedes darte de baja en cualquier momento.
-            </p>
+          <div class="space-y-4">
+            {recentArticlesByCategory.comportamiento.length > 0 ? (
+              recentArticlesByCategory.comportamiento.map((article: any) => (
+                <a href={`/articulos/${article.slug}`} class="flex group">
+                  <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
+                    {article.data.image ? (
+                      <Image 
+                        src={article.data.image} 
+                        alt={article.data.title}
+                        width={64}
+                        height={64}
+                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div class="w-full h-full flex items-center justify-center text-gray-400">🧠</div>
+                    )}
+                  </div>
+                  <div class="ml-3 flex-1">
+                    <h4 class="text-sm font-bold text-[#2E2E2E] group-hover:text-[#AFC2D5] transition-colors line-clamp-2">
+                      {article.data.title}
+                    </h4>
+                    <p class="text-xs text-gray-600 mt-1 line-clamp-2">{article.data.description || article.data.excerpt}</p>
+                    <div class="text-xs text-gray-500 mt-1">{article.data.readingTime || 5} min lectura</div>
+                  </div>
+                </a>
+              ))
+            ) : (
+              <p class="text-gray-500 text-sm text-center py-4">No hay artículos de comportamiento disponibles</p>
+            )}
           </div>
         </div>
-      </Container>
-    </section>
-  </Container>
+
+        {/* Entrenamiento */}
+        <div class="bg-white rounded-xl p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-[#2E2E2E] flex items-center">
+              🎓 <span class="ml-2">Entrenamiento</span>
+            </h3>
+            <Button href="/entrenamiento" variant="text" size="sm">Ver más</Button>
+          </div>
+          
+          <div class="space-y-4">
+            {recentArticlesByCategory.entrenamiento.length > 0 ? (
+              recentArticlesByCategory.entrenamiento.map((article: any) => (
+                <a href={`/articulos/${article.slug}`} class="flex group">
+                  <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
+                    {article.data.image ? (
+                      <Image 
+                        src={article.data.image} 
+                        alt={article.data.title}
+                        width={64}
+                        height={64}
+                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div class="w-full h-full flex items-center justify-center text-gray-400">🎓</div>
+                    )}
+                  </div>
+                  <div class="ml-3 flex-1">
+                    <h4 class="text-sm font-bold text-[#2E2E2E] group-hover:text-[#F6B89E] transition-colors line-clamp-2">
+                      {article.data.title}
+                    </h4>
+                    <p class="text-xs text-gray-600 mt-1 line-clamp-2">{article.data.description || article.data.excerpt}</p>
+                    <div class="text-xs text-gray-500 mt-1">{article.data.readingTime || 5} min lectura</div>
+                  </div>
+                </a>
+              ))
+            ) : (
+              <p class="text-gray-500 text-sm text-center py-4">No hay artículos de entrenamiento disponibles</p>
+            )}
+          </div>
+        </div>
+
+        {/* Cuidado */}
+        <div class="bg-white rounded-xl p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-[#2E2E2E] flex items-center">
+              💙 <span class="ml-2">Cuidado</span>
+            </h3>
+            <Button href="/cuidado" variant="text" size="sm">Ver más</Button>
+          </div>
+          
+          <div class="space-y-4">
+            {recentArticlesByCategory.cuidado.length > 0 ? (
+              recentArticlesByCategory.cuidado.map((article: any) => (
+                <a href={`/articulos/${article.slug}`} class="flex group">
+                  <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
+                    {article.data.image ? (
+                      <Image 
+                        src={article.data.image} 
+                        alt={article.data.title}
+                        width={64}
+                        height={64}
+                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div class="w-full h-full flex items-center justify-center text-gray-400">💙</div>
+                    )}
+                  </div>
+                  <div class="ml-3 flex-1">
+                    <h4 class="text-sm font-bold text-[#2E2E2E] group-hover:text-[#C8D6B9] transition-colors line-clamp-2">
+                      {article.data.title}
+                    </h4>
+                    <p class="text-xs text-gray-600 mt-1 line-clamp-2">{article.data.description || article.data.excerpt}</p>
+                    <div class="text-xs text-gray-500 mt-1">{article.data.readingTime || 5} min lectura</div>
+                  </div>
+                </a>
+              ))
+            ) : (
+              <p class="text-gray-500 text-sm text-center py-4">No hay artículos de cuidado disponibles</p>
+            )}
+          </div>
+        </div>
+
+        {/* Nuevos Dueños */}
+        <div class="bg-white rounded-xl p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-[#2E2E2E] flex items-center">
+              🆕 <span class="ml-2">Nuevos Dueños</span>
+            </h3>
+            <Button href="/nuevos-duenos" variant="text" size="sm">Ver más</Button>
+          </div>
+          
+          <div class="space-y-4">
+            {recentArticlesByCategory.nuevos_duenos.length > 0 ? (
+              recentArticlesByCategory.nuevos_duenos.map((article: any) => (
+                <a href={`/articulos/${article.slug}`} class="flex group">
+                  <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
+                    {article.data.image ? (
+                      <Image 
+                        src={article.data.image} 
+                        alt={article.data.title}
+                        width={64}
+                        height={64}
+                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div class="w-full h-full flex items-center justify-center text-gray-400">🆕</div>
+                    )}
+                  </div>
+                  <div class="ml-3 flex-1">
+                    <h4 class="text-sm font-bold text-[#2E2E2E] group-hover:text-[#5A7251] transition-colors line-clamp-2">
+                      {article.data.title}
+                    </h4>
+                    <p class="text-xs text-gray-600 mt-1 line-clamp-2">{article.data.description || article.data.excerpt}</p>
+                    <div class="text-xs text-gray-500 mt-1">{article.data.readingTime || 5} min lectura</div>
+                  </div>
+                </a>
+              ))
+            ) : (
+              <p class="text-gray-500 text-sm text-center py-4">No hay artículos para nuevos dueños disponibles</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-8">
+        <Button href="/blog" variant="primary" size="lg">
+          Ver todos los artículos
+        </Button>
+      </div>
+    </Container>
+  </section>
+
+  {/* Newsletter y CTA */}
+  <section class="py-16 bg-[#C8D6B9] bg-opacity-20">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-3xl font-bold mb-4">Únete a nuestra comunidad</h2>
+        <p class="text-lg text-gray-700 mb-8">
+          Suscríbete para recibir consejos, artículos y novedades sobre el cuidado de mascotas directamente en tu correo.
+        </p>
+        
+        <div class="max-w-md mx-auto">
+          <form class="flex flex-col md:flex-row gap-3">
+            <input
+              type="email"
+              placeholder="Tu correo electrónico"
+              class="flex-grow px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#AFC2D5] focus:border-transparent"
+              required
+            />
+            <Button type="submit" variant="primary" size="lg" class="whitespace-nowrap">
+              Suscribirme
+            </Button>
+          </form>
+          <p class="text-xs text-gray-500 mt-3">
+            Prometemos no hacer spam. Puedes darte de baja en cualquier momento.
+          </p>
+        </div>
+      </div>
+    </Container>
+  </section>
 </BaseLayout>
