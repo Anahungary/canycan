@@ -1,6 +1,6 @@
 ---
 name: "Clumber Spaniel"
-slug: "clumber-spaniel
+slug: "clumber-spaniel"
 description: "El Clumber Spaniel es un perro de caza tranquilo y afectuoso, conocido por su cuerpo robusto, su andar pausado y su naturaleza amigable. Ideal para familias que buscan un compañero leal y relajado."
 image: "/images/breeds/Clumber-Spaniel.webp"
 type: "dog"
