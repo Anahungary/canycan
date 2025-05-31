@@ -25,7 +25,6 @@ twitterImage: "/images/articulos/mi_perro_ladra.jpeg"
 twitterImageAlt: "Perro ladrando a otro perro durante un paseo en el barrio"
 twitterCard: "summary_large_image"
 # Para mejor compatibilidad, también puedes agregar:
-image: "/images/articulos/mi_perro_ladra.jpeg"
 ---
 
 # ¿Por qué mi perro ladra a otros perros? Soluciones fáciles para perros reactivos
