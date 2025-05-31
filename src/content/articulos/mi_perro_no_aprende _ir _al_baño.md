@@ -24,7 +24,6 @@ twitterImage: "/images/articulos/rio.webp"
 twitterImageAlt: "Perro ladrando a otro perro durante un paseo en el barrio"
 twitterCard: "summary_large_image"
 # Para mejor compatibilidad, también puedes agregar:
-image: "/images/articulos/rio.webp"
 ---
 
 # Mi perro de 7 meses aún no aprende a ir al baño: Mi experiencia y lo que realmente funciona
