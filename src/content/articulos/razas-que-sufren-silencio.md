@@ -15,6 +15,7 @@ seoTitle: "Razas Problemáticas: Perros y Gatos que Sufren por la Cría Extrema"
 seoDescription: "Análisis científico de razas con problemas genéticos graves. Bulldog, Pug, Scottish Fold y más. Por qué algunos países ya las prohiben y alternativas saludables."
 keywords: ["razas problemáticas", "síndrome braquicefálico", "scottish fold", "bulldog inglés", "pug", "bienestar animal", "cría responsable", "genética canina"]
 articleType: "Investigation"
+
 ---
 
 # Razas que Sufren en Silencio: Una Investigación sobre las Consecuencias de la Cría Irresponsable

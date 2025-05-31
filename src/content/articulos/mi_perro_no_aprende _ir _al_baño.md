@@ -15,6 +15,16 @@ seoTitle: "Cachorro 7 meses no aprende ir al baño - Historia real y soluciones"
 seoDescription: "Mi perro se tardó 8 meses en aprender a ir al baño. Te cuento mi experiencia real, mis errores y lo que finalmente funcionó para acabar con los accidentes."
 keywords: ["cachorro no aprende ir baño", "perro 7 meses orina casa", "entrenamiento baño tardío", "experiencia real cachorro"]
 articleType: "Article"
+ogImage: "/images/articulos/rio.webp"
+ogImageWidth: 1200
+ogImageHeight: 630
+ogImageAlt: "Perro ladrando a otro perro durante un paseo en el barrio"
+# Twitter Cards
+twitterImage: "/images/articulos/rio.webp"
+twitterImageAlt: "Perro ladrando a otro perro durante un paseo en el barrio"
+twitterCard: "summary_large_image"
+# Para mejor compatibilidad, también puedes agregar:
+image: "/images/articulos/rio.webp"
 ---
 
 # Mi perro de 7 meses aún no aprende a ir al baño: Mi experiencia y lo que realmente funciona
