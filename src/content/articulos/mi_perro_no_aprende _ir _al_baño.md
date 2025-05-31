@@ -7,7 +7,7 @@ authorBio: "Dueña de perro primeriza que pasó por la pesadilla del entrenamien
 tags: ["entrenamiento-bano", "cachorro", "problemas-comportamiento", "experiencia-real"]
 category: "entrenamiento"
 featured: true
-image: "/images/articulos/cachorro_entrenamiento_bano.jpeg"
+image: "/images/articulos/rio.webp"
 imageAlt: "Cachorro aprendiendo a ir al baño con empapadores"
 readingTime: 8
 status: "published"
@@ -23,7 +23,7 @@ articleType: "Article"
 
 **Si estás leyendo esto probablemente estés tan desesperada como yo estaba.** Te voy a contar mi historia real, mis errores, y lo que finalmente funcionó. Spoiler: mi perro se tardó casi 8 meses en aprender completamente.
 
-![Cachorro aprendiendo a ir al baño con empapadores](/images/articulos/cachorro_entrenamiento_bano.jpeg)
+![Cachorro aprendiendo a ir al baño con empapadores](/images/articulos/rio_cachorro.jpg)
 
 *La realidad del entrenamiento de baño: no siempre es tan fácil como parece*
 
