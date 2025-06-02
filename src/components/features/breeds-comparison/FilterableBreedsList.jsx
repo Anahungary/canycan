@@ -312,53 +312,95 @@ const FilterableBreedsList = ({
                   </div>
                 </div>
 
-                {/* Paginación */}
                 {getTotalPages() > 1 && (
-                  <div className="flex justify-center items-center space-x-4 py-6">
-                    <button
-                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                      disabled={currentPage === 1}
-                      className="flex items-center px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                      Anterior
-                    </button>
-                    
-                    <div className="flex items-center space-x-2">
-                      {Array.from({ length: Math.min(5, getTotalPages()) }, (_, i) => {
-                        const pageNum = Math.max(1, currentPage - 2) + i;
-                        if (pageNum > getTotalPages()) return null;
-                        
-                        return (
-                          <button
-                            key={pageNum}
-                            onClick={() => setCurrentPage(pageNum)}
-                            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                              currentPage === pageNum
-                                ? 'bg-[#AFC2D5] text-white'
-                                : 'text-gray-700 hover:bg-gray-100'
-                            }`}
-                          >
-                            {pageNum}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    
-                    <button
-                      onClick={() => setCurrentPage(prev => Math.min(getTotalPages(), prev + 1))}
-                      disabled={currentPage === getTotalPages()}
-                      className="flex items-center px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
-                    >
-                      Siguiente
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                )}
+  <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-4 py-6 px-4">
+    {/* Botón Anterior */}
+    <button
+      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+      disabled={currentPage === 1}
+      className="flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors min-w-[100px] justify-center"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+      </svg>
+      <span className="hidden xs:inline">Anterior</span>
+      <span className="xs:hidden">Ant</span>
+    </button>
+    
+    {/* Números de página - Versión responsiva */}
+    <div className="flex items-center space-x-1 overflow-x-auto max-w-full">
+      {(() => {
+        const totalPages = getTotalPages();
+        const current = currentPage;
+        let pages = [];
+        
+        if (totalPages <= 7) {
+          // Si hay 7 o menos páginas, mostrar todas
+          pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+        } else {
+          // Lógica para páginas con puntos suspensivos
+          if (current <= 4) {
+            // Cerca del inicio: 1 2 3 4 5 ... 10
+            pages = [1, 2, 3, 4, 5, '...', totalPages];
+          } else if (current >= totalPages - 3) {
+            // Cerca del final: 1 ... 6 7 8 9 10
+            pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+          } else {
+            // En el medio: 1 ... 4 5 6 ... 10
+            pages = [1, '...', current - 1, current, current + 1, '...', totalPages];
+          }
+        }
+        
+        return pages.map((page, index) => {
+          if (page === '...') {
+            return (
+              <span
+                key={`ellipsis-${index}`}
+                className="px-2 py-2 text-gray-500 text-sm"
+              >
+                ...
+              </span>
+            );
+          }
+          
+          return (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors min-w-[40px] flex-shrink-0 ${
+                currentPage === page
+                  ? 'bg-[#AFC2D5] text-white'
+                  : 'text-gray-700 hover:bg-gray-100 border border-gray-200'
+              }`}
+            >
+              {page}
+            </button>
+          );
+        });
+      })()}
+    </div>
+    
+    {/* Botón Siguiente */}
+    <button
+      onClick={() => setCurrentPage(prev => Math.min(getTotalPages(), prev + 1))}
+      disabled={currentPage === getTotalPages()}
+      className="flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors min-w-[100px] justify-center"
+    >
+      <span className="hidden xs:inline">Siguiente</span>
+      <span className="xs:hidden">Sig</span>
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
+  </div>
+)}
+
+{/* Información adicional en pantallas pequeñas */}
+{getTotalPages() > 1 && (
+  <div className="text-center text-sm text-gray-600 pb-4 sm:hidden">
+    Página {currentPage} de {getTotalPages()}
+  </div>
+)}
               </>
             ) : (
               <div className="bg-gray-50 rounded-lg p-8 text-center">
