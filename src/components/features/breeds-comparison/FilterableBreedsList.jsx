@@ -328,7 +328,18 @@ const FilterableBreedsList = ({
     </button>
     
     {/* Números de página - Versión responsiva */}
-    <div className="flex items-center space-x-1 overflow-x-auto max-w-full">
+    <div 
+      className="flex items-center space-x-1 overflow-x-auto max-w-full scroll-smooth"
+      ref={(el) => {
+        // Reset scroll position cuando cambie la página
+        if (el) {
+          setTimeout(() => {
+            el.scrollLeft = 0;
+          }, 0);
+        }
+      }}
+      key={`pagination-${currentPage}`} // Forzar re-render
+    >
       {(() => {
         const totalPages = getTotalPages();
         const current = currentPage;
