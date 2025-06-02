@@ -318,7 +318,7 @@ export const dogsNZ = [
 },{
   id: 'teckel-miniatura-pelo-liso',
   name: 'Teckel miniatura de pelo liso',
-  image: '/images/breeds/Teckel-miniatura-pelo-liso.webp',
+  image: '/images/breeds/teckel-miniatura-pelo-liso.webp',
   description: 'Pequeño, valiente y muy curioso. De pelaje corto y fácil mantenimiento, ideal para interiores.',
   size: 'tiny',
   energyLevel: 3,
@@ -618,7 +618,7 @@ export const dogsNZ = [
 {
   id: 'xoloitzcuintle-mediano',
   name: 'Xoloitzcuintle (mediano)',
-  image: '/images/breeds/Xoloitzcuintle-mediano.jpg',
+  image: '/images/breeds/Xoloitzcuintle-mediano.webp',
   description: 'Raza mexicana sin pelo, noble y tranquila. Ideal para alérgicos y hogares cálidos.',
   size: 'medium',
   energyLevel: 3,

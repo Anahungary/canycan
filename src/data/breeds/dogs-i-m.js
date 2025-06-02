@@ -654,6 +654,26 @@ export const dogsIM = [
   suitableFor: ['hunting', 'training']
 },
 {
+  id: 'sabueso-fino-colombiano',
+  name: 'Sabueso fino colombiano',
+  image: '/images/breeds/sabueso-fino-colombiano.jpg',
+  description: 'Resistente, versátil y con gran olfato. Raza colombiana usada para caza, ideal para entornos rurales y familias activas.',
+  size: 'medium',
+  energyLevel: 5,
+  friendliness: 4,
+  grooming: 2,
+  training: 3,
+  type: 'dog',
+  goodWith: ['children', 'dogs', 'seniors'],
+  hypoallergenic: false,
+  furLength: 'short',
+  noiseLevel: 4,
+  healthIssues: 2,
+  costLevel: 2,
+  independenceLevel: 3,
+  suitableFor: ['rural', 'active-owners']
+},
+{
   id: 'saluki',
   name: 'Saluki (galgo persa)',
   image: '/images/breeds/Saluki.webp',
