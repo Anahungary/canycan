@@ -141,11 +141,11 @@ const BreedsComparisonContainer = ({ breeds = [] }) => {
           </div>
         )}
 
-        <div className="relative h-48 overflow-hidden">
+        <div className="relative h-58 overflow-hidden">
           <img
             src={breed.image}
             alt={breed.name}
-            className="w-full h-full object-cover p-8 transition-transform duration-500 hover:scale-105"
+            className="w-full  wobject-cover p-8 transition-transform duration-500 hover:scale-105"
           />
           <div className={`absolute top-3 left-3 ${breed.type === 'dog' ? 'bg-[#AFC2D5]' : 'bg-[#F6B89E]'} text-white text-xs px-2 py-1 rounded-full`}>
             {breed.type === 'dog' ? 'Perro' : 'Gato'}
