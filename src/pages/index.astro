@@ -1,18 +1,15 @@
 ---
-// src/pages/index.astro - VERSIÓN QUE CARGA ARTÍCULOS REALES AUTOMÁTICAMENTE
+// src/pages/index.astro - VERSIÓN SIMPLE: SOLO VERDE Y AMARILLO
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Container from '../components/ui/Container.astro';
-import HeroBanner from '../components/home/HeroBanner.astro';
 import Button from '../components/ui/Button.astro';
-import Card from '../components/ui/Card.astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 
-// 🔍 CARGAR TODOS LOS ARTÍCULOS REALES QUE EXISTEN
+// 🔍 CARGAR SOLO ARTÍCULOS REALES DEL CMS
 let allArticles: any[] = [];
 try {
   allArticles = await getCollection('articulos');
-  // Filtrar solo artículos publicados y ordenar por fecha
   allArticles = allArticles
     .filter((article: any) => article.data.status === 'published')
     .sort((a: any, b: any) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
@@ -21,503 +18,334 @@ try {
   allArticles = [];
 }
 
-// Datos del hero principal
-const heroData = {
-  title: 'La guía definitiva para el bienestar de tu perro',
-  subtitle: 'Descubre todo lo que necesitas para mantener a tu mejor amigo feliz, sano y en perfecta forma',
-  image: '/images/hero/perro-hero2.jpg',
-  category: 'Guía Completa',
-  badges: ['Salud', 'Nutrición', 'Ejercicio'],
-  primaryCTA: { text: 'Leer artículo', url: '/articulos/guia-bienestar-perros' },
-  secondaryCTA: { text: 'Explorar razas', url: 'https://cani2.netlify.app/razas/' }
-};
+// 📰 USAR PRIMER ARTÍCULO REAL COMO HERO (SI EXISTE)
+const heroArticle = allArticles[0] || null;
 
-// 🐕 RAZAS ALEATORIAS (simulando las de cani2.netlify.app)
-const featuredBreeds = [
-  {
-    id: 'golden-retriever',
-    name: 'Golden Retriever',
-    image: '/images/breeds/golden_retriever.jpg',
-    type: 'perro',
-    description: 'Leal, inteligente y perfecto para familias activas',
-    traits: { energy: 4, friendliness: 5, training: 5 }
-  },
-  {
-    id: 'border-collie',
-    name: 'Border Collie',
-    image: '/images/breeds/border_collie.jpg',
-    type: 'perro',
-    description: 'El más inteligente, ideal para dueños experimentados',
-    traits: { energy: 5, friendliness: 4, training: 5 }
-  },
-  {
-    id: 'beagle',
-    name: 'Beagle',
-    image: '/images/breeds/beagle.jpg',
-    type: 'perro',
-    description: 'Amigable, compacto y excelente con niños',
-    traits: { energy: 4, friendliness: 5, training: 3 }
-  },
-  {
-    id: 'boston-terrier',
-    name: 'Boston Terrier',
-    image: '/images/breeds/boston_terrier.jpg',
-    type: 'perro',
-    description: 'Compañero urbano inteligente y cariñoso',
-    traits: { energy: 3, friendliness: 4, training: 4 }
-  }
-];
+// 📈 TRENDING: SIGUIENTES ARTÍCULOS REALES
+const trendingArticles = allArticles.slice(1, 5);
 
-// 📖 ARTÍCULOS RECIENTES POR CATEGORÍAS (de los artículos reales)
-const getArticlesByCategory = (category: string, limit = 2) => {
-  return allArticles
-    .filter((article: any) => 
-      article.data.category?.toLowerCase().includes(category.toLowerCase()) ||
-      article.data.tags?.some((tag: string) => tag.toLowerCase().includes(category.toLowerCase()))
-    )
-    .slice(0, limit);
-};
-
-const recentArticlesByCategory = {
-  comportamiento: getArticlesByCategory('comportamiento'),
-  entrenamiento: getArticlesByCategory('entrenamiento'),
-  cuidado: getArticlesByCategory('cuidado'),
-  nuevos_duenos: getArticlesByCategory('nuevos')
-};
-
-// Función para formatear fecha
+// Funciones utilitarias
 const formatDate = (date: string | Date) => {
-  return new Date(date).toLocaleDateString('es-ES', {day: 'numeric', month: 'short'});
+  return new Date(date).toLocaleDateString('es-ES', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
 };
 
-// Función para obtener color de categoría
-const getCategoryColor = (category: string | undefined) => {
-  const cat = category?.toLowerCase() || '';
-  if (cat.includes('entrenamiento')) return 'bg-[#AFC2D5]/20 text-[#436280]';
-  if (cat.includes('comportamiento')) return 'bg-[#F6B89E]/20 text-[#B25E42]';
-  if (cat.includes('cuidado')) return 'bg-[#C8D6B9]/20 text-[#5A7251]';
-  if (cat.includes('nuevos')) return 'bg-purple-100 text-purple-800';
-  return 'bg-gray-100 text-gray-700';
+const getTimeAgo = (date: string | Date) => {
+  const now = new Date();
+  const articleDate = new Date(date);
+  const diffInHours = Math.floor((now.getTime() - articleDate.getTime()) / (1000 * 60 * 60));
+  
+  if (diffInHours < 1) return 'Hace unos minutos';
+  if (diffInHours < 24) return `Hace ${diffInHours} horas`;
+  if (diffInHours < 48) return 'Ayer';
+  return formatDate(date);
+};
+
+// 🎨 SOLO VERDE Y AMARILLO PARA DESTACAR
+const getCategoryColor = (category: string) => {
+  const colors: Record<string, string> = {
+    'razas': 'bg-green-100 text-green-800 border-green-200',
+    'comportamiento': 'bg-gray-100 text-gray-800 border-gray-200',
+    'alimentación': 'bg-green-100 text-green-800 border-green-200',
+    'entrenamiento': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    'salud': 'bg-gray-100 text-gray-800 border-gray-200',
+    'cuidado': 'bg-gray-100 text-gray-800 border-gray-200',
+    'adopcion': 'bg-green-100 text-green-800 border-green-200',
+    'nuevos-duenos': 'bg-yellow-100 text-yellow-800 border-yellow-200'
+  };
+  return colors[category?.toLowerCase()] || 'bg-gray-100 text-gray-800 border-gray-200';
 };
 ---
 
 <BaseLayout
-  title="PataDigital - La revista especializada en perros y gatos"
-  description="Descubre consejos, guías, comparativas de razas y todo lo que necesitas para el bienestar de tus mascotas."
-  bodyClass="homepage"
+  title="PataDigital - La revista digital líder en mascotas"
+  description="Noticias, análisis y guías sobre perros y gatos. Encuentra tu raza ideal, aprende técnicas de entrenamiento y mantente al día con las últimas tendencias."
+  bodyClass="homepage-modern"
 >
-  {/* Hero + Artículos destacados REALES */}
-  <section class="bg-gradient-to-br from-[#F4F4F4] to-[#E6ECF2] py-12">
-    <Container fluid={true} size="xl">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-        {/* Hero Banner */}
-        <div class="relative overflow-hidden rounded-2xl shadow-2xl h-full">
-          <div class="relative h-full min-h-[680px] overflow-hidden">
-            <Image 
-              src={heroData.image} 
-              alt={heroData.title}
-              width={1200}
-              height={800}
-              class="w-full h-full object-cover"
-            />
-            <div class="absolute inset-0 bg-gradient-to-tr from-black via-black/40 to-transparent"></div>
-            
-            <div class="absolute inset-0 flex flex-col justify-end p-8 z-10">
-              <div class="flex flex-wrap gap-2 mb-4">
-                <span class="bg-[#AFC2D5] text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-                  {heroData.category}
-                </span>
-                {heroData.badges.map((badge) => (
-                  <span class="bg-white/80 text-[#2E2E2E] px-3 py-1 rounded-full text-xs font-medium">
-                    {badge}
-                  </span>
-                ))}
-              </div>
-              
-              <h1 class="text-3xl md:text-4xl font-bold text-white mb-3 drop-shadow-md">
-                {heroData.title}
-              </h1>
-              
-              <p class="text-lg text-white/90 mb-6 max-w-xl drop-shadow-sm line-clamp-3">
-                {heroData.subtitle}
-              </p>
-              
-              <div class="flex flex-wrap gap-3">
-                <Button 
-                  href={heroData.primaryCTA.url}
-                  variant="primary" 
-                  size="lg"
-                  class="bg-white text-[#2E2E2E] hover:bg-gray-100 border border-white shadow-md"
-                >
-                  {heroData.primaryCTA.text}
-                </Button>
+
+  {/* 🎯 HERO SECTION SIMPLE CON VERDE */}
+  {heroArticle && (
+    <section class="bg-gradient-to-br from-green-500 to-green-600">
+      <Container size="xl" class="py-12 lg:py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* ARTÍCULO PRINCIPAL */}
+          <div class="lg:col-span-8">
+            <a href={`/articulos/${heroArticle.slug}`} class="block">
+              <article class="relative overflow-hidden rounded-2xl bg-white shadow-lg border border-green-200">
+                <div class="aspect-[16/10] lg:aspect-[16/9]">
+                  <Image 
+                    src={heroArticle.data.image || '/images/articles/default.jpg'} 
+                    alt={heroArticle.data.title}
+                    width={1200}
+                    height={675}
+                    class="w-full h-full object-cover"
+                  />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                </div>
                 
-                <Button 
-                  href={heroData.secondaryCTA.url}
-                  variant="outline" 
-                  size="lg"
-                  class="border-white text-white hover:bg-white/20 shadow-md"
-                >
-                  {heroData.secondaryCTA.text}
-                </Button>
-              </div>
-            </div>
+                <div class="absolute bottom-0 left-0 right-0 p-6 lg:p-8">
+                  <div class="mb-3">
+                    <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold bg-yellow-400 text-yellow-900">
+                      {heroArticle.data.category}
+                    </span>
+                  </div>
+                  
+                  <h1 class="text-2xl lg:text-4xl font-bold leading-tight text-white mb-3">
+                    {heroArticle.data.title}
+                  </h1>
+                  
+                  <p class="text-gray-200 text-base lg:text-lg mb-4 line-clamp-2">
+                    {heroArticle.data.description}
+                  </p>
+                  
+                  <div class="flex items-center space-x-4 text-sm text-gray-300">
+                    <span class="font-medium">{heroArticle.data.author || 'Editor'}</span>
+                    <span>•</span>
+                    <span>{getTimeAgo(heroArticle.data.date)}</span>
+                    <span>•</span>
+                    <span>{heroArticle.data.readingTime || 5} min</span>
+                  </div>
+                </div>
+              </article>
+            </a>
           </div>
+
+         {trendingArticles.length > 0 && (
+ <div class="lg:col-span-4">
+   <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+     <div class="flex items-center justify-between mb-6">
+       <h2 class="text-lg font-bold text-gray-900">🐾 Artículos destacados</h2>
+       <a href="/blog" class="text-sm text-green-600 font-medium">Ver todo</a>
+     </div>
+     
+     <div class="space-y-4">
+       {trendingArticles.map((article, index) => (
+         <>
+           <a href={`/articulos/${article.slug}`} class="block">
+             <article class="flex items-start space-x-3 py-2 rounded-lg">
+               <div class={`flex-shrink-0 w-8 h-8 ${index === 0 ? 'bg-yellow-400' : 'bg-green-500'} rounded-lg flex items-center justify-center text-white font-bold text-sm`}>
+                 {index + 1}
+               </div>
+               <div class="flex-1 min-w-0">
+                 <h3 class="text-sm font-semibold text-gray-900 line-clamp-2">
+                   {article.data.title}
+                 </h3>
+                 <div class="flex items-center space-x-2 mt-1 text-xs text-gray-500">
+                   <span class={`px-2 py-0.5 rounded-full ${getCategoryColor(article.data.category)}`}>
+                     {article.data.category}
+                   </span>
+                   <span>•</span>
+                   <span>{article.data.readingTime || 5}m</span>
+                 </div>
+               </div>
+             </article>
+           </a>
+           
+           {index < trendingArticles.length - 1 && (
+  <div class="border-t border-gray-200 my-3"></div>
+)}
+         </>
+       ))}
+     </div>
+   </div>
+ </div>
+)}
+        </div>
+      </Container>
+    </section>
+  )}
+
+  {/* 📰 ARTÍCULOS RECIENTES */}
+  {allArticles.length > 0 && (
+    <section class="py-16 bg-white">
+      <Container size="xl">
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-3xl font-bold text-gray-900">Últimas noticias</h2>
+          <Button href="/blog" variant="outline" size="sm" class="border-green-500 text-green-600">
+            Ver todo
+          </Button>
         </div>
 
-        {/* TODOS LOS ARTÍCULOS REALES QUE EXISTEN */}
-        <div class="bg-white rounded-2xl shadow-2xl p-6 flex flex-col h-full">
-          <div class="flex items-center justify-between mb-6 pb-2 border-b border-gray-100">
-            <h2 class="text-xl font-bold text-[#2E2E2E]">
-              {allArticles.length > 0 ? `Todos los artículos (${allArticles.length})` : 'Artículos destacados'}
-            </h2>
-            <Button href="/blog" variant="text" size="sm">Ver blog</Button>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {allArticles.slice(heroArticle ? 1 : 0, 7).map((article) => (
+            <a href={`/articulos/${article.slug}`} class="block">
+              <article class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div class="aspect-[16/10] relative overflow-hidden">
+                  <Image 
+                    src={article.data.image || '/images/articles/default.jpg'} 
+                    alt={article.data.title}
+                    width={400}
+                    height={250}
+                    class="w-full h-full object-cover"
+                  />
+                  <div class="absolute top-3 left-3">
+                    <span class={`px-2 py-1 rounded-full text-xs font-semibold ${getCategoryColor(article.data.category)}`}>
+                      {article.data.category}
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="p-5">
+                  <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
+                    {article.data.title}
+                  </h3>
+                  
+                  <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                    {article.data.description}
+                  </p>
+                  
+                  <div class="flex items-center justify-between text-xs text-gray-500">
+                    <div class="flex items-center space-x-2">
+                      <span class="font-medium">{article.data.author || 'Editor'}</span>
+                      <span>•</span>
+                      <span>{getTimeAgo(article.data.date)}</span>
+                    </div>
+                    <span>{article.data.readingTime || 5}m</span>
+                  </div>
+                </div>
+              </article>
+            </a>
+          ))}
+        </div>
+      </Container>
+    </section>
+  )}
+
+  {/* 📝 MENSAJE SI NO HAY ARTÍCULOS */}
+  {allArticles.length === 0 && (
+    <section class="py-16 bg-green-50">
+      <Container size="lg">
+        <div class="text-center max-w-2xl mx-auto">
+          <div class="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="text-4xl">📝</span>
           </div>
-          
-          {allArticles.length > 0 ? (
-            <div class="flex-grow overflow-y-auto max-h-[600px] pr-2">
-              <div class="space-y-3">
-                {allArticles.map((article: any) => (
-                  <a href={`/articulos/${article.slug}`} class="group">
-                    <Card variant="default" padding="none" class="hover:shadow-md transition-shadow">
-                      <div class="flex items-center p-3">
-                        <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
-                          {article.data.image ? (
-                            <Image 
-                              src={article.data.image} 
-                              alt={article.data.title}
-                              width={64}
-                              height={64}
-                              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                          ) : (
-                            <div class="w-full h-full flex items-center justify-center text-gray-400">
-                              📄
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div class="ml-3 flex-1 min-w-0">
-                          <div class="flex items-center gap-2 mb-1">
-                            <span class={`text-xs font-medium px-2 py-0.5 rounded-full ${getCategoryColor(article.data.category)}`}>
-                              {article.data.category || 'General'}
-                            </span>
-                            <span class="text-xs text-gray-400">•</span>
-                            <span class="text-xs text-gray-500">{article.data.readingTime || 5} min</span>
-                          </div>
-                          
-                          <h3 class="text-sm font-bold text-[#2E2E2E] group-hover:text-[#AFC2D5] transition-colors line-clamp-2 mb-1">
-                            {article.data.title}
-                          </h3>
-                          
-                          {article.data.description && (
-                            <p class="text-xs text-gray-600 line-clamp-2 mb-1">
-                              {article.data.description}
-                            </p>
-                          )}
-                          
-                          <div class="flex items-center text-xs text-gray-500">
-                            <span>{article.data.author || 'Editor'}</span>
-                            <span class="mx-1">•</span>
-                            <span>{formatDate(article.data.date)}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  </a>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div class="flex-grow flex items-center justify-center text-center py-12">
-              <div>
-                <p class="text-gray-500 mb-4">No hay artículos disponibles aún</p>
-                <Button href="/admin/" variant="primary" size="sm">
-                  Crear artículo
-                </Button>
-              </div>
-            </div>
-          )}
-          
-          <div class="text-center pt-4 mt-4 border-t border-gray-100">
-            <Button href="/blog" variant="primary" size="sm">
-              Ver todos en el blog
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            ¡Bienvenido a PataDigital!
+          </h2>
+          <p class="text-gray-600 mb-8">
+            Aún no hay artículos publicados. Comienza creando contenido increíble para los amantes de las mascotas.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button href="/admin/" variant="primary" size="lg" class="bg-green-600 hover:bg-green-700 text-white">
+              📝 Crear primer artículo
+            </Button>
+            <Button href="/comparador-razas" variant="outline" size="lg" class="border-yellow-500 text-yellow-600">
+              🔍 Explorar comparador
             </Button>
           </div>
         </div>
-      </div>
-    </Container>
-  </section>
-  
-  {/* Razas destacadas - ENLACE A CANI2.NETLIFY.APP */}
-  <section class="py-12 bg-white">
-    <Container>
-      <div class="text-center mb-10">
-        <h2 class="text-2xl font-bold mb-3">Descubre la raza perfecta para ti</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">
-          Compara características, temperamento y necesidades de las diferentes razas para encontrar tu compañero ideal
-        </p>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {featuredBreeds.map(breed => (
-          <a href="/razas/" class="group" target="_blank" rel="noopener">
-            <Card variant="default" padding="none">
-              <div class="relative h-48">
-                <Image 
-                  src={breed.image} 
-                  alt={breed.name}
-                  width={400}
-                  height={300}
-                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div class="absolute top-3 left-3 bg-white/80 text-[#2E2E2E] text-xs uppercase tracking-wider px-2 py-1 rounded-full">
-                  {breed.type}
-                </div>
-              </div>
-              <div class="p-4">
-                <h3 class="text-lg font-bold group-hover:text-[#AFC2D5] transition-colors">{breed.name}</h3>
-                <p class="text-sm text-gray-600 mt-1 mb-3">{breed.description}</p>
-                
-                <div class="space-y-1 text-xs">
-                  <div class="flex justify-between">
-                    <span>Energía:</span>
-                    <span>{'★'.repeat(breed.traits.energy)}{'☆'.repeat(5-breed.traits.energy)}</span>
-                  </div>
-                  <div class="flex justify-between">
-                    <span>Amistad:</span>
-                    <span>{'★'.repeat(breed.traits.friendliness)}{'☆'.repeat(5-breed.traits.friendliness)}</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </a>
-        ))}
-      </div>
-      
-      <div class="text-center mt-8">
-        <a 
-          href="/razas/" 
-          target="_blank" 
-          rel="noopener"
-          class="inline-flex items-center px-6 py-3 bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white rounded-lg text-lg font-medium transition-colors duration-200"
-        >
-          Ir al comparador de razas
-        </a>
-      </div>
-        </Button>
-      </div>
-    </Container>
-  </section>
-    
-  {/* Artículos recientes POR SECCIONES - DINÁMICO */}
-  <section class="py-12 bg-[#FAFAFA]">
-    <Container>
-      <div class="text-center mb-12">
-        <h2 class="text-2xl font-bold mb-3">Artículos recientes por tema</h2>
-        <p class="text-gray-600">Mantente al día con el contenido más actualizado en cada área</p>
-      </div>
+      </Container>
+    </section>
+  )}
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Comportamiento */}
-        <div class="bg-white rounded-xl p-6 shadow-sm">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-bold text-[#2E2E2E] flex items-center">
-              🧠 <span class="ml-2">Comportamiento</span>
-            </h3>
-            <Button href="/comportamiento" variant="text" size="sm">Ver más</Button>
-          </div>
-          
-          <div class="space-y-4">
-            {recentArticlesByCategory.comportamiento.length > 0 ? (
-              recentArticlesByCategory.comportamiento.map((article: any) => (
-                <a href={`/articulos/${article.slug}`} class="flex group">
-                  <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
-                    {article.data.image ? (
-                      <Image 
-                        src={article.data.image} 
-                        alt={article.data.title}
-                        width={64}
-                        height={64}
-                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div class="w-full h-full flex items-center justify-center text-gray-400">🧠</div>
-                    )}
-                  </div>
-                  <div class="ml-3 flex-1">
-                    <h4 class="text-sm font-bold text-[#2E2E2E] group-hover:text-[#AFC2D5] transition-colors line-clamp-2">
-                      {article.data.title}
-                    </h4>
-                    <p class="text-xs text-gray-600 mt-1 line-clamp-2">{article.data.description || article.data.excerpt}</p>
-                    <div class="text-xs text-gray-500 mt-1">{article.data.readingTime || 5} min lectura</div>
-                  </div>
-                </a>
-              ))
-            ) : (
-              <p class="text-gray-500 text-sm text-center py-4">No hay artículos de comportamiento disponibles</p>
-            )}
+  {/* 🎯 SECCIÓN COMPARADOR CON VERDE PRINCIPAL */}
+  <section class="py-16 bg-gradient-to-br from-green-500 to-green-600 text-white">
+    <Container size="xl">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <h2 class="text-3xl lg:text-4xl font-bold mb-6">
+            Encuentra tu mascota ideal
+          </h2>
+          <p class="text-lg text-green-100 mb-8">
+            Nuestro algoritmo inteligente analiza tu estilo de vida y te recomienda 
+            las razas más compatibles. Muchas familias ya encontraron su compañero perfecto.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <Button href="/tu-raza-ideal" variant="secondary" size="lg" class="bg-yellow-400 text-yellow-900 hover:bg-yellow-500">
+              🎯 Test personalizado
+            </Button>
+            <Button href="/comparador-razas" variant="outline" size="lg" class="border-white text-white hover:bg-white/10">
+              🔍 Comparar razas
+            </Button>
           </div>
         </div>
-
-        {/* Entrenamiento */}
-        <div class="bg-white rounded-xl p-6 shadow-sm">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-bold text-[#2E2E2E] flex items-center">
-              🎓 <span class="ml-2">Entrenamiento</span>
-            </h3>
-            <Button href="/entrenamiento" variant="text" size="sm">Ver más</Button>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-white/10 rounded-xl p-6 text-center">
+            <div class="text-3xl font-bold mb-2">50+</div>
+            <div class="text-sm text-green-100">Razas analizadas</div>
           </div>
-          
-          <div class="space-y-4">
-            {recentArticlesByCategory.entrenamiento.length > 0 ? (
-              recentArticlesByCategory.entrenamiento.map((article: any) => (
-                <a href={`/articulos/${article.slug}`} class="flex group">
-                  <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
-                    {article.data.image ? (
-                      <Image 
-                        src={article.data.image} 
-                        alt={article.data.title}
-                        width={64}
-                        height={64}
-                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div class="w-full h-full flex items-center justify-center text-gray-400">🎓</div>
-                    )}
-                  </div>
-                  <div class="ml-3 flex-1">
-                    <h4 class="text-sm font-bold text-[#2E2E2E] group-hover:text-[#F6B89E] transition-colors line-clamp-2">
-                      {article.data.title}
-                    </h4>
-                    <p class="text-xs text-gray-600 mt-1 line-clamp-2">{article.data.description || article.data.excerpt}</p>
-                    <div class="text-xs text-gray-500 mt-1">{article.data.readingTime || 5} min lectura</div>
-                  </div>
-                </a>
-              ))
-            ) : (
-              <p class="text-gray-500 text-sm text-center py-4">No hay artículos de entrenamiento disponibles</p>
-            )}
+          <div class="bg-yellow-400/20 rounded-xl p-6 text-center">
+            <div class="text-3xl font-bold mb-2">95%</div>
+            <div class="text-sm text-green-100">Satisfacción</div>
+          </div>
+          <div class="col-span-2 bg-white/10 rounded-xl p-6 text-center">
+            <div class="text-sm text-green-100">Familias ayudadas</div>
           </div>
         </div>
-
-        {/* Cuidado */}
-        <div class="bg-white rounded-xl p-6 shadow-sm">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-bold text-[#2E2E2E] flex items-center">
-              💙 <span class="ml-2">Cuidado</span>
-            </h3>
-            <Button href="/cuidado" variant="text" size="sm">Ver más</Button>
-          </div>
-          
-          <div class="space-y-4">
-            {recentArticlesByCategory.cuidado.length > 0 ? (
-              recentArticlesByCategory.cuidado.map((article: any) => (
-                <a href={`/articulos/${article.slug}`} class="flex group">
-                  <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
-                    {article.data.image ? (
-                      <Image 
-                        src={article.data.image} 
-                        alt={article.data.title}
-                        width={64}
-                        height={64}
-                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div class="w-full h-full flex items-center justify-center text-gray-400">💙</div>
-                    )}
-                  </div>
-                  <div class="ml-3 flex-1">
-                    <h4 class="text-sm font-bold text-[#2E2E2E] group-hover:text-[#C8D6B9] transition-colors line-clamp-2">
-                      {article.data.title}
-                    </h4>
-                    <p class="text-xs text-gray-600 mt-1 line-clamp-2">{article.data.description || article.data.excerpt}</p>
-                    <div class="text-xs text-gray-500 mt-1">{article.data.readingTime || 5} min lectura</div>
-                  </div>
-                </a>
-              ))
-            ) : (
-              <p class="text-gray-500 text-sm text-center py-4">No hay artículos de cuidado disponibles</p>
-            )}
-          </div>
-        </div>
-
-        {/* Nuevos Dueños */}
-        <div class="bg-white rounded-xl p-6 shadow-sm">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-bold text-[#2E2E2E] flex items-center">
-              🆕 <span class="ml-2">Nuevos Dueños</span>
-            </h3>
-            <Button href="/nuevos-duenos" variant="text" size="sm">Ver más</Button>
-          </div>
-          
-          <div class="space-y-4">
-            {recentArticlesByCategory.nuevos_duenos.length > 0 ? (
-              recentArticlesByCategory.nuevos_duenos.map((article: any) => (
-                <a href={`/articulos/${article.slug}`} class="flex group">
-                  <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
-                    {article.data.image ? (
-                      <Image 
-                        src={article.data.image} 
-                        alt={article.data.title}
-                        width={64}
-                        height={64}
-                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div class="w-full h-full flex items-center justify-center text-gray-400">🆕</div>
-                    )}
-                  </div>
-                  <div class="ml-3 flex-1">
-                    <h4 class="text-sm font-bold text-[#2E2E2E] group-hover:text-[#5A7251] transition-colors line-clamp-2">
-                      {article.data.title}
-                    </h4>
-                    <p class="text-xs text-gray-600 mt-1 line-clamp-2">{article.data.description || article.data.excerpt}</p>
-                    <div class="text-xs text-gray-500 mt-1">{article.data.readingTime || 5} min lectura</div>
-                  </div>
-                </a>
-              ))
-            ) : (
-              <p class="text-gray-500 text-sm text-center py-4">No hay artículos para nuevos dueños disponibles</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div class="text-center mt-8">
-        <Button href="/blog" variant="primary" size="lg">
-          Ver todos los artículos
-        </Button>
       </div>
     </Container>
   </section>
 
-  {/* Newsletter y CTA */}
-  <section class="py-16 bg-[#C8D6B9] bg-opacity-20">
-    <Container>
+  {/* 📧 NEWSLETTER CON AMARILLO */}
+  <section class="py-16 bg-yellow-50">
+    <Container size="lg">
       <div class="max-w-3xl mx-auto text-center">
-        <h2 class="text-3xl font-bold mb-4">Únete a nuestra comunidad</h2>
-        <p class="text-lg text-gray-700 mb-8">
-          Suscríbete para recibir consejos, artículos y novedades sobre el cuidado de mascotas directamente en tu correo.
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">
+          Mantente al día con PataDigital
+        </h2>
+        <p class="text-lg text-gray-600 mb-8">
+          Recibe las últimas noticias, guías exclusivas y consejos de expertos 
+          directamente en tu inbox.
         </p>
         
-        <div class="max-w-md mx-auto">
-          <form class="flex flex-col md:flex-row gap-3">
+        <div class="bg-white rounded-2xl border-2 border-yellow-200 p-8 shadow-sm">
+          <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
             <input
               type="email"
-              placeholder="Tu correo electrónico"
-              class="flex-grow px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#AFC2D5] focus:border-transparent"
+              placeholder="tu@email.com"
+              class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent outline-none"
               required
             />
-            <Button type="submit" variant="primary" size="lg" class="whitespace-nowrap">
+            <Button type="submit" variant="primary" size="lg" class="bg-green-600 hover:bg-green-700 text-white">
               Suscribirme
             </Button>
           </form>
-          <p class="text-xs text-gray-500 mt-3">
-            Prometemos no hacer spam. Puedes darte de baja en cualquier momento.
-          </p>
         </div>
       </div>
     </Container>
   </section>
 </BaseLayout>
+
+<style>
+  /* 📐 ESTILOS SIMPLES Y LIMPIOS */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Transiciones suaves pero simples */
+  a, button {
+    transition: all 0.2s ease;
+  }
+
+  /* Focus accesible */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible {
+    outline: 2px solid #eab308;
+    outline-offset: 2px;
+  }
+
+  /* Scroll suave */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Mejoras responsive */
+  @media (max-width: 768px) {
+    .text-3xl {
+      font-size: 1.875rem;
+    }
+    
+    .text-4xl {
+      font-size: 2.25rem;
+    }
+  }
+</style>

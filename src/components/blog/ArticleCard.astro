@@ -55,7 +55,7 @@ const allCategories = category ? [category, ...categories] : categories;
 let cardClasses = 'group relative transition-all duration-300 ';
 let imageContainerClasses = 'relative overflow-hidden ';
 let contentClasses = '';
-let titleClasses = 'font-bold text-[#2E2E2E] group-hover:text-[#AFC2D5] transition-colors duration-200 ';
+let titleClasses = 'font-bold text-[#] group-hover:text-[#AFC2D5] transition-colors duration-200 ';
 
 if (variant === 'default') {
   cardClasses += featured ? 'border-2 border-[#AFC2D5] rounded-lg shadow-sm hover:shadow-md' : 'border border-gray-200 rounded-lg shadow-sm hover:shadow-md';
@@ -146,7 +146,7 @@ if (variant === 'default') {
             )}
             <div>
               <span class={`text-xs ${variant === 'overlay' ? 'text-gray-300' : 'text-gray-600'}`}>Por </span>
-              <span class={`text-xs font-medium ${variant === 'overlay' ? 'text-white' : 'text-[#2E2E2E]'}`}>{author.name}</span>
+              <span class={`text-xs font-medium ${variant === 'overlay' ? 'text-white' : 'text-[#]'}`}>{author.name}</span>
             </div>
           </div>
         )}
@@ -163,7 +163,7 @@ if (variant === 'default') {
     
     {variant === 'overlay' && (
       <div class="mt-3">
-        <Button href={`/articulos/${id}`} variant="primary" size="sm" class="bg-white text-[#2E2E2E] hover:bg-gray-100">
+        <Button href={`/articulos/${id}`} variant="primary" size="sm" class="bg-white text-[#] hover:bg-gray-100">
           Leer artículo
         </Button>
       </div>

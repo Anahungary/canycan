@@ -44,7 +44,7 @@ export const dogsIM = [
   image: '/images/breeds/Pastor-aleman.webp',
   description: 'Raza versátil, inteligente y leal. Ampliamente usada en trabajo policial, de rescate y como perro de servicio.',
   size: 'large',
-  energyLevel: 4,
+  energyLevel: 5,
   friendliness: 4,
   grooming: 3,
   training: 5,

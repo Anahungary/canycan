@@ -1,14 +1,9 @@
-// src/components/features/breeds-comparison/BreedsComparisonContainer.jsx - CÓDIGO COMPLETO ACTUALIZADO
-
+// src/components/features/breeds-comparison/BreedsComparisonContainer.jsx - VERSIÓN CON ANÁLISIS COMPARATIVO
 import React, { useState, useEffect } from 'react';
 import FilterableBreedsList from './FilterableBreedsList.jsx';
+import { ComparativeAnalysis } from './ComparativeAnalysis.jsx'; // El componente que acabamos de crear
 import { calculateCompatibilityScore, identifyStrengths, identifyChallenges } from '../../../utils/breedMatcher';
 
-/**
- * Componente principal del comparador de razas
- * @param {Object} props
- * @param {import('../../../types/breeds.js').BaseBreed[]} props.breeds - Array de razas
- */
 const BreedsComparisonContainer = ({ breeds = [] }) => {
   const [selectedBreeds, setSelectedBreeds] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
@@ -85,8 +80,8 @@ const BreedsComparisonContainer = ({ breeds = [] }) => {
 
   const canAddMore = selectedBreeds.length < 3;
 
-  // Calcular análisis de compatibilidad para cada raza seleccionada
-  const getAnalysisData = () => {
+  // Calcular análisis de compatibilidad para cada raza seleccionada (solo si hay perfil)
+  const getPersonalizedAnalysis = () => {
     if (!userProfile) return null;
 
     return selectedBreeds.map(breed => {
@@ -106,7 +101,7 @@ const BreedsComparisonContainer = ({ breeds = [] }) => {
     });
   };
 
-  const analysisData = getAnalysisData();
+  const personalizedAnalysis = getPersonalizedAnalysis();
 
   // 🎨 Renderizar tarjeta personalizada para el comparador
   const renderComparisonCard = (breed) => {
@@ -141,11 +136,14 @@ const BreedsComparisonContainer = ({ breeds = [] }) => {
           </div>
         )}
 
-        <div className="relative h-58 overflow-hidden">
+        <div className="relative h-48 overflow-hidden">
           <img
             src={breed.image}
             alt={breed.name}
-            className="w-full  wobject-cover p-8 transition-transform duration-500 hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            onError={(e) => {
+              e.target.src = '/images/breeds/default-pet.jpg'; // Imagen por defecto
+            }}
           />
           <div className={`absolute top-3 left-3 ${breed.type === 'dog' ? 'bg-[#AFC2D5]' : 'bg-[#F6B89E]'} text-white text-xs px-2 py-1 rounded-full`}>
             {breed.type === 'dog' ? 'Perro' : 'Gato'}
@@ -158,21 +156,40 @@ const BreedsComparisonContainer = ({ breeds = [] }) => {
           <div className="mb-4 space-y-3 text-sm">
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Tamaño:</span>
-              <span className="font-medium">
+              <span className="font-medium capitalize">
                 {breed.size === 'small' ? 'Pequeño' : breed.size === 'medium' ? 'Mediano' : 'Grande'}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Energía:</span>
-              <div className="flex">{renderRating(breed.energyLevel)}</div>
+              <div className="flex">{renderRating(breed.energyLevel || 0)}</div>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Sociabilidad:</span>
-              <div className="flex">{renderRating(breed.friendliness)}</div>
+              <div className="flex">{renderRating(breed.friendliness || 0)}</div>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Cuidados:</span>
-              <div className="flex">{renderRating(breed.grooming)}</div>
+              <div className="flex">{renderRating(breed.grooming || 0)}</div>
+            </div>
+
+            {/* Características adicionales */}
+            <div className="pt-2 border-t border-gray-200">
+              {breed.hypoallergenic && (
+                <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mr-2 mb-1">
+                  ✓ Hipoalergénica
+                </span>
+              )}
+              {breed.goodWith && breed.goodWith.includes('children') && (
+                <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-2 mb-1">
+                  👶 Bueno con niños
+                </span>
+              )}
+              {breed.goodWith && breed.goodWith.includes('apartments') && (
+                <span className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full mr-2 mb-1">
+                  🏠 Apto apartamento
+                </span>
+              )}
             </div>
           </div>
 
@@ -226,11 +243,11 @@ const BreedsComparisonContainer = ({ breeds = [] }) => {
         ) : (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
             <p className="text-blue-800">
-              💡 <strong>Consejo:</strong> Completa nuestro{' '}
+              💡 <strong>Consejo:</strong> El comparador funciona perfectamente sin test. Completa nuestro{' '}
               <a href="/tu-raza-ideal" className="underline font-medium hover:text-blue-600">
                 cuestionario "Tu Raza Ideal"
               </a>{' '}
-              para obtener recomendaciones personalizadas.
+              solo si quieres análisis de compatibilidad ultra-personalizado.
             </p>
           </div>
         )}
@@ -264,95 +281,39 @@ const BreedsComparisonContainer = ({ breeds = [] }) => {
         {(breed) => renderComparisonCard(breed)}
       </FilterableBreedsList>
 
-      {/* Panel de comparación mejorado */}
+      {/* ANÁLISIS COMPARATIVO DIRECTO - NUEVO */}
       {selectedBreeds.length >= 2 && (
-        <div className="mt-12">
-          <EnhancedComparisonResults 
-            selectedBreeds={selectedBreeds}
-            analysisData={analysisData}
-            userProfile={userProfile}
-            onRemoveBreed={removeBreed}
-            onClearComparison={clearComparison}
-            isAnalyzing={isAnalyzing}
-          />
-        </div>
+        <ComparativeAnalysis selectedBreeds={selectedBreeds} />
       )}
 
-      {/* Indicador de selección */}
-      {selectedBreeds.length > 0 && (
-        <div className="fixed bottom-4 right-4 bg-[#AFC2D5] text-white px-4 py-2 rounded-full shadow-lg z-40">
-          <span className="text-sm font-medium">
-            {selectedBreeds.length}/3 razas seleccionadas
-          </span>
-        </div>
-      )}
-    </div>
-  );
-};
+      {/* Panel de análisis personalizado (solo si hay perfil) */}
+      {personalizedAnalysis && selectedBreeds.length >= 2 && (
+        <div className="bg-white rounded-lg border border-gray-200 shadow-lg p-6">
+          <h3 className="text-xl font-bold text-[#2E2E2E] mb-6">
+            🎯 Análisis personalizado de compatibilidad
+          </h3>
 
-// Componente de resultados de comparación mejorado
-const EnhancedComparisonResults = ({ selectedBreeds, analysisData, userProfile, onRemoveBreed, onClearComparison, isAnalyzing }) => {
-  if (selectedBreeds.length < 2) return null;
-
-  return (
-    <div className="bg-white rounded-lg border border-gray-200 shadow-lg p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-bold text-[#2E2E2E]">
-          Comparación de {selectedBreeds.length} razas
-          {userProfile && " - Análisis personalizado"}
-        </h3>
-        <button
-          onClick={onClearComparison}
-          className="text-red-500 hover:text-red-700 text-sm font-medium"
-        >
-          Limpiar comparación
-        </button>
-      </div>
-
-      {isAnalyzing && (
-        <div className="flex items-center justify-center py-4">
-          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-[#AFC2D5] mr-2"></div>
-          <span className="text-gray-600">Analizando compatibilidad...</span>
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {selectedBreeds.map((breed) => {
-          const analysis = analysisData?.find(a => a.breed.id === breed.id);
-          
-          return (
-            <div key={breed.id} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {personalizedAnalysis.map((analysis) => (
+              <div key={analysis.breed.id} className="border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center mb-3">
                   <img 
-                    src={breed.image} 
-                    alt={breed.name}
+                    src={analysis.breed.image} 
+                    alt={analysis.breed.name}
                     className="w-12 h-12 rounded-full object-cover mr-3"
                   />
                   <div>
-                    <h4 className="font-bold text-lg">{breed.name}</h4>
-                    {analysis && (
-                      <div className={`text-sm font-medium ${
-                        analysis.isHighCompatibility ? 'text-green-600' :
-                        analysis.isModerateCompatibility ? 'text-yellow-600' :
-                        'text-red-600'
-                      }`}>
-                        Compatibilidad: {analysis.compatibilityScore}%
-                      </div>
-                    )}
+                    <h4 className="font-bold text-lg">{analysis.breed.name}</h4>
+                    <div className={`text-sm font-medium ${
+                      analysis.isHighCompatibility ? 'text-green-600' :
+                      analysis.isModerateCompatibility ? 'text-yellow-600' :
+                      'text-red-600'
+                    }`}>
+                      Compatibilidad: {analysis.compatibilityScore}%
+                    </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => onRemoveBreed(breed.id)}
-                  className="text-gray-400 hover:text-red-500 transition-colors"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </button>
-              </div>
 
-              {analysis && (
                 <div className="text-sm space-y-2">
                   {analysis.strengths.length > 0 && (
                     <div>
@@ -376,33 +337,76 @@ const EnhancedComparisonResults = ({ selectedBreeds, analysisData, userProfile, 
                     </div>
                   )}
                 </div>
-              )}
 
-              <div className="mt-3 pt-3 border-t border-gray-200">
-                <a 
-                  href={`/razas/${breed.id}`}
-                  className="text-sm font-medium text-[#AFC2D5] hover:underline"
-                >
-                  Ver perfil completo →
-                </a>
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <a 
+                    href={`/razas/${analysis.breed.id}`}
+                    className="text-sm font-medium text-[#AFC2D5] hover:underline"
+                  >
+                    Ver perfil completo →
+                  </a>
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-      {!userProfile && (
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-blue-800 text-sm">
-            <strong>💡 Tip:</strong> Completa nuestro{' '}
-            <a href="/tu-raza-ideal" className="underline font-medium">
-              cuestionario "Tu Raza Ideal"
-            </a>{' '}
-            para obtener análisis de compatibilidad personalizado.
-          </p>
+      {/* Indicador de selección flotante */}
+      {selectedBreeds.length > 0 && (
+        <div className="fixed bottom-4 right-4 bg-[#AFC2D5] text-white px-4 py-2 rounded-full shadow-lg z-40 flex items-center space-x-2">
+          <span className="text-sm font-medium">
+            {selectedBreeds.length}/3 razas seleccionadas
+          </span>
+          {selectedBreeds.length >= 2 && (
+            <button
+              onClick={clearComparison}
+              className="ml-2 text-white hover:text-gray-200 text-xs"
+              title="Limpiar selección"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Estado vacío mejorado */}
+      {selectedBreeds.length === 0 && (
+        <div className="text-center py-12 bg-gray-50 rounded-lg">
+          <div className="max-w-md mx-auto">
+            <div className="text-6xl mb-4">🔍</div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              Selecciona razas para comenzar
+            </h3>
+            <p className="text-gray-600 mb-4">
+              Usa los filtros arriba para encontrar razas que te interesen y haz clic en "Comparar" para comenzar el análisis.
+            </p>
+            <div className="text-sm text-gray-500">
+              💡 <strong>Tip:</strong> Puedes comparar hasta 3 razas a la vez
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Estado con una sola raza */}
+      {selectedBreeds.length === 1 && (
+        <div className="text-center py-8 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="max-w-md mx-auto">
+            <div className="text-4xl mb-3">👍</div>
+            <h3 className="text-lg font-bold text-blue-900 mb-2">
+              ¡{selectedBreeds[0].name} seleccionado!
+            </h3>
+            <p className="text-blue-700 mb-4">
+              Selecciona al menos una raza más para comenzar la comparación.
+            </p>
+            <div className="text-sm text-blue-600">
+              Puedes agregar hasta 2 razas más para una comparación completa.
+            </div>
+          </div>
         </div>
       )}
     </div>
   );
 };
+
 export default BreedsComparisonContainer;
