@@ -136,11 +136,11 @@ const BreedsComparisonContainer = ({ breeds = [] }) => {
           </div>
         )}
 
-        <div className="relative h-48 overflow-hidden">
+        <div className="relative h-38 overflow-hidden">
           <img
             src={breed.image}
             alt={breed.name}
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            className="w-full  object-cover transition-transform duration-500 hover:scale-105"
             onError={(e) => {
               e.target.src = '/images/breeds/default-pet.jpg'; // Imagen por defecto
             }}

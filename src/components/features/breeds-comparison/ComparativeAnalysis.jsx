@@ -516,7 +516,7 @@ const ComparativeAnalysis = ({ selectedBreeds }) => {
         )}
 
         {/* Resumen ejecutivo con diseño premium */}
-        <div className="bg-gradient-to-br from-[#AFC2D5] via-[#9DB3C6] to-[#8BA3B8] rounded-xl p-8 text-white relative overflow-hidden">
+        <div className="bg-gradient-to-br from-[#ced5dc] via-[#ecf2f6] to-[#8BA3B8] rounded-xl p-8 text-white relative overflow-hidden">
           {/* Decoración de fondo */}
           <div className="absolute inset-0 bg-black bg-opacity-10"></div>
           <div className="absolute -top-4 -right-4 w-24 h-24 bg-white bg-opacity-10 rounded-full"></div>
