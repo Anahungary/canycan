@@ -38,7 +38,7 @@ const typeColor = getTypeColor(breed.type);
   description={breed.description || `Todo sobre ${breed.name}: características, cuidados y temperamento`}
 >
   <!-- Hero Simple y Elegante -->
-  <section class={`bg-gradient-to-br ${typeColor === 'blue' ? 'from-blue-200 to-indigo-100' : 'from-blue-200 to-indigo-100'} py-16`}>
+  <section class={`bg-gradient-to-br ${typeColor === 'blue' ? 'from-[#FAFAFA] to-indigo-100' : 'from-blue-200 to-indigo-100'} py-16`}>
     <Container>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         
@@ -67,19 +67,19 @@ const typeColor = getTypeColor(breed.type);
           
           <!-- Características principales -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white bg-opacity-20 rounded-xl p-4 text-center">
+            <div class="bg-indigo-900  text-white rounded-xl p-4 text-center">
               <div class="text-2xl font-bold mb-1">{breed.energyLevel}/5</div>
               <div class="text-sm opacity-90">Energía</div>
             </div>
-            <div class="bg-white bg-opacity-20 rounded-xl p-4 text-center">
+            <div class="bg-indigo-900  text-white rounded-xl p-4 text-center">
               <div class="text-2xl font-bold mb-1">{breed.friendliness}/5</div>
               <div class="text-sm opacity-90">Amigable</div>
             </div>
-            <div class="bg-white bg-opacity-20 rounded-xl p-4 text-center">
+            <div class="bg-indigo-900  text-white  rounded-xl p-4 text-center">
               <div class="text-2xl font-bold mb-1">{breed.grooming}/5</div>
               <div class="text-sm opacity-90">Cuidados</div>
             </div>
-            <div class="bg-white bg-opacity-20 rounded-xl p-4 text-center">
+            <div class="bg-indigo-900  text-white  rounded-xl p-4 text-center">
               <div class="text-2xl font-bold mb-1">{breed.training}/5</div>
               <div class="text-sm opacity-90">Entrena.</div>
             </div>
@@ -269,7 +269,7 @@ const typeColor = getTypeColor(breed.type);
           <Button 
             href="/comparador-razas" 
             variant="secondary"
-            class="bg-indigo-50  text-indigo-900 hover:bg-gray-100 font-semibold px-8 py-3"
+            class="bg-indigo-950  text-indigo-900 hover:bg-gray-100 font-semibold px-8 py-3"
           >
             Comparar razas
           </Button>
