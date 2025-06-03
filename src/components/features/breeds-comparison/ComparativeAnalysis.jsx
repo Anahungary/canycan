@@ -415,7 +415,7 @@ const ComparativeAnalysis = ({ selectedBreeds }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-xl p-8 mt-8 overflow-hidden relative">
+    <div className="bg-white rounded-xl   overflow-hidden relative">
       {/* Fondo decorativo */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-purple-50/20 to-pink-50/30"></div>
       
@@ -446,7 +446,7 @@ const ComparativeAnalysis = ({ selectedBreeds }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {analysis.insights.map((insight, index) => (
                 <div key={index} className="group hover:scale-105 transition-all duration-300">
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 rounded-xl shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-start space-x-4">
                       <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
                         <span className="text-xl">{insight.icon}</span>

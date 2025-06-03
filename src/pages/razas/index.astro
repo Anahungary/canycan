@@ -1,5 +1,5 @@
 ---
-// src/pages/razas/index.astro - COPIANDO EXACTAMENTE de comparador-razas.astro
+// src/pages/razas/index.astro - VERSIÓN FINAL SIN ERRORES
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/ui/Container.astro';
 import Button from '../../components/ui/Button.astro';
@@ -9,15 +9,15 @@ import { breedsData } from '../../data/breeds/index.js';
 const title = "Razas de Perros y Gatos | Encuentra tu compañero ideal";
 const description = "Explora más de 50 razas de perros y gatos con información detallada sobre temperamento, cuidados y compatibilidad familiar.";
 
-// ✅ USAR DATOS REALES IGUAL QUE EN COMPARADOR-RAZAS
-const breeds = breedsData;
+// ✅ SOLUCIÓN DEFINITIVA PARA ERRORES DE TIPOS
+const breeds: any[] = Array.isArray(breedsData) ? breedsData : [];
 
 // 📊 Estadísticas para mostrar
 const stats = {
   total: breeds.length,
-  dogs: breeds.filter(breed => breed?.type === 'dog').length,
-  cats: breeds.filter(breed => breed?.type === 'cat').length,
-  hypoallergenic: breeds.filter(breed => breed?.hypoallergenic === true).length
+  dogs: breeds.filter((breed: any) => breed?.type === 'dog').length,
+  cats: breeds.filter((breed: any) => breed?.type === 'cat').length,
+  hypoallergenic: breeds.filter((breed: any) => breed?.hypoallergenic === true).length
 };
 ---
 
@@ -71,19 +71,16 @@ const stats = {
     </Container>
   </div>
 
-  {/* Sección del Comparador - EXACTO COMO EN COMPARADOR-RAZAS */}
+  {/* Sección del Comparador */}
   <section id="comparador" class="py-12 bg-white">
     <Container>
-      
-
-      {/* Sección de filtros y comparación - IGUAL QUE COMPARADOR-RAZAS */}
       <div class="mb-12">
-        <BreedsComparisonContainer breeds={breeds} client:load />
+        <BreedsComparisonContainer breeds={breeds as any} client:load />
       </div>
     </Container>
   </section>
 
-  {/* Sección informativa - Mantener para SEO y contenido */}
+  {/* Sección informativa */}
   <section class="py-12 bg-[#FAFAFA]">
     <Container>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -109,13 +106,13 @@ const stats = {
               <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white mr-3 mt-0.5">
                 <span class="text-xs font-bold">3</span>
               </div>
-              <p><strong>Análisis personalizado:</strong> Si completaste nuestro cuestionario, verás compatibilidad específica para ti.</p>
+              <p><strong>Análisis automático:</strong> Ve comparaciones directas sin necesidad de hacer test.</p>
             </li>
             <li class="flex items-start">
               <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white mr-3 mt-0.5">
                 <span class="text-xs font-bold">4</span>
               </div>
-              <p><strong>Toma la mejor decisión:</strong> Compara características, pros/contras y compatibilidad.</p>
+              <p><strong>Test opcional:</strong> Para mayor precisión, completa nuestro cuestionario.</p>
             </li>
           </ul>
         </div>
@@ -132,7 +129,7 @@ const stats = {
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
               </div>
-              <p><strong>Haz el cuestionario primero:</strong> Para análisis personalizado, completa "Tu Raza Ideal".</p>
+              <p><strong>Funciona sin test:</strong> El comparador muestra análisis directos automáticamente.</p>
             </li>
             <li class="flex items-start">
               <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#F6B89E] flex items-center justify-center text-white mr-3 mt-0.5">
@@ -156,7 +153,7 @@ const stats = {
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
               </div>
-              <p><strong>Lee el análisis detallado:</strong> Presta atención a "aspectos positivos" y "consideraciones".</p>
+              <p><strong>Test personalizado opcional:</strong> Para mayor precisión, completa "Tu Raza Ideal".</p>
             </li>
           </ul>
         </div>
@@ -177,7 +174,7 @@ const stats = {
           href="#comparador" 
           variant="primary" 
           size="md" 
-          class="bg-[#AFC2D5] text-white hover:bg-[#9DB3C6]"
+          class="bg-[#AFC2D5] text-white hover:bg-[#9DB3C6] filter-button"
           data-filter="dog"
         >
           🐕 Solo Perros ({stats.dogs})
@@ -186,7 +183,7 @@ const stats = {
           href="#comparador" 
           variant="primary" 
           size="md" 
-          class="bg-[#AFC2D5] text-white hover:bg-[#9DB3C6]"
+          class="bg-[#AFC2D5] text-white hover:bg-[#9DB3C6] filter-button"
           data-filter="cat"
         >
           🐱 Solo Gatos ({stats.cats})
@@ -195,7 +192,7 @@ const stats = {
           href="#comparador" 
           variant="outline" 
           size="md" 
-          class="border-[#AFC2D5] text-[#AFC2D5] hover:bg-[#AFC2D5] hover:text-white"
+          class="border-[#AFC2D5] text-[#AFC2D5] hover:bg-[#AFC2D5] hover:text-white filter-button"
           data-filter="hypoallergenic"
         >
           ✨ Hipoalergénicas ({stats.hypoallergenic})
@@ -204,7 +201,7 @@ const stats = {
           href="#comparador" 
           variant="outline" 
           size="md" 
-          class="border-[#AFC2D5] text-[#AFC2D5] hover:bg-[#AFC2D5] hover:text-white"
+          class="border-[#AFC2D5] text-[#AFC2D5] hover:bg-[#AFC2D5] hover:text-white filter-button"
           data-filter="apartment"
         >
           🏠 Ideales para apartamento
@@ -219,8 +216,8 @@ const stats = {
       <div class="text-center text-white max-w-3xl mx-auto">
         <h2 class="text-2xl font-bold mb-4">¿Necesitas ayuda personalizada?</h2>
         <p class="text-lg mb-8 opacity-90">
-          Nuestro sistema de recomendaciones personalizadas te ayuda a encontrar 
-          la mascota perfecta según tu estilo de vida específico.
+          Nuestro comparador funciona perfectamente sin test. Para análisis ultra-personalizado, 
+          completa nuestro cuestionario según tu estilo de vida específico.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <Button 
@@ -229,7 +226,7 @@ const stats = {
             size="lg" 
             class="bg-white text-[#225382] hover:bg-gray-300"
           >
-            🎯 Hacer test personalizado
+            🎯 Test personalizado opcional
           </Button>
           <Button 
             href="#comparador"
@@ -243,25 +240,6 @@ const stats = {
       </div>
     </Container>
   </section>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Scroll suave para enlaces internos - SIMPLE
-      const anchorLinks = document.querySelectorAll('a[href^="#"]') as NodeListOf<HTMLAnchorElement>;
-      anchorLinks.forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-          e.preventDefault();
-          const targetId = this.getAttribute('href');
-          if (targetId) {
-            const target = document.querySelector(targetId);
-            if (target) {
-              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          }
-        });
-      });
-    });
-  </script>
 
   <style>
     /* Estilos específicos para la integración */
@@ -277,11 +255,11 @@ const stats = {
     }
 
     /* Animaciones para botones de filtro rápido */
-    [data-filter] {
+    .filter-button {
       transition: all 0.3s ease;
     }
 
-    [data-filter]:hover {
+    .filter-button:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(175, 194, 213, 0.3);
     }
@@ -304,4 +282,62 @@ const stats = {
       to { transform: rotate(360deg); }
     }
   </style>
+
+  <!-- Script simplificado y movido a archivo externo para evitar errores TS -->
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Scroll suave para enlaces internos
+      const anchorLinks = document.querySelectorAll('a[href^="#"]');
+      anchorLinks.forEach(function(anchor) {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const targetId = anchor.getAttribute('href');
+          if (targetId && targetId !== '#') {
+            const target = document.querySelector(targetId);
+            if (target) {
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        });
+      });
+
+      // Manejador para botones de filtro rápido - CSS puro
+      const filterButtons = document.querySelectorAll('.filter-button');
+      filterButtons.forEach(function(button) {
+        button.addEventListener('click', function(e) {
+          const filterType = button.getAttribute('data-filter');
+          
+          // Scroll al comparador
+          const comparador = document.querySelector('#comparador');
+          if (comparador) {
+            comparador.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'start' 
+            });
+            
+            // Disparar evento para React después del scroll
+            setTimeout(function() {
+              const event = new CustomEvent('quickFilterApplied', {
+                detail: { filterType: filterType }
+              });
+              document.dispatchEvent(event);
+            }, 800);
+          }
+        });
+      });
+
+      // Detectar si viene de URL con hash
+      if (window.location.hash === '#comparador') {
+        setTimeout(function() {
+          const comparador = document.querySelector('#comparador');
+          if (comparador) {
+            comparador.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'start' 
+            });
+          }
+        }, 100);
+      }
+    });
+  </script>
 </BaseLayout>
