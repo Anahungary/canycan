@@ -1,5 +1,5 @@
 ---
-// CategoryLayout.astro - Layout para páginas de categoría
+// CategoryLayout.astro - Layout para páginas de categoría con estilos corregidos
 import BaseLayout from './BaseLayout.astro';
 import Container from '../components/ui/Container.astro';
 import ArticleList from '../components/blog/ArticleList.astro';
@@ -35,20 +35,25 @@ const {
   description={description}
   ogImage={image}
 >
-  {/* Hero */}
-  <div class="bg-gradient-to-br from-[#AFC2D5] to-[#C8D6B9] text-white">
+  {/* Hero con gradiente verde */}
+  <div class="bg-gradient-to-br from-green-500 to-green-600 text-white relative overflow-hidden">
+    {/* Decoración de fondo */}
+    <div class="absolute inset-0 bg-black bg-opacity-10"></div>
+    <div class="absolute -top-4 -right-4 w-24 h-24 bg-white bg-opacity-10 rounded-full"></div>
+    <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-white bg-opacity-5 rounded-full"></div>
+    
     <Container>
-      <div class="py-16 md:py-24">
-        <div class="max-w-2xl mx-auto text-center">
-          <h1 class="text-3xl md:text-4xl font-bold mb-4">{title}</h1>
-          <p class="text-lg md:text-xl opacity-90 mb-6">{description}</p>
+      <div class="py-16 md:py-24 relative z-10">
+        <div class="max-w-3xl mx-auto text-center">
+          <h1 class="text-3xl md:text-5xl font-bold mb-4 text-white">{title}</h1>
+          <p class="text-lg md:text-xl opacity-90 mb-8 leading-relaxed">{description}</p>
           
           {subcategories.length > 0 && (
-            <div class="flex flex-wrap justify-center gap-2 mt-6">
+            <div class="flex flex-wrap justify-center gap-3 mt-8">
               {subcategories.map(subcategory => (
                 <a 
                   href={`/${category}/${subcategory.toLowerCase().replace(/\s+/g, '-')}`}
-                  class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200"
+                  class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 backdrop-blur-sm border border-white border-opacity-20"
                 >
                   {subcategory}
                 </a>
@@ -67,40 +72,57 @@ const {
         {/* Artículo destacado si existe */}
         {featuredArticle && (
           <div class="mb-12">
-            <h2 class="text-2xl font-bold mb-6">Artículo destacado</h2>
-            <Card variant="default" padding="none" class="overflow-hidden">
-              <div class="relative h-80">
-                <Image 
-                  src={featuredArticle.image} 
-                  alt={featuredArticle.title}
-                  width={1200}
-                  height={600}
-                  class="w-full h-full object-cover"
-                />
-                <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-70"></div>
-                <div class="absolute bottom-0 left-0 p-6 text-white">
-                  <div class="flex flex-wrap gap-2 mb-3">
-                    {featuredArticle.categories.map((cat: string) => (
-                      <Badge variant="info" size="sm">{cat}</Badge>
-                    ))}
+            <h2 class="text-2xl font-bold mb-6 text-[#2E2E2E] flex items-center">
+              <span class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
+                ⭐
+              </span>
+              Artículo destacado
+            </h2>
+            <div class="group transition-all duration-300">
+              <div class="bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-xl overflow-hidden transition-all duration-300">
+                <div class="relative h-80 md:h-96">
+                  <Image 
+                    src={featuredArticle.image} 
+                    alt={featuredArticle.title}
+                    width={1200}
+                    height={600}
+                    class="w-full h-full object-cover"
+                  />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent"></div>
+                  <div class="absolute bottom-0 left-0 p-6 text-white">
+                    <div class="flex flex-wrap gap-2 mb-3">
+                      {featuredArticle.categories.map((cat: string) => (
+                        <span class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                          {cat}
+                        </span>
+                      ))}
+                    </div>
+                    <h3 class="text-2xl md:text-3xl font-bold mb-3 leading-tight">{featuredArticle.title}</h3>
+                    <p class="mb-4 opacity-90 leading-relaxed">{featuredArticle.excerpt}</p>
+                    <a 
+                      href={`/articulos/${featuredArticle.id}`}
+                      class="inline-flex items-center bg-white text-[#2E2E2E] hover:bg-gray-100 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 shadow-lg"
+                    >
+                      Leer artículo
+                      <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                      </svg>
+                    </a>
                   </div>
-                  <h3 class="text-2xl font-bold mb-2">{featuredArticle.title}</h3>
-                  <p class="mb-4">{featuredArticle.excerpt}</p>
-                  <a 
-                    href={`/articulos/${featuredArticle.id}`}
-                    class="bg-white text-[#2E2E2E] hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium inline-block"
-                  >
-                    Leer artículo
-                  </a>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
         )}
         
         {/* Lista de artículos */}
         <div>
-          <h2 class="text-2xl font-bold mb-6">Artículos recientes</h2>
+          <h2 class="text-2xl font-bold mb-6 text-[#2E2E2E] flex items-center">
+            <span class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
+              📚
+            </span>
+            Artículos recientes
+          </h2>
           <ArticleList 
             articles={articles} 
             layout="grid" 
@@ -114,114 +136,164 @@ const {
         <div class="sticky top-[140px] space-y-8">
           {/* Subcategorías */}
           {subcategories.length > 0 && (
-            <Card variant="default" padding="md">
-              <h3 class="text-lg font-bold mb-4">Explorar {title}</h3>
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-6">
+              <h3 class="text-lg font-bold mb-4 text-[#2E2E2E] flex items-center">
+                <span class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-2">
+                  🔍
+                </span>
+                Explorar {title}
+              </h3>
               <div class="space-y-2">
                 {subcategories.map(subcategory => (
                   <a 
                     href={`/${category}/${subcategory.toLowerCase().replace(/\s+/g, '-')}`}
-                    class="block py-2 px-3 rounded-md hover:bg-gray-100 transition-colors duration-200"
+                    class="group flex items-center py-3 px-4 rounded-lg hover:bg-green-500 hover:text-white transition-all duration-300 border border-transparent hover:border-green-500"
                   >
+                    <span class="w-2 h-2 bg-green-300 rounded-full mr-3 group-hover:bg-white transition-colors"></span>
                     {subcategory}
+                    <svg class="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
                   </a>
                 ))}
               </div>
-            </Card>
+            </div>
           )}
           
           {/* Etiquetas populares */}
           {popularTags.length > 0 && (
-            <Card variant="default" padding="md">
-              <h3 class="text-lg font-bold mb-4">Temas populares</h3>
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow p-6">
+              <h3 class="text-lg font-bold mb-4 text-[#2E2E2E] flex items-center">
+                <span class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-2">
+                  🏷️
+                </span>
+                Temas populares
+              </h3>
               <div class="flex flex-wrap gap-2">
                 {popularTags.map(tag => (
                   <a 
                     href={`/blog/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm"
+                    class="bg-gray-100 hover:bg-green-500 hover:text-white text-[#2E2E2E] px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 border border-gray-200 hover:border-green-500"
                   >
                     {tag}
                   </a>
                 ))}
               </div>
-            </Card>
+            </div>
           )}
           
-          {/* Newsletter */}
-          <Card variant="highlight" padding="md">
-            <h3 class="text-lg font-bold mb-3">Suscríbete a nuestra newsletter</h3>
-            <p class="text-sm text-gray-600 mb-4">
-              Recibe consejos, artículos y novedades sobre el cuidado de mascotas directamente en tu correo.
-            </p>
+          {/* Newsletter con diseño verde */}
+          <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white relative overflow-hidden">
+            {/* Decoración de fondo */}
+            <div class="absolute inset-0 bg-black bg-opacity-10"></div>
+            <div class="absolute -top-4 -right-4 w-16 h-16 bg-white bg-opacity-10 rounded-full"></div>
+            <div class="absolute -bottom-4 -left-4 w-20 h-20 bg-white bg-opacity-5 rounded-full"></div>
             
-            <form class="space-y-3">
-              <div>
-                <label for="email-sidebar" class="sr-only">Correo electrónico</label>
-                <input
-                  type="email"
-                  id="email-sidebar"
-                  name="email"
-                  required
-                  placeholder="Tu correo electrónico"
-                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AFC2D5] focus:border-transparent"
-                />
+            <div class="relative z-10">
+              <div class="flex items-center mb-3">
+                <span class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+                  📧
+                </span>
+                <h3 class="text-lg font-bold">Suscríbete a nuestra newsletter</h3>
               </div>
-              <div class="flex">
-                <label class="flex items-start">
-                  <input 
-                    type="checkbox" 
-                    name="accept-terms" 
+              <p class="text-sm opacity-90 mb-6 leading-relaxed">
+                Recibe consejos, artículos y novedades sobre el cuidado de mascotas directamente en tu correo.
+              </p>
+              
+              <form class="space-y-4">
+                <div>
+                  <label for="email-sidebar" class="sr-only">Correo electrónico</label>
+                  <input
+                    type="email"
+                    id="email-sidebar"
+                    name="email"
                     required
-                    class="h-4 w-4 mt-1 rounded border-gray-300 text-[#AFC2D5] focus:ring-[#AFC2D5]" 
+                    placeholder="Tu correo electrónico"
+                    class="w-full px-4 py-3 text-sm text-[#2E2E2E] bg-white bg-opacity-90 backdrop-blur-sm border border-white border-opacity-30 rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:bg-white transition-all duration-300"
                   />
-                  <span class="ml-2 text-xs text-gray-500">
-                    Acepto recibir correos y la política de privacidad
-                  </span>
-                </label>
-              </div>
-              <button
-                type="submit"
-                class="w-full bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200"
-              >
-                Suscribirme
-              </button>
-            </form>
-          </Card>
+                </div>
+                <div class="flex">
+                  <label class="flex items-start">
+                    <input 
+                      type="checkbox" 
+                      name="accept-terms" 
+                      required
+                      class="h-4 w-4 mt-1 rounded border-white border-opacity-30 text-green-600 focus:ring-white bg-white bg-opacity-90" 
+                    />
+                    <span class="ml-3 text-xs opacity-90 leading-relaxed">
+                      Acepto recibir correos y la política de privacidad
+                    </span>
+                  </label>
+                </div>
+                <button
+                  type="submit"
+                  class="w-full bg-white text-green-600 hover:text-green-700 py-3 px-6 rounded-lg text-sm font-bold transition-all duration-300 hover:bg-gray-50 shadow-lg"
+                >
+                  Suscribirme
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>
     
-    {/* Paginación */}
+    {/* Paginación mejorada */}
     {articles.length >= 10 && (
-      <div class="mt-12 flex justify-center">
-        <nav class="flex items-center">
+      <div class="mt-16 flex justify-center">
+        <nav class="flex items-center bg-white rounded-xl shadow-lg border border-gray-200 p-2">
           <a 
             href="#" 
-            class="px-4 py-2 mx-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+            class="flex items-center px-4 py-3 mx-1 text-[#2E2E2E] hover:bg-green-500 hover:text-white rounded-lg text-sm font-medium transition-all duration-300 group"
           >
-            &laquo; Anterior
+            <svg class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Anterior
           </a>
-          <span class="px-4 py-2 mx-1 bg-[#AFC2D5] text-white rounded-md text-sm">1</span>
+          
+          <span class="px-4 py-3 mx-1 bg-green-500 text-white rounded-lg text-sm font-bold shadow-md">
+            1
+          </span>
+          
           <a 
             href="#" 
-            class="px-4 py-2 mx-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+            class="px-4 py-3 mx-1 text-[#2E2E2E] hover:bg-green-500 hover:text-white rounded-lg text-sm font-medium transition-all duration-300"
           >
             2
           </a>
           <a 
             href="#" 
-            class="px-4 py-2 mx-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+            class="px-4 py-3 mx-1 text-[#2E2E2E] hover:bg-green-500 hover:text-white rounded-lg text-sm font-medium transition-all duration-300"
           >
             3
           </a>
-          <span class="px-2 text-gray-500">...</span>
+          
+          <span class="px-2 text-gray-400">...</span>
+          
           <a 
             href="#" 
-            class="px-4 py-2 mx-1 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+            class="flex items-center px-4 py-3 mx-1 text-[#2E2E2E] hover:bg-green-500 hover:text-white rounded-lg text-sm font-medium transition-all duration-300 group"
           >
-            Siguiente &raquo;
+            Siguiente
+            <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
           </a>
         </nav>
       </div>
     )}
   </Container>
 </BaseLayout>
+
+<style>
+  /* Scroll suave */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Efectos de glass morphism */
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+  }
+</style>

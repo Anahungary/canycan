@@ -245,7 +245,7 @@ const generateGeneralInsights = (breeds, comparisons) => {
   return insights;
 };
 
-// Generar resumen ejecutivo
+// Generar resumen ejecutivo mejorado con recomendaciones específicas
 const generateSummary = (breeds, comparisons) => {
   const summary = {
     totalBreeds: breeds.length,
@@ -271,18 +271,96 @@ const generateSummary = (breeds, comparisons) => {
     emoji: diff.emoji
   }));
 
-  // Generar recomendaciones básicas
-  if (significantDiffs.length > 0) {
-    summary.recommendations.push(
-      'Considera cuáles de estas diferencias son más importantes para tu estilo de vida.'
-    );
-  }
+  // Generar recomendaciones específicas y útiles
+  const recommendations = generateSmartRecommendations(breeds, significantDiffs);
+  summary.recommendations = recommendations;
 
   return summary;
 };
 
+// Generar recomendaciones inteligentes basadas en las diferencias
+const generateSmartRecommendations = (breeds, significantDiffs) => {
+  const recommendations = [];
+  
+  // Analizar cada diferencia significativa y dar consejos específicos
+  significantDiffs.forEach(diff => {
+    const winner = diff.analysis?.highest;
+    const lower = diff.analysis?.lowest;
+    
+    if (!winner || !lower) return;
+    
+    const winnerName = winner.breeds?.[0]?.name;
+    const loserName = lower.breeds?.[0]?.name;
+    
+    switch (diff.key) {
+      case 'energyLevel':
+        if (diff.variance >= 3) {
+          recommendations.push(`Si tienes estilo de vida activo, ${winnerName} será ideal. Si prefieres tranquilidad, ${loserName} es mejor opción.`);
+        } else {
+          recommendations.push(`La diferencia de energía es manejable. Ambas razas se pueden adaptar con el ejercicio adecuado.`);
+        }
+        break;
+        
+      case 'grooming':
+        if (diff.variance >= 2) {
+          recommendations.push(`${winnerName} necesita mucho más cuidado de pelaje. Considera si tienes tiempo o presupuesto para grooming profesional.`);
+        }
+        break;
+        
+      case 'training':
+        if (diff.variance >= 2) {
+          recommendations.push(`${winnerName} será más fácil de entrenar para principiantes. ${loserName} requiere más paciencia y experiencia.`);
+        }
+        break;
+        
+      case 'noiseLevel':
+        if (diff.variance >= 2) {
+          recommendations.push(`Si vives en apartamento o tienes vecinos cercanos, ${lower.breeds?.[0]?.name} (más silencioso) causará menos problemas.`);
+        }
+        break;
+        
+      case 'healthIssues':
+        if (diff.variance >= 2) {
+          recommendations.push(`${lower.breeds?.[0]?.name} tiende a ser más saludable, lo que significa menos gastos veterinarios a largo plazo.`);
+        }
+        break;
+        
+      case 'costLevel':
+        if (diff.variance >= 2) {
+          recommendations.push(`${lower.breeds?.[0]?.name} será más económico de mantener. Evalúa tu presupuesto a largo plazo.`);
+        }
+        break;
+        
+      case 'independenceLevel':
+        if (diff.variance >= 2) {
+          recommendations.push(`Si trabajas muchas horas fuera, ${winner.breeds?.[0]?.name} manejará mejor la soledad.`);
+        }
+        break;
+    }
+  });
+  
+  // Si no hay diferencias significativas
+  if (recommendations.length === 0) {
+    recommendations.push('Las razas son muy similares. Tu decisión puede basarse en preferencias estéticas o disponibilidad local.');
+  }
+  
+  // Añadir recomendación general inteligente
+  const hasHighVariance = significantDiffs.some(diff => diff.variance >= 3);
+  if (hasHighVariance) {
+    recommendations.push('Las diferencias son importantes. Te recomendamos conocer las razas en persona antes de decidir.');
+  }
+  
+  // Análisis de tipos mixtos
+  const types = [...new Set(breeds.map(b => b.type))];
+  if (types.length > 1) {
+    recommendations.push('Estás comparando perros y gatos. Considera que las necesidades y cuidados son naturalmente diferentes.');
+  }
+  
+  return recommendations.slice(0, 2); // Máximo 2 recomendaciones para no abrumar
+};
+
 // Componente principal de análisis comparativo con diseño mejorado
-const ComparativeAnalysis = ({ selectedBreeds }) => {
+const ComparativeAnalysis = ({ selectedBreeds, userProfile = null }) => {
   const analysis = analyzeBreedComparison(selectedBreeds);
   
   if (!analysis) return null;
@@ -357,7 +435,7 @@ const ComparativeAnalysis = ({ selectedBreeds }) => {
     return (
       <div className="relative">
         {/* Winner side */}
-        <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-4 mb-3">
+        <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-4 ">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
@@ -415,15 +493,15 @@ const ComparativeAnalysis = ({ selectedBreeds }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl   overflow-hidden relative">
+    <div className="  overflow-hidden relative">
       {/* Fondo decorativo */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-purple-50/20 to-pink-50/30"></div>
+      <div className="absolute inset-0 "></div>
       
       {/* Contenido principal */}
       <div className="relative z-10">
         {/* Header con animación */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-[#AFC2D5] to-[#9DB3C6] text-white px-6 py-3 rounded-full shadow-lg mb-4">
+          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-green-600 to-green-500 text-white px-6 py-3 rounded-full shadow-lg mb-4">
             <span className="text-xl">📊</span>
             <h3 className="text-xl font-bold">
               Análisis comparativo de {selectedBreeds.length} razas
@@ -446,7 +524,7 @@ const ComparativeAnalysis = ({ selectedBreeds }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {analysis.insights.map((insight, index) => (
                 <div key={index} className="group hover:scale-105 transition-all duration-300">
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-start space-x-4">
                       <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
                         <span className="text-xl">{insight.icon}</span>
@@ -516,11 +594,8 @@ const ComparativeAnalysis = ({ selectedBreeds }) => {
         )}
 
         {/* Resumen ejecutivo con diseño premium */}
-        <div className="bg-gradient-to-br from-[#ced5dc] via-[#ecf2f6] to-[#8BA3B8] rounded-xl p-8 text-white relative overflow-hidden">
+        <div className="bg-gradient-to-br from-green-500 via-green-600 to-green-500 rounded-xl p-8 text-white relative overflow-hidden">
           {/* Decoración de fondo */}
-          <div className="absolute inset-0 bg-black bg-opacity-10"></div>
-          <div className="absolute -top-4 -right-4 w-24 h-24 bg-white bg-opacity-10 rounded-full"></div>
-          <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-white bg-opacity-5 rounded-full"></div>
           
           <div className="relative z-10">
             <div className="flex items-center space-x-3 mb-6">
@@ -560,16 +635,42 @@ const ComparativeAnalysis = ({ selectedBreeds }) => {
               </div>
             </div>
 
-            {/* CTA mejorado */}
+            {/* CTA mejorado - CONDICIONAL SEGÚN PERFIL */}
             <div className="text-center">
-              <p className="mb-4 opacity-90">¿Quieres un análisis aún más personalizado?</p>
-              <a 
-                href="/tu-raza-ideal"
-                className="inline-flex items-center space-x-2 bg-white text-[#AFC2D5] px-6 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all duration-300 hover:scale-105 shadow-lg"
-              >
-                <span className="text-xl">🎯</span>
-                <span>Hacer test personalizado para mayor precisión</span>
-              </a>
+              {userProfile ? (
+                // Usuario YA tiene perfil/test completado
+                <>
+                  <p className="mb-4 opacity-90">¡Tu análisis personalizado está activo!</p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <a 
+                      href="/razas"
+                      className="inline-flex items-center space-x-2 bg-white text-[#AFC2D5] px-6 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all duration-300 hover:scale-105 shadow-lg"
+                    >
+                      <span className="text-xl">🔍</span>
+                      <span>Explorar más razas</span>
+                    </a>
+                    <a 
+                      href="/tu-raza-ideal"
+                      className="inline-flex items-center space-x-2 bg-white bg-opacity-20 text-white px-6 py-3 rounded-xl font-bold hover:bg-white hover:bg-opacity-30 transition-all duration-300 border border-white border-opacity-30"
+                    >
+                      <span className="text-xl">⚙️</span>
+                      <span>Refinar tu perfil</span>
+                    </a>
+                  </div>
+                </>
+              ) : (
+                // Usuario NO tiene perfil/test
+                <>
+                  <p className="mb-4 opacity-90">¿Quieres un análisis aún más personalizado?</p>
+                  <a 
+                    href="/tu-raza-ideal"
+                    className="inline-flex items-center space-x-2 bg-white text-black px-6 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all duration-300 hover:scale-105 shadow-lg"
+                  >
+                    <span className="text-xl">🎯</span>
+                    <span>Hacer test personalizado para mayor precisión</span>
+                  </a>
+                </>
+              )}
             </div>
           </div>
         </div>

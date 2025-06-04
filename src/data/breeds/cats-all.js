@@ -359,7 +359,7 @@ export const catsALL = [
 {
   id: 'bengali',
   name: 'Gato Bengalí',
-  image: '/images/breeds/Bengali.webp',
+  image: '/images/breeds/bengali.webp',
   description: 'Gato exótico con apariencia salvaje y comportamiento activo. Curioso, sociable y muy energético.',
   size: 'medium',
   energyLevel: 5,

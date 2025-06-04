@@ -20,8 +20,8 @@ const currentPath = Astro.url.pathname;
         <a 
           href={item.href} 
           class={`px-3 py-2 rounded-md text-sm font-medium ${currentPath === item.href || currentPath.startsWith(item.href + '/') 
-            ? 'bg-[#AFC2D5] text-white' 
-            : 'text-[#2E2E2E] hover:bg-[#F4E2D8] hover:text-[#2E2E2E]'}`}
+            ? 'bg-green-500 text-white' 
+            : 'text-[#2E2E2E] hover:bg-[#facc14] hover:text-[#2E2E2E]'}`}
           aria-current={currentPath === item.href ? 'page' : undefined}
         >
           {item.name}

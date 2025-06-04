@@ -36,33 +36,33 @@ const stats = {
         {/* Estadísticas */}
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto mb-8">
           <div class="bg-white rounded-lg p-4 shadow-sm">
-            <div class="text-2xl font-bold text-[#AFC2D5]">{stats.total}</div>
+            <div class="text-2xl font-bold text-green-500">{stats.total}</div>
             <div class="text-sm text-gray-600">Razas totales</div>
           </div>
           <div class="bg-white rounded-lg p-4 shadow-sm">
-            <div class="text-2xl font-bold text-[#AFC2D5]">{stats.dogs}</div>
+            <div class="text-2xl font-bold text-green-500">{stats.dogs}</div>
             <div class="text-sm text-gray-600">Perros</div>
           </div>
           <div class="bg-white rounded-lg p-4 shadow-sm">
-            <div class="text-2xl font-bold text-[#AFC2D5]">{stats.cats}</div>
+            <div class="text-2xl font-bold text-green-500">{stats.cats}</div>
             <div class="text-sm text-gray-600">Gatos</div>
           </div>
           <div class="bg-white rounded-lg p-4 shadow-sm">
-            <div class="text-2xl font-bold text-[#AFC2D5]">{stats.hypoallergenic}</div>
+            <div class="text-2xl font-bold text-green-500">{stats.hypoallergenic}</div>
             <div class="text-sm text-gray-600">Hipoalergénicas</div>
           </div>
         </div>
 
         {/* Botones principales */}
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button href="/tu-raza-ideal" variant="primary" size="lg" class="bg-[#AFC2D5] text-white hover:bg-[#9DB3C6]">
+          <Button href="/tu-raza-ideal" variant="primary" size="lg" class="bg-green-500 text-white hover:bg-[#9DB3C6]">
             🎯 Descubre tu raza ideal
           </Button>
           <Button 
             href="#comparador" 
             variant="outline" 
             size="lg" 
-            class="border-[#AFC2D5] text-[#AFC2D5] hover:bg-[#AFC2D5] hover:text-white"
+            class="border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
           >
             🔍 Comparar razas
           </Button>
@@ -91,25 +91,25 @@ const stats = {
           </h3>
           <ul class="space-y-3 text-sm">
             <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white mr-3 mt-0.5">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white mr-3 mt-0.5">
                 <span class="text-xs font-bold">1</span>
               </div>
               <p><strong>Filtra por tus necesidades:</strong> Usa los filtros para encontrar razas que se adapten a tu estilo de vida.</p>
             </li>
             <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white mr-3 mt-0.5">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white mr-3 mt-0.5">
                 <span class="text-xs font-bold">2</span>
               </div>
               <p><strong>Selecciona hasta 3 razas:</strong> Haz clic en "Comparar" en las razas que te interesan.</p>
             </li>
             <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white mr-3 mt-0.5">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white mr-3 mt-0.5">
                 <span class="text-xs font-bold">3</span>
               </div>
               <p><strong>Análisis automático:</strong> Ve comparaciones directas sin necesidad de hacer test.</p>
             </li>
             <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#AFC2D5] flex items-center justify-center text-white mr-3 mt-0.5">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white mr-3 mt-0.5">
                 <span class="text-xs font-bold">4</span>
               </div>
               <p><strong>Test opcional:</strong> Para mayor precisión, completa nuestro cuestionario.</p>
@@ -124,7 +124,7 @@ const stats = {
           </h3>
           <ul class="space-y-3 text-sm">
             <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#F6B89E] flex items-center justify-center text-white mr-3 mt-0.5">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#facc14] flex items-center justify-center text-black mr-3 mt-0.5">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
@@ -132,7 +132,7 @@ const stats = {
               <p><strong>Funciona sin test:</strong> El comparador muestra análisis directos automáticamente.</p>
             </li>
             <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#F6B89E] flex items-center justify-center text-white mr-3 mt-0.5">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#facc14] flex items-center justify-center text-black mr-3 mt-0.5">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
@@ -140,7 +140,7 @@ const stats = {
               <p><strong>Usa múltiples filtros:</strong> Combina tipo, tamaño, energía y compatibilidad familiar.</p>
             </li>
             <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#F6B89E] flex items-center justify-center text-white mr-3 mt-0.5">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#facc14] flex items-center justify-center text-black mr-3 mt-0.5">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
@@ -148,7 +148,7 @@ const stats = {
               <p><strong>Compara diferentes tipos:</strong> Mezcla perros grandes y pequeños para ver diferencias.</p>
             </li>
             <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#F6B89E] flex items-center justify-center text-white mr-3 mt-0.5">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#facc14] flex items-center justify-center text-black mr-3 mt-0.5">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
@@ -174,7 +174,7 @@ const stats = {
           href="#comparador" 
           variant="primary" 
           size="md" 
-          class="bg-[#AFC2D5] text-white hover:bg-[#9DB3C6] filter-button"
+          class="bg-green-500 text-white hover:bg-[#9DB3C6] filter-button"
           data-filter="dog"
         >
           🐕 Solo Perros ({stats.dogs})
@@ -183,7 +183,7 @@ const stats = {
           href="#comparador" 
           variant="primary" 
           size="md" 
-          class="bg-[#AFC2D5] text-white hover:bg-[#9DB3C6] filter-button"
+          class="bg-green-500 text-white hover:bg-[#9DB3C6] filter-button"
           data-filter="cat"
         >
           🐱 Solo Gatos ({stats.cats})
@@ -192,7 +192,7 @@ const stats = {
           href="#comparador" 
           variant="outline" 
           size="md" 
-          class="border-[#AFC2D5] text-[#AFC2D5] hover:bg-[#AFC2D5] hover:text-white filter-button"
+          class="border-green-500 text-green-500 hover:bg-green-500 hover:text-white filter-button"
           data-filter="hypoallergenic"
         >
           ✨ Hipoalergénicas ({stats.hypoallergenic})
@@ -201,7 +201,7 @@ const stats = {
           href="#comparador" 
           variant="outline" 
           size="md" 
-          class="border-[#AFC2D5] text-[#AFC2D5] hover:bg-[#AFC2D5] hover:text-white filter-button"
+          class="border-green-500 text-green-500 hover:bg-green-500 hover:text-white filter-button"
           data-filter="apartment"
         >
           🏠 Ideales para apartamento
@@ -210,36 +210,7 @@ const stats = {
     </Container>
   </section>
 
-  {/* CTA Final */}
-  <section class="py-16 bg-gradient-to-r from-[#AFC2D5] to-[#9DB3C6]">
-    <Container>
-      <div class="text-center text-white max-w-3xl mx-auto">
-        <h2 class="text-2xl font-bold mb-4">¿Necesitas ayuda personalizada?</h2>
-        <p class="text-lg mb-8 opacity-90">
-          Nuestro comparador funciona perfectamente sin test. Para análisis ultra-personalizado, 
-          completa nuestro cuestionario según tu estilo de vida específico.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button 
-            href="/tu-raza-ideal" 
-            variant="secondary" 
-            size="lg" 
-            class="bg-white text-[#225382] hover:bg-gray-300"
-          >
-            🎯 Test personalizado opcional
-          </Button>
-          <Button 
-            href="#comparador"
-            variant="outline" 
-            size="lg" 
-            class="border-white text-white hover:bg-white hover:bg-opacity-20"
-          >
-            🔍 Volver al comparador
-          </Button>
-        </div>
-      </div>
-    </Container>
-  </section>
+
 
   <style>
     /* Estilos específicos para la integración */

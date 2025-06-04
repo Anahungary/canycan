@@ -1,8 +1,8 @@
 ---
 name: "Gato Bengalí"
-slug: "gato-bengali"
+slug: "bengali"
 description: "El Gato Bengalí combina el salvajismo de un leopardo con la dulzura de un gato doméstico. Es un felino activo, curioso y extremadamente inteligente, ideal para dueños experimentados que puedan estimularlo física y mentalmente."
-image: "/images/breeds/Gato-Bengali.webp"
+image: "/images/breeds/bengali.webp"
 type: "cat"
 size: "medium"
 weight:

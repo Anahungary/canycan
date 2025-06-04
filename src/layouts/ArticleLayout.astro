@@ -177,10 +177,10 @@ const currentUrl = Astro.url.pathname;
       <div class="lg:col-span-3">
         <div class="sidebar-sticky">
           <!-- Artículos populares -->
-          <div class="sidebar-card">
+                    <div class="sidebar-card">
             <h3 class="text-lg font-bold mb-4 text-gray-900">Más leídos</h3>
             <div class="space-y-4">
-              {popularArticles.length > 0 ? (
+              {popularArticles && popularArticles.length > 0 ? (
                 popularArticles.slice(0, 5).map((article, index) => (
                   <div class="flex items-start space-x-3 group">
                     <div class="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">
@@ -194,41 +194,20 @@ const currentUrl = Astro.url.pathname;
                         {article.title}
                       </a>
                       <p class="text-xs text-gray-500 mt-1">
-                        {article.readingTime} min • {article.category}
+                        {article.readingTime || 5} min • {article.category}
                       </p>
                     </div>
                   </div>
                 ))
               ) : (
-                <>
-                  <div class="flex items-start space-x-3 group">
-                    <div class="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">1</div>
-                    <div class="flex-1 min-w-0">
-                      <a href="/articulos/golden-vs-labrador" class="block text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
-                        Golden Retriever vs Labrador: ¿Cuál elegir?
-                      </a>
-                      <p class="text-xs text-gray-500 mt-1">12 min • Razas</p>
-                    </div>
+                <div class="text-center py-4">
+                  <p class="text-sm text-gray-500 mb-3">Cargando artículos populares...</p>
+                  <div class="animate-pulse space-y-2">
+                    <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div class="h-4 bg-gray-200 rounded w-2/3"></div>
                   </div>
-                  <div class="flex items-start space-x-3 group">
-                    <div class="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">2</div>
-                    <div class="flex-1 min-w-0">
-                      <a href="/articulos/alimentacion-canina" class="block text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
-                        Guía completa de alimentación canina
-                      </a>
-                      <p class="text-xs text-gray-500 mt-1">8 min • Alimentación</p>
-                    </div>
-                  </div>
-                  <div class="flex items-start space-x-3 group">
-                    <div class="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">3</div>
-                    <div class="flex-1 min-w-0">
-                      <a href="/articulos/entrenamiento-cachorros" class="block text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
-                        Entrenamiento básico para cachorros
-                      </a>
-                      <p class="text-xs text-gray-500 mt-1">6 min • Entrenamiento</p>
-                    </div>
-                  </div>
-                </>
+                </div>
               )}
             </div>
           </div>

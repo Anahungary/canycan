@@ -1,5 +1,5 @@
 ---
-// src/pages/articulos/[slug].astro - CORREGIDO
+// src/pages/articulos/[slug].astro - CORREGIDO PARA USAR ARTÍCULOS REALES
 import { getCollection } from 'astro:content';
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
 
@@ -15,6 +15,42 @@ export async function getStaticPaths() {
 const { articulo } = Astro.props;
 const { Content, headings } = await articulo.render();
 
+// 🔥 CARGAR ARTÍCULOS REALES DEL CMS PARA EL SIDEBAR
+let allArticles: any[] = [];
+try {
+  allArticles = await getCollection('articulos');
+  // Filtrar solo artículos publicados
+  allArticles = allArticles.filter((art: any) => art.data.status === 'published');
+} catch (error) {
+  console.log('Error cargando artículos para sidebar:', error);
+}
+
+// 📈 GENERAR ARTÍCULOS POPULARES REALES (ordenados por fecha)
+const popularArticles = allArticles
+  .filter((art: any) => art.slug !== articulo.slug) // Excluir artículo actual
+  .sort((a: any, b: any) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 5)
+  .map((art: any) => ({
+    title: art.data.title,
+    slug: art.slug,
+    readingTime: art.data.readingTime || 5,
+    category: art.data.category || 'General'
+  }));
+
+// 📰 GENERAR ARTÍCULOS RELACIONADOS (misma categoría)
+const relatedArticles = allArticles
+  .filter((art: any) => 
+    art.slug !== articulo.slug && 
+    art.data.category === articulo.data.category
+  )
+  .slice(0, 3)
+  .map((art: any) => ({
+    id: art.slug,
+    title: art.data.title,
+    image: art.data.image || '/images/articles/default.jpg',
+    readingTime: art.data.readingTime || 5
+  }));
+
 // Preparar datos para el layout con valores por defecto
 const articleData = {
   title: articulo.data.title,
@@ -26,42 +62,12 @@ const articleData = {
   },
   date: articulo.data.date.toISOString(),
   readingTime: articulo.data.readingTime || 5,
-  categories: articulo.data.tags || [],
+  categories: articulo.data.tags || [articulo.data.category || 'General'],
   image: articulo.data.image || '/images/articles/default.jpg',
   views: 0,
   showTableOfContents: true,
-  popularArticles: [
-    {
-      title: "Golden Retriever vs Labrador: ¿Cuál elegir?",
-      slug: "golden-vs-labrador", 
-      readingTime: 12,
-      category: "Razas"
-    },
-    {
-      title: "Guía completa de alimentación canina",
-      slug: "alimentacion-canina",
-      readingTime: 8,
-      category: "Alimentación"
-    },
-    {
-      title: "Entrenamiento básico para cachorros",
-      slug: "entrenamiento-cachorros",
-      readingTime: 6,
-      category: "Entrenamiento"
-    },
-    {
-      title: "Cuidados preventivos para tu mascota",
-      slug: "salud-preventiva",
-      readingTime: 10,
-      category: "Salud"
-    },
-    {
-      title: "Guía para gatos de interior",
-      slug: "gatos-indoor",
-      readingTime: 7,
-      category: "Gatos"
-    }
-  ]
+  popularArticles: popularArticles, // 🎯 USAR ARTÍCULOS REALES
+  relatedArticles: relatedArticles   // 🎯 USAR ARTÍCULOS RELACIONADOS REALES
 };
 ---
 

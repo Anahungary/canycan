@@ -38,7 +38,7 @@ const typeColor = getTypeColor(breed.type);
   description={breed.description || `Todo sobre ${breed.name}: características, cuidados y temperamento`}
 >
   <!-- Hero Simple y Elegante -->
-  <section class={`bg-gradient-to-br ${typeColor === 'blue' ? 'from-[#FAFAFA] to-indigo-100' : 'from-blue-200 to-indigo-100'} py-16`}>
+  <section class={`bg-gradient-to-br ${typeColor === 'blue' ? 'from-[#ffffff] to-gray-100' : 'from-[#ffffff] to-gray-100'} py-16`}>
     <Container>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         
@@ -46,14 +46,14 @@ const typeColor = getTypeColor(breed.type);
         <div class="text-indigo-950 order-2 lg:order-1">
           <!-- Badges -->
           <div class="flex flex-wrap gap-3 mb-6">
-            <Badge variant="primary" class="bg-indigo-950 bg-opacity-20 text-white px-4 py-2 text-sm font-medium">
+            <Badge  class="bg-green-500  text-white px-4 py-2 text-sm font-medium">
               {breed.type === 'dog' ? '🐕 Perro' : '🐱 Gato'}
             </Badge>
-            <Badge variant="primary" class="bg-indigo-950 bg-opacity-20 text-white px-4 py-2 text-sm font-medium">
+            <Badge  class="bg-green-500  text-white px-4 py-2 text-sm font-medium">
               📏 {getSizeText(breed.size)}
             </Badge>
             {breed.hypoallergenic && (
-              <Badge variant="success" class="bg-green-500 bg-opacity-80 text-white px-4 py-2 text-sm font-medium">
+              <Badge  class="bg-[#facc14] bg-opacity-80 text-indigo-950 px-4 py-2 text-sm font-medium">
                 ✨ Hipoalergénico
               </Badge>
             )}
