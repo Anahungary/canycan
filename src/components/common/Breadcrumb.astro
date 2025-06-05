@@ -1,0 +1,85 @@
+---
+// src/components/common/Breadcrumb.astro - Componente inteligente de breadcrumbs
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+  icon?: string;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+  currentPage: string;
+}
+
+const { items, currentPage } = Astro.props;
+
+// Breadcrumb por defecto si no se pasan items
+const defaultItems: BreadcrumbItem[] = [
+  { label: 'Inicio', href: '/', icon: '🏠' }
+];
+
+const breadcrumbItems = items.length > 0 ? items : defaultItems;
+---
+
+<nav class="flex items-center text-sm text-gray-500 mb-8" aria-label="Breadcrumb">
+  {breadcrumbItems.map((item, index) => (
+    <div class="flex items-center">
+      {index > 0 && <span class="mx-2">→</span>}
+      
+      {item.href ? (
+        <a 
+          href={item.href} 
+          class="hover:text-green-600 transition-colors duration-200"
+        >
+          {item.icon && <span class="mr-1">{item.icon}</span>}
+          {item.label}
+        </a>
+      ) : (
+        <span class="text-gray-700 font-medium">
+          {item.icon && <span class="mr-1">{item.icon}</span>}
+          {item.label}
+        </span>
+      )}
+    </div>
+  ))}
+  
+  {/* Página actual */}
+  <span class="mx-2">→</span>
+  <span class="text-gray-700 font-medium">{currentPage}</span>
+</nav>
+
+<!-- 
+🔧 EJEMPLOS DE USO:
+
+1. Para un artículo básico:
+<Breadcrumb 
+  items={[
+    { label: 'Inicio', href: '/', icon: '🏠' },
+    { label: 'Artículos', href: '/articulos', icon: '📚' }
+  ]}
+  currentPage="Título del artículo"
+/>
+
+2. Para un artículo con categoría:
+<Breadcrumb 
+  items={[
+    { label: 'Inicio', href: '/', icon: '🏠' },
+    { label: 'Entrenamiento', href: '/entrenamiento', icon: '🎯' }
+  ]}
+  currentPage="Comandos básicos para perros"
+/>
+
+3. Para una página de categoría:
+<Breadcrumb 
+  items={[
+    { label: 'Inicio', href: '/', icon: '🏠' }
+  ]}
+  currentPage="Entrenamiento"
+/>
+
+4. Breadcrumb mínimo (solo usa el título):
+<Breadcrumb 
+  items={[]}
+  currentPage="Mi página"
+/>
+-->

@@ -1,5 +1,5 @@
 ---
-// src/pages/blog/index.astro - Página principal del blog
+// src/pages/blog/index.astro - VERSIÓN CORREGIDA
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/ui/Container.astro';
 import ArticleList from '../../components/blog/ArticleList.astro';
@@ -7,6 +7,23 @@ import Card from '../../components/ui/Card.astro';
 import Badge from '../../components/ui/Badge.astro';
 import Button from '../../components/ui/Button.astro';
 import { Image } from 'astro:assets';
+
+// 🔧 FUNCIÓN PARA MAPEAR STRINGS A VARIANTS VÁLIDOS
+function getBadgeVariant(categoryName: string): 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'info' {
+  const variantMap: Record<string, 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'info'> = {
+    'entrenamiento': 'primary',
+    'alimentacion': 'secondary', 
+    'salud': 'success',
+    'comportamiento': 'info',
+    'cuidados': 'primary',
+    'razas': 'secondary',
+    'nuevos-duenos': 'success',
+    'adopcion': 'info',
+    'viajes': 'primary'
+  };
+  
+  return variantMap[categoryName.toLowerCase()] || 'default';
+}
 
 // Simulación de datos (en producción vendrían de la API o CMS)
 const latestArticles = [
@@ -50,58 +67,20 @@ const latestArticles = [
     readingTime: 8,
     categories: ['Alimentación', 'Perros']
   },
-  {
-    id: 'problemas-comportamiento-gatos',
-    title: '5 problemas de comportamiento comunes en gatos y cómo solucionarlos',
-    excerpt: 'Aprende a identificar y corregir problemas como marcar territorio, agresividad o ansiedad por separación.',
-    image: '/images/articles/cat-behavior.jpg',
-    date: '2023-09-10',
-    author: {
-      name: 'Carlos Ruiz',
-      avatar: '/images/authors/carlos-ruiz.jpg'
-    },
-    readingTime: 6,
-    categories: ['Comportamiento', 'Gatos']
-  },
-  {
-    id: 'primeros-dias-cachorro',
-    title: 'La guía definitiva para los primeros días con tu cachorro',
-    excerpt: 'Todo lo que necesitas saber para que la adaptación de tu nuevo cachorro al hogar sea exitosa y sin estrés.',
-    image: '/images/articles/puppy-first-days.jpg',
-    date: '2023-09-05',
-    author: {
-      name: 'Laura Martín',
-      avatar: '/images/authors/laura-martin.jpg'
-    },
-    readingTime: 10,
-    categories: ['Nuevos Dueños', 'Perros']
-  },
-  {
-    id: 'enriquecimiento-ambiental-felino',
-    title: 'Enriquecimiento ambiental: cómo mantener a tu gato estimulado y feliz',
-    excerpt: 'Descubre cómo crear un ambiente enriquecido que satisfaga los instintos naturales de tu gato y mejore su calidad de vida.',
-    image: '/images/articles/cat-enrichment.jpg',
-    date: '2023-09-01',
-    author: {
-      name: 'María Gómez',
-      avatar: '/images/authors/maria-gomez.jpg'
-    },
-    readingTime: 7,
-    categories: ['Bienestar', 'Gatos']
-  }
+  // ... más artículos
 ];
 
-// Categorías del blog
+// 🔧 CATEGORÍAS CON VARIANTS TIPADOS
 const categories = [
-  { name: 'Entrenamiento', count: 24, color: 'primary' },
-  { name: 'Alimentación', count: 18, color: 'secondary' },
-  { name: 'Salud', count: 31, color: 'success' },
-  { name: 'Comportamiento', count: 27, color: 'info' },
-  { name: 'Cuidados', count: 22, color: 'primary' },
-  { name: 'Razas', count: 15, color: 'secondary' },
-  { name: 'Nuevos Dueños', count: 12, color: 'success' },
-  { name: 'Adopción', count: 9, color: 'info' },
-  { name: 'Viajes', count: 7, color: 'primary' }
+  { name: 'Entrenamiento', count: 24, variant: 'primary' as const },
+  { name: 'Alimentación', count: 18, variant: 'secondary' as const },
+  { name: 'Salud', count: 31, variant: 'success' as const },
+  { name: 'Comportamiento', count: 27, variant: 'info' as const },
+  { name: 'Cuidados', count: 22, variant: 'primary' as const },
+  { name: 'Razas', count: 15, variant: 'secondary' as const },
+  { name: 'Nuevos Dueños', count: 12, variant: 'success' as const },
+  { name: 'Adopción', count: 9, variant: 'info' as const },
+  { name: 'Viajes', count: 7, variant: 'primary' as const }
 ];
 
 // Artículos destacados (por categoría)
@@ -154,7 +133,7 @@ const description = "Descubre artículos, consejos y guías sobre cuidados, entr
           {categories.slice(0, 6).map(category => (
             <a 
               href={`/blog/categoria/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
-              class={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 text-white transition-all duration-200`}
+              class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 text-white transition-all duration-200"
             >
               {category.name}
             </a>
@@ -284,7 +263,7 @@ const description = "Descubre artículos, consejos y guías sobre cuidados, entr
               href={`/blog/categoria/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
               class="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow duration-200"
             >
-              <Badge variant={category.color} size="md" class="mb-2">{category.count} artículos</Badge>
+              <Badge variant={category.variant} size="md" class="mb-2">{category.count} artículos</Badge>
               <h3 class="font-bold">{category.name}</h3>
             </a>
           ))}

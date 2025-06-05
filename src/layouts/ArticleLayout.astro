@@ -1,13 +1,10 @@
 ---
-// ArticleLayout.astro - VERSIÓN FINAL LIMPIA SIN TOC
+// ArticleLayout.astro - VERSIÓN FINAL COMPLETA PARA ASTRO 5
 import BaseLayout from './BaseLayout.astro';
-import ArticleMeta from '../components/blog/ArticleMeta.astro';
 import ShareButtons from '../components/blog/ShareButtons.astro';
 import Container from '../components/ui/Container.astro';
-import Card from '../components/ui/Card.astro';
 import { Image } from 'astro:assets';
 import '../styles/article.css';
-
 
 interface Author {
   name: string;
@@ -23,9 +20,14 @@ interface Props {
   date: string;
   readingTime: number;
   categories: string[];
+  // 🔧 PROPS SEPARADAS PARA CATEGORY Y TAGS
+  category?: string;
+  tags?: string[];
   views?: number;
   relatedArticles?: any[];
   popularArticles?: any[];
+  breadcrumbItems?: Array<{label: string; href?: string; icon?: string}>;
+  showBreadcrumb?: boolean;
 }
 
 const { 
@@ -36,12 +38,106 @@ const {
   date, 
   readingTime, 
   categories,
+  category,
+  tags = [],
   views,
   relatedArticles = [],
-  popularArticles = []
+  popularArticles = [],
+  breadcrumbItems = [],
+  showBreadcrumb = true
 } = Astro.props;
 
 const currentUrl = Astro.url.pathname;
+
+// 🔧 FUNCIÓN PARA OBTENER LA CATEGORÍA PRINCIPAL REAL
+function getRealCategory(): string | null {
+  const realCategoryNames = [
+    'comportamiento', 'entrenamiento', 'alimentacion', 'alimentación', 
+    'salud', 'cuidado', 'nuevos-duenos', 'nuevos dueños', 'cachorros'
+  ];
+  
+  // 1. Primero intentar con category (data.category del CMS)
+  if (category && realCategoryNames.includes(category.toLowerCase())) {
+    return category;
+  }
+  
+  // 2. Luego buscar en categories array
+  const realCategory = categories.find(cat => 
+    realCategoryNames.includes(cat.toLowerCase())
+  );
+  
+  return realCategory || null;
+}
+
+// 🔧 FUNCIÓN PARA SEPARAR TAGS REALES DE CATEGORÍAS
+function getRealTags(): string[] {
+  const realCategoryNames = [
+    'comportamiento', 'entrenamiento', 'alimentacion', 'alimentación', 
+    'salud', 'cuidado', 'nuevos-duenos', 'nuevos dueños', 'cachorros'
+  ];
+  
+  // Combinar tags prop con categories que son realmente tags
+  const allTags = [...tags];
+  
+  // Agregar categories que no son categorías reales (son tags)
+  categories.forEach(cat => {
+    if (!realCategoryNames.includes(cat.toLowerCase())) {
+      allTags.push(cat);
+    }
+  });
+  
+  return [...new Set(allTags)]; // Eliminar duplicados
+}
+
+// 🔧 OBTENER CATEGORÍA Y TAGS REALES
+const realCategory = getRealCategory();
+const realTags = getRealTags();
+
+// 🔧 LÓGICA MEJORADA PARA BREADCRUMB
+let breadcrumb = breadcrumbItems;
+
+if (breadcrumb.length === 0) {
+  breadcrumb = [
+    { label: 'Inicio', href: '/', icon: '🏠' }
+  ];
+  
+  if (realCategory) {
+    // Mapear categorías reales a URLs que existen
+    const categoryMap: Record<string, {href: string, icon: string}> = {
+      'comportamiento': { href: '/comportamiento', icon: '🧠' },
+      'entrenamiento': { href: '/entrenamiento', icon: '🎯' },
+      'alimentacion': { href: '/cuidado', icon: '🥗' },
+      'alimentación': { href: '/cuidado', icon: '🥗' },
+      'salud': { href: '/cuidado', icon: '🏥' },
+      'cuidado': { href: '/cuidado', icon: '💚' },
+      'nuevos-duenos': { href: '/nuevos-duenos', icon: '🐾' },
+      'nuevos dueños': { href: '/nuevos-duenos', icon: '🐾' },
+      'cachorros': { href: '/cachorros', icon: '🐶' }
+    };
+    
+    const categoryInfo = categoryMap[realCategory.toLowerCase()];
+    
+    if (categoryInfo) {
+      breadcrumb.push({ 
+        label: realCategory, 
+        href: categoryInfo.href, 
+        icon: categoryInfo.icon
+      });
+    } else {
+      breadcrumb.push({ 
+        label: 'Artículos', 
+        href: '/articulos', 
+        icon: '📚' 
+      });
+    }
+  } else {
+    breadcrumb.push({ 
+      label: 'Artículos', 
+      href: '/articulos', 
+      icon: '📚' 
+    });
+  }
+}
 ---
 
 <BaseLayout 
@@ -51,116 +147,173 @@ const currentUrl = Astro.url.pathname;
   canonicalUrl={currentUrl}
   bodyClass="article-page"
 >
- 
-
   <!-- HEADER DEL ARTÍCULO -->
-  <div class="article-header py-12 md:py-20">
+  <div class="article-header py-16 md:py-24 bg-gradient-to-br from-gray-50 via-white to-green-50">
     <Container size="lg">
       <div class="max-w-4xl mx-auto">
-        <!-- Categorías -->
-        <div class="article-badges mb-6">
-          {categories.map(category => (
-            <a href={`/categorias/${category.toLowerCase()}`} class="badge badge-category">
-              {category}
+        
+        {/* 🔧 BREADCRUMB CORREGIDO */}
+        {showBreadcrumb && (
+          <nav class="flex items-center text-sm text-gray-500 mb-8" aria-label="Breadcrumb">
+            {breadcrumb.map((item, index) => (
+              <div class="flex items-center">
+                {index > 0 && <span class="mx-2">→</span>}
+                
+                {item.href ? (
+                  <a 
+                    href={item.href} 
+                    class="hover:text-green-600 transition-colors duration-200"
+                  >
+                    {item.icon && <span class="mr-1">{item.icon}</span>}
+                    {item.label}
+                  </a>
+                ) : (
+                  <span class="text-gray-700">
+                    {item.icon && <span class="mr-1">{item.icon}</span>}
+                    {item.label}
+                  </span>
+                )}
+              </div>
+            ))}
+            
+            {/* Página actual */}
+            <span class="mx-2">→</span>
+            <span class="text-gray-700 font-medium truncate max-w-xs" title={title}>
+              {title.length > 50 ? title.substring(0, 50) + '...' : title}
+            </span>
+          </nav>
+        )}
+
+        {/* 🔧 BADGES CORREGIDOS: CATEGORÍA AMARILLO + TAGS VERDE */}
+        <div class="article-badges mb-8">
+          {/* Mostrar categoría principal primero - AMARILLO */}
+          {realCategory && (
+            <a 
+              href={`/${realCategory.toLowerCase()}`} 
+              class="inline-block px-4 py-2 rounded-full text-sm font-bold mr-3 mb-2 transition-all duration-300 hover:scale-105 shadow-md bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900 hover:shadow-lg"
+            >
+              {realCategory}
             </a>
+          )}
+          
+          {/* Mostrar tags - VERDE */}
+          {realTags.slice(0, 3).map(tag => (
+            <span class="inline-block px-4 py-2 rounded-full text-sm font-bold mr-3 mb-2 shadow-md bg-gradient-to-r from-green-500 to-green-600 text-white">
+              #{tag}
+            </span>
           ))}
-          <span class="badge badge-reading-time">
-            {readingTime} min lectura
+          
+          {/* Indicador de más tags - VERDE */}
+          {realTags.length > 3 && (
+            <span class="inline-block px-4 py-2 rounded-full text-sm font-bold mr-3 mb-2 shadow-md bg-gradient-to-r from-green-500 to-green-600 text-yellow-900">
+              +{realTags.length - 3} más
+            </span>
+          )}
+          
+          {/* Tiempo de lectura */}
+          <span class="inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium shadow-sm">
+            ⏱️ {readingTime} min lectura
           </span>
         </div>
 
         <!-- Título principal -->
-        <h1 class="article-title">{title}</h1>
+        <h1 class="article-title text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+          {title}
+        </h1>
         
-        <!-- Subtítulo/Descripción -->
-        <p class="article-subtitle">{description}</p>
+        <!-- Subtítulo -->
+        <p class="article-subtitle text-xl md:text-2xl text-gray-600 leading-relaxed mb-10 max-w-3xl">
+          {description}
+        </p>
 
-        <!-- Metadata mejorada -->
-        <div class="article-meta-enhanced">
-          <div class="author-info">
-            {author.avatar ? (
-              <Image 
-                src={author.avatar} 
-                alt={author.name}
-                width={40}
-                height={40}
-                class="author-avatar"
-              />
-            ) : (
-              <div class="author-avatar bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
-                {author.name.charAt(0)}
+        <!-- Metadata premium -->
+        <div class="article-meta-enhanced bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="author-info flex items-center gap-4">
+              {author.avatar ? (
+                <Image 
+                  src={author.avatar} 
+                  alt={author.name}
+                  width={60}
+                  height={60}
+                  class="author-avatar w-15 h-15 rounded-full border-4 border-green-200 shadow-lg"
+                />
+              ) : (
+                <div class="author-avatar w-15 h-15 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-2xl font-bold border-4 border-green-200 shadow-lg">
+                  {author.name.charAt(0)}
+                </div>
+              )}
+              <div class="author-details">
+                <h4 class="text-lg font-bold text-gray-900">{author.name}</h4>
+                <p class="text-gray-600">{new Date(date).toLocaleDateString('es-ES', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}</p>
+                {views && (
+                  <p class="text-sm text-gray-500">👁️ {views.toLocaleString()} visualizaciones</p>
+                )}
               </div>
-            )}
-            <div class="author-details">
-              <h4>{author.name}</h4>
-              <p>{new Date(date).toLocaleDateString('es-ES', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}</p>
             </div>
+
+            <ShareButtons 
+              url={currentUrl} 
+              title={title} 
+              vertical={false} 
+              showLabel={false}
+            />
           </div>
-
-          {views && (
-            <div class="text-sm text-gray-600">
-              {views.toLocaleString()} visualizaciones
-            </div>
-          )}
-
-          <!-- Botones de compartir horizontal -->
-          <ShareButtons 
-            url={currentUrl} 
-            title={title} 
-            vertical={false} 
-            showLabel={false}
-          />
         </div>
       </div>
     </Container>
   </div>
   
-  <Container size="lg" class="py-8">
+  <!-- CONTENIDO PRINCIPAL Y SIDEBAR -->
+  <Container size="lg" class="py-12">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
       <!-- Contenido principal -->
       <article class="lg:col-span-9">
         <!-- Imagen principal -->
-        <div class="article-hero-image">
-          <Image 
-            src={image} 
-            alt={title}
-            width={1200}
-            height={675}
-            class="w-full h-auto"
-          />
+        <div class="article-hero-image mb-12 relative">
+          <div class="relative rounded-2xl overflow-hidden shadow-2xl group">
+            <Image 
+              src={image} 
+              alt={title}
+              width={1200}
+              height={675}
+              class="w-full h-auto"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
         </div>
         
         <!-- Contenido del artículo -->
-        <div class="article-content">
+        <div class="article-content prose prose-lg max-w-none">
           <slot />
         </div>
         
         <!-- Autor destacado -->
-        <div class="author-spotlight">
+        <div class="author-spotlight bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 mt-16 border border-green-100 shadow-lg">
           <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             {author.avatar ? (
               <Image 
                 src={author.avatar} 
                 alt={author.name}
-                width={100}
-                height={100}
-                class="w-20 h-20 rounded-full border-4 border-white shadow-lg"
+                width={120}
+                height={120}
+                class="w-24 h-24 rounded-full border-4 border-white shadow-xl"
               />
             ) : (
-              <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold border-4 border-white shadow-lg">
+              <div class="w-24 h-24 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white text-3xl font-bold border-4 border-white shadow-xl">
                 {author.name.charAt(0)}
               </div>
             )}
             <div class="flex-1">
-              <h3 class="text-xl font-bold text-gray-900 mb-2">{author.name}</h3>
+              <h3 class="text-2xl font-bold text-gray-900 mb-3">{author.name}</h3>
               {author.bio && (
-                <p class="text-gray-600 leading-relaxed">{author.bio}</p>
+                <p class="text-gray-700 leading-relaxed mb-4">{author.bio}</p>
               )}
-              <div class="mt-4">
+              <div class="flex flex-wrap gap-4">
                 <ShareButtons 
                   url={currentUrl} 
                   title={`Artículo de ${author.name}: ${title}`} 
@@ -173,40 +326,54 @@ const currentUrl = Astro.url.pathname;
         </div>
       </article>
       
-      <!-- Sidebar -->
+      <!-- Sidebar completo -->
       <div class="lg:col-span-3">
-        <div class="sidebar-sticky">
+        <div class="sidebar-sticky sticky top-[140px] space-y-8">
           <!-- Artículos populares -->
-                    <div class="sidebar-card">
-            <h3 class="text-lg font-bold mb-4 text-gray-900">Más leídos</h3>
-            <div class="space-y-4">
+          <div class="sidebar-card bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+            <div class="flex items-center gap-3 mb-6">
+              <span class="text-3xl">🔥</span>
+              <h3 class="text-xl font-bold text-gray-900">Más leídos</h3>
+            </div>
+            
+            <div class="space-y-6">
               {popularArticles && popularArticles.length > 0 ? (
                 popularArticles.slice(0, 5).map((article, index) => (
-                  <div class="flex items-start space-x-3 group">
-                    <div class="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">
+                  <div class="flex items-start space-x-4 group">
+                    <div class={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shadow-md ${
+                      index === 0 
+                        ? 'bg-gradient-to-br from-yellow-400 to-orange-400 text-white' 
+                        : index === 1 
+                        ? 'bg-gradient-to-br from-gray-400 to-gray-500 text-white'
+                        : index === 2
+                        ? 'bg-gradient-to-br from-orange-400 to-red-500 text-white'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
                       {index + 1}
                     </div>
                     <div class="flex-1 min-w-0">
                       <a 
-                        href={`/articulos/${article.slug || article.id}`}
-                        class="block text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2"
+                        href={`/articulos/${article.slug}`}
+                        class="block text-sm font-bold text-gray-900 group-hover:text-green-600 transition-colors line-clamp-2 mb-2"
                       >
                         {article.title}
                       </a>
-                      <p class="text-xs text-gray-500 mt-1">
-                        {article.readingTime || 5} min • {article.category}
-                      </p>
+                      <div class="flex items-center gap-2 text-xs text-gray-500">
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                          {article.category}
+                        </span>
+                        <span>•</span>
+                        <span>{article.readingTime || 5}m</span>
+                      </div>
                     </div>
                   </div>
                 ))
               ) : (
-                <div class="text-center py-4">
-                  <p class="text-sm text-gray-500 mb-3">Cargando artículos populares...</p>
-                  <div class="animate-pulse space-y-2">
-                    <div class="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div class="h-4 bg-gray-200 rounded w-1/2"></div>
-                    <div class="h-4 bg-gray-200 rounded w-2/3"></div>
+                <div class="text-center py-8">
+                  <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-2xl">📚</span>
                   </div>
+                  <p class="text-sm text-gray-500 mb-3">Cargando artículos populares...</p>
                 </div>
               )}
             </div>
@@ -214,90 +381,343 @@ const currentUrl = Astro.url.pathname;
           
           <!-- Artículos relacionados -->
           {relatedArticles.length > 0 && (
-            <div class="sidebar-card">
-              <h3 class="text-lg font-bold mb-4 text-gray-900">Artículos relacionados</h3>
-              <div class="space-y-4">
+            <div class="sidebar-card bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+              <div class="flex items-center gap-3 mb-6">
+                <span class="text-3xl">🔗</span>
+                <h3 class="text-xl font-bold text-gray-900">Artículos relacionados</h3>
+              </div>
+              
+              <div class="space-y-6">
                 {relatedArticles.map(article => (
-                  <div class="flex items-start space-x-3 group">
-                    <a href={`/articulos/${article.id}`} class="flex-shrink-0">
-                      <Image 
-                        src={article.image} 
-                        alt={article.title}
-                        width={80}
-                        height={60}
-                        class="w-20 h-16 object-cover rounded-lg"
-                      />
+                  <div class="group">
+                    <a href={`/articulos/${article.id}`} class="block">
+                      <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0">
+                          <Image 
+                            src={article.image} 
+                            alt={article.title}
+                            width={80}
+                            height={60}
+                            class="w-20 h-16 object-cover rounded-xl border border-gray-200 group-hover:border-green-300 transition-colors"
+                          />
+                        </div>
+                        <div class="flex-1 min-w-0">
+                          <h4 class="text-sm font-bold text-gray-900 group-hover:text-green-600 transition-colors line-clamp-2 mb-2">
+                            {article.title}
+                          </h4>
+                          <div class="flex items-center gap-2 text-xs text-gray-500">
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                              {article.readingTime}m
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </a>
-                    <div class="flex-1 min-w-0">
-                      <a 
-                        href={`/articulos/${article.id}`} 
-                        class="block text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2"
-                      >
-                        {article.title}
-                      </a>
-                      <p class="text-xs text-gray-500 mt-1">
-                        {article.readingTime} min lectura
-                      </p>
-                    </div>
                   </div>
                 ))}
               </div>
             </div>
           )}
+
+          <!-- Newsletter integrado premium -->
+          <div class="bg-gradient-to-br from-green-500 via-green-600 to-emerald-600 rounded-2xl shadow-2xl p-8 text-white relative overflow-hidden">
+            <!-- Decoraciones de fondo -->
+            <div class="absolute inset-0 opacity-20">
+              <div class="absolute -top-4 -right-4 w-20 h-20 bg-white rounded-full blur-xl"></div>
+              <div class="absolute -bottom-4 -left-4 w-24 h-24 bg-yellow-300 rounded-full blur-lg"></div>
+            </div>
+            
+            <div class="relative z-10">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <span class="text-2xl">💡</span>
+                </div>
+                <h3 class="text-xl font-bold">¡No te pierdas nada!</h3>
+              </div>
+              
+              <p class="text-white/90 mb-6 leading-relaxed">
+                Suscríbete y recibe los mejores consejos para el cuidado de mascotas en tu email.
+              </p>
+              
+              <!-- Newsletter form integrado -->
+              <form id="newsletter-sidebar" class="newsletter-form space-y-4">
+                <div class="space-y-3">
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    placeholder="tu@email.com"
+                    class="w-full px-4 py-3 text-sm text-gray-900 bg-white/95 backdrop-blur-sm border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-white focus:bg-white transition-all duration-300 placeholder-gray-500"
+                  />
+                  <button
+                    type="submit"
+                    class="w-full px-6 py-3 bg-white text-green-600 hover:text-green-700 rounded-xl text-sm font-bold transition-all duration-300 hover:bg-gray-50 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <span class="button-text">Suscribirme</span>
+                    <span class="loading-text hidden">Enviando...</span>
+                  </button>
+                </div>
+                
+                <div class="flex items-start">
+                  <label class="flex items-start text-xs text-white/80">
+                    <input 
+                      type="checkbox" 
+                      name="accept-terms" 
+                      required
+                      class="h-3 w-3 mt-0.5 mr-2 rounded border-white/30 text-green-600 focus:ring-white bg-white/20" 
+                    />
+                    Acepto recibir correos y la política de privacidad
+                  </label>
+                </div>
+                
+                <p class="text-xs text-white/70 text-center">
+                  Sin spam. Cancela cuando quieras.
+                </p>
+                
+                <!-- Mensaje de respuesta -->
+                <div class="message-container mt-3 hidden">
+                  <div class="success-message hidden p-3 bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-xl text-sm">
+                    ✅ ¡Suscripción exitosa! Bienvenido a nuestra comunidad.
+                  </div>
+                  <div class="error-message hidden p-3 bg-red-500/80 backdrop-blur-sm border border-red-300/30 text-white rounded-xl text-sm">
+                    ❌ <span class="error-text">Error al procesar la suscripción</span>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </Container>
 
+  <!-- Barra de progreso de lectura -->
+  <div class="reading-progress fixed top-0 left-0 right-0 z-50 h-1 bg-gray-200">
+    <div class="reading-progress-bar h-full bg-gradient-to-r from-green-500 to-emerald-600 transition-all duration-150 ease-out w-0"></div>
+  </div>
+
+  <!-- Script para funcionalidades -->
   <script>
-    // Script limpio sin errores TypeScript
     document.addEventListener('DOMContentLoaded', () => {
       
       // Progress bar de lectura
-      function createReadingProgress() {
-        const progressBar = document.createElement('div');
-        progressBar.className = 'reading-progress';
-        progressBar.innerHTML = '<div class="reading-progress-bar"></div>';
-        document.body.appendChild(progressBar);
+      function updateProgress(): void {
+        const scrolled = window.scrollY;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (scrolled / maxScroll) * 100;
         
-        function updateProgress() {
-          const scrolled = window.scrollY;
-          const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-          const progress = (scrolled / maxScroll) * 100;
+        const progressBarElement = document.querySelector('.reading-progress-bar') as HTMLElement;
+        if (progressBarElement) {
+          progressBarElement.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+        }
+      }
+      
+      window.addEventListener('scroll', updateProgress);
+      updateProgress();
+
+      // Newsletter específico del sidebar
+      const form = document.getElementById('newsletter-sidebar') as HTMLFormElement;
+      if (!form) return;
+
+      const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+      const buttonText = form.querySelector('.button-text') as HTMLElement;
+      const loadingText = form.querySelector('.loading-text') as HTMLElement;
+      const messageContainer = form.querySelector('.message-container') as HTMLElement;
+      const successMessage = form.querySelector('.success-message') as HTMLElement;
+      const errorMessage = form.querySelector('.error-message') as HTMLElement;
+      const errorText = form.querySelector('.error-text') as HTMLElement;
+
+      form.addEventListener('submit', async (e: Event) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const email = formData.get('email') as string;
+
+        if (!email) {
+          showError('Por favor, ingresa tu email');
+          return;
+        }
+
+        setLoading(true);
+        hideMessages();
+
+        try {
+          // Simulación de envío (reemplazar con tu API real)
+          await new Promise(resolve => setTimeout(resolve, 1000));
           
-          const progressBarElement = document.querySelector('.reading-progress-bar') as HTMLElement;
-          if (progressBarElement) {
-            progressBarElement.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+          showSuccess('¡Suscripción exitosa! Revisa tu email.');
+          form.reset();
+          
+        } catch (error) {
+          showError('Error de conexión. Inténtalo de nuevo.');
+        } finally {
+          setLoading(false);
+        }
+      });
+
+      function setLoading(isLoading: boolean): void {
+        if (submitButton) {
+          submitButton.disabled = isLoading;
+        }
+        if (buttonText && loadingText) {
+          if (isLoading) {
+            buttonText.classList.add('hidden');
+            loadingText.classList.remove('hidden');
+          } else {
+            buttonText.classList.remove('hidden');
+            loadingText.classList.add('hidden');
           }
         }
-        
-        window.addEventListener('scroll', updateProgress);
-        updateProgress();
+      }
+
+      function showSuccess(message: string): void {
+        if (messageContainer && successMessage) {
+          messageContainer.classList.remove('hidden');
+          successMessage.classList.remove('hidden');
+          successMessage.textContent = message;
+        }
+      }
+
+      function showError(message: string): void {
+        if (messageContainer && errorMessage && errorText) {
+          messageContainer.classList.remove('hidden');
+          errorMessage.classList.remove('hidden');
+          errorText.textContent = message;
+        }
+      }
+
+      function hideMessages(): void {
+        if (messageContainer) {
+          messageContainer.classList.add('hidden');
+        }
+        if (successMessage) {
+          successMessage.classList.add('hidden');
+        }
+        if (errorMessage) {
+          errorMessage.classList.add('hidden');
+        }
       }
       
-      // Mejoras de lectura
+      // Mejorar enlaces externos
       const articleContentEl = document.querySelector('.article-content');
       if (articleContentEl) {
-        // Mejorar enlaces externos
         const externalLinks = articleContentEl.querySelectorAll('a[href^="http"]') as NodeListOf<HTMLAnchorElement>;
-        externalLinks.forEach(link => {
+        externalLinks.forEach((link: HTMLAnchorElement) => {
           link.setAttribute('target', '_blank');
           link.setAttribute('rel', 'noopener noreferrer');
+          link.classList.add('external-link');
         });
         
-        // Lazy loading para imágenes
         const images = articleContentEl.querySelectorAll('img') as NodeListOf<HTMLImageElement>;
-        images.forEach(img => {
+        images.forEach((img: HTMLImageElement) => {
           img.loading = 'lazy';
+          img.classList.add('article-image');
         });
       }
-      
-      createReadingProgress();
-      
-      // Añadir indicador de scroll suave
-      document.documentElement.style.scrollBehavior = 'smooth';
       
       console.log('✅ ArticleLayout cargado correctamente');
     });
   </script>
 </BaseLayout>
+
+<style>
+  /* Estilos premium para el artículo */
+  .article-content {
+    @apply prose prose-lg max-w-none;
+  }
+  
+  .article-content h1 {
+    @apply text-4xl font-bold text-gray-900 mb-6 mt-12 border-b-4 border-green-500 pb-4;
+  }
+  
+  .article-content h2 {
+    @apply text-3xl font-bold mb-4 mt-10 text-green-700;
+  }
+  
+  .article-content h3 {
+    @apply text-2xl font-bold mb-3 mt-8 text-green-600;
+  }
+  
+  .article-content p {
+    @apply text-gray-700 leading-relaxed mb-6;
+  }
+  
+  .article-content img {
+    @apply rounded-xl shadow-lg my-8 border border-gray-200;
+  }
+  
+  .article-content blockquote {
+    @apply border-l-4 border-green-500 bg-green-50 p-6 my-8 rounded-r-xl italic;
+  }
+  
+  .article-content ul, .article-content ol {
+    @apply my-6 space-y-2;
+  }
+  
+  .article-content li {
+    @apply text-gray-700;
+  }
+  
+  .article-content a {
+    @apply text-green-600 hover:text-green-700 transition-colors duration-200;
+  }
+  
+  .external-link::after {
+    content: "↗";
+    @apply ml-1 text-xs text-gray-400;
+  }
+  
+  /* Animaciones */
+  .sidebar-card {
+    transition: all 0.3s ease;
+  }
+  
+  .sidebar-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* Line clamp utility */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Responsive mejoras */
+  @media (max-width: 768px) {
+    .article-title {
+      @apply text-3xl;
+    }
+    
+    .article-subtitle {
+      @apply text-lg;
+    }
+  }
+  
+  /* Estilos específicos del newsletter sidebar */
+  .newsletter-form input[type="email"]:focus {
+    transform: scale(1.02);
+  }
+  
+  .newsletter-form button:hover {
+    transform: translateY(-1px);
+  }
+  
+  /* Animación para los mensajes */
+  .message-container .success-message,
+  .message-container .error-message {
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

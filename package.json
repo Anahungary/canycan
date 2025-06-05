@@ -4,16 +4,18 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "start": "astro dev", 
+    "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check"
   },
   "dependencies": {
+    "@astrojs/netlify": "^6.3.4",
     "@astrojs/react": "^4.2.7",
     "@astrojs/tailwind": "^5.1.1",
     "astro": "^5.7.13",
+    "dotenv": "^16.5.0",
     "marked": "^15.0.12",
     "prop-types": "^15.8.1",
     "react": "^19.1.0",
@@ -21,9 +23,9 @@
     "tailwindcss": "^3.4.0"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.10",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
-    "@tailwindcss/typography": "^0.5.10",
     "typescript": "^5.0.0"
   }
 }

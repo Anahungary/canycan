@@ -28,7 +28,7 @@ const mapTraitToSpanish = (trait) => {
     
     // Niveles de experiencia
     'first_time_owners': 'Dueños primerizos',
-    'experienced_owners': 'Dueños experimentados',
+    'experienced_owner': 'Dueños experimentados',
     
     // Estilos de vida
     'active_owners': 'Personas activas',

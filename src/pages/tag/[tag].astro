@@ -1,0 +1,593 @@
+---
+// src/pages/tag/[tag].astro - VERSIÓN CORREGIDA CON VALIDACIONES
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/ui/Container.astro';
+import ArticleList from '../../components/blog/ArticleList.astro';
+import Button from '../../components/ui/Button.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Card from '../../components/ui/Card.astro';
+import Breadcrumb from '../../components/common/Breadcrumb.astro';
+
+// 🔧 IMPORTAR UTILIDADES CORREGIDAS
+import {
+  generateTagSlug,
+  getTagColor,
+  createSafeTagStats,
+  getSafeTrendingTags,
+  getRelatedTags,
+  searchByTags,
+  generateTagBreadcrumbs,
+  validateTag,
+  type TagData
+} from '../../utils/tags.ts';
+
+// ✅ HABILITAR PRERENDER
+export const prerender = true;
+
+// 🔧 TIPOS TYPESCRIPT
+interface Article {
+  id: string;
+  title: string;
+  excerpt: string;
+  image: string;
+  date: string;
+  author: {
+    name: string;
+    avatar: string;
+  };
+  readingTime: number;
+  categories: string[];
+}
+
+interface TagInfo {
+  slug: string;
+  name: string;
+  description: string;
+  color: string;
+  category?: string;
+  articlesCount: number;
+  featured?: boolean;
+  trending?: boolean;
+}
+
+export async function getStaticPaths() {
+  let allArticles: any[] = [];
+  let allTags: any[] = [];
+  
+  try {
+    const { getCollection } = await import('astro:content');
+    allArticles = await getCollection('articulos').catch(() => []);
+    allTags = await getCollection('etiquetas').catch(() => []);
+    
+    // Filtrar solo artículos publicados
+    allArticles = allArticles.filter((article: any) => 
+      article && article.data && article.data.status === 'published'
+    );
+    
+    console.log(`📊 Cargados: ${allArticles.length} artículos, ${allTags.length} tags del CMS`);
+  } catch (error) {
+    console.log('⚠️ Error cargando contenido:', error);
+    allArticles = [];
+    allTags = [];
+  }
+
+  // 📊 CALCULAR ESTADÍSTICAS DE TAGS DE FORMA SEGURA
+  const tagStats = createSafeTagStats(allArticles);
+  const paths: any[] = [];
+
+  console.log(`📊 TagStats generado con ${tagStats.size} tags únicos`);
+
+  // 🏷️ PROCESAR TAGS DEL CMS
+  for (const tagFromCMS of allTags) {
+    if (!validateTag(tagFromCMS.data)) {
+      console.log(`⚠️ Tag inválido encontrado:`, tagFromCMS);
+      continue;
+    }
+    
+    const tagSlug = tagFromCMS.data.slug || generateTagSlug(tagFromCMS.data.name);
+    const tagName = tagFromCMS.data.name;
+    
+    // Buscar artículos con este tag
+    const tagArticles = searchByTags(allArticles, [tagSlug]);
+    
+    const processedArticles: Article[] = tagArticles.map((article: any) => ({
+      id: article.slug || 'unknown',
+      title: article.data?.title || 'Sin título',
+      excerpt: article.data?.description || article.data?.excerpt || '',
+      image: article.data?.image || '/images/articles/default.jpg',
+      date: article.data?.date ? article.data.date.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      author: {
+        name: article.data?.author || 'Editor PataDigital',
+        avatar: '/images/authors/default.jpg'
+      },
+      readingTime: article.data?.readingTime || 5,
+      categories: [article.data?.category, ...(article.data?.tags || [])].filter(Boolean)
+    }));
+
+    const tagInfo: TagInfo = {
+      slug: tagSlug,
+      name: tagName,
+      description: tagFromCMS.data?.description || `Artículos sobre ${tagName.toLowerCase()}`,
+      color: tagFromCMS.data?.color || getTagColor(tagName, tagFromCMS.data?.category),
+      category: tagFromCMS.data?.category,
+      articlesCount: processedArticles.length,
+      featured: tagFromCMS.data?.featured || false,
+      trending: tagFromCMS.data?.trending || false
+    };
+
+    paths.push({
+      params: { tag: tagSlug },
+      props: { 
+        tag: tagInfo,
+        articles: processedArticles,
+        tagStats: tagStats
+      }
+    });
+  }
+
+  // 🔍 TAGS DINÁMICOS DE ARTÍCULOS (si no están en CMS)
+  for (const [tagSlug, count] of tagStats.entries()) {
+    // Si ya está en el CMS, saltar
+    if (paths.some(path => path.params.tag === tagSlug)) continue;
+    
+    // Crear tag dinámico
+    const tagArticles = searchByTags(allArticles, [tagSlug]);
+    
+    if (tagArticles.length === 0) continue;
+    
+    const processedArticles: Article[] = tagArticles.map((article: any) => ({
+      id: article.slug || 'unknown',
+      title: article.data?.title || 'Sin título',
+      excerpt: article.data?.description || article.data?.excerpt || '',
+      image: article.data?.image || '/images/articles/default.jpg',
+      date: article.data?.date ? article.data.date.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      author: {
+        name: article.data?.author || 'Editor PataDigital',
+        avatar: '/images/authors/default.jpg'
+      },
+      readingTime: article.data?.readingTime || 5,
+      categories: [article.data?.category, ...(article.data?.tags || [])].filter(Boolean)
+    }));
+
+    // Generar nombre amigable del slug
+    const tagName = tagSlug
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+
+    const tagInfo: TagInfo = {
+      slug: tagSlug,
+      name: tagName,
+      description: `Artículos relacionados con ${tagName.toLowerCase()}`,
+      color: getTagColor(tagName),
+      articlesCount: count,
+      featured: false,
+      trending: false
+    };
+
+    paths.push({
+      params: { tag: tagSlug },
+      props: { 
+        tag: tagInfo,
+        articles: processedArticles,
+        tagStats: tagStats
+      }
+    });
+  }
+
+  // 🚨 FALLBACK si no hay paths
+  if (paths.length === 0) {
+    console.log('⚠️ No se encontraron tags, generando fallbacks');
+    const fallbackTags = [
+      { slug: 'cachorros', name: 'Cachorros', description: 'Contenido sobre cachorros' },
+      { slug: 'entrenamiento', name: 'Entrenamiento', description: 'Artículos sobre entrenamiento' },
+      { slug: 'alimentacion', name: 'Alimentación', description: 'Guías de alimentación' }
+    ];
+    
+    return fallbackTags.map((tagData) => ({
+      params: { tag: tagData.slug },
+      props: { 
+        tag: {
+          slug: tagData.slug,
+          name: tagData.name,
+          description: tagData.description,
+          color: getTagColor(tagData.name),
+          articlesCount: 0,
+          featured: false,
+          trending: false
+        },
+        articles: [] as Article[],
+        tagStats: new Map()
+      }
+    }));
+  }
+
+  console.log(`✅ Generados ${paths.length} paths para tags`);
+  return paths;
+}
+
+// 🔧 OBTENER PROPS CON VALIDACIÓN
+const { tag, articles = [], tagStats } = Astro.props;
+
+// Validar que tag existe
+if (!tag) {
+  console.error('❌ Tag no definido en props');
+  return Astro.redirect('/404');
+}
+
+// 🔗 TAGS RELACIONADOS CON VALIDACIÓN
+let relatedTags: any[] = [];
+try {
+  const { getCollection } = await import('astro:content');
+  const allTagsFromCMS = await getCollection('etiquetas').catch(() => []);
+  
+  const validTagsFromCMS: TagData[] = allTagsFromCMS
+    .filter((t: any) => validateTag(t.data))
+    .map((t: any) => ({
+      slug: t.data.slug || generateTagSlug(t.data.name),
+      name: t.data.name,
+      description: t.data.description || '',
+      color: t.data.color || 'gray',
+      category: t.data.category || '',
+      articlesCount: tagStats instanceof Map ? (tagStats.get(t.data.slug || generateTagSlug(t.data.name)) || 0) : 0,
+      featured: t.data.featured || false,
+      trending: t.data.trending || false
+    }));
+  
+  relatedTags = getRelatedTags(tag.slug, validTagsFromCMS);
+} catch (error) {
+  console.log('⚠️ Error cargando tags relacionados:', error);
+  relatedTags = [];
+}
+
+// 🔥 TAGS TRENDING CON VALIDACIÓN
+const trendingTags = getSafeTrendingTags(tagStats, 8);
+
+// 📍 BREADCRUMBS
+const breadcrumbItems = generateTagBreadcrumbs(tag.slug, tag);
+
+// 🎨 CLASSES CSS SEGÚN COLOR
+const getColorClasses = (color: string) => {
+  const colorMap: Record<string, string> = {
+    'green': 'bg-green-100 text-green-800 border-green-200',
+    'blue': 'bg-blue-100 text-blue-800 border-blue-200',
+    'purple': 'bg-purple-100 text-purple-800 border-purple-200',
+    'orange': 'bg-orange-100 text-orange-800 border-orange-200',
+    'red': 'bg-red-100 text-red-800 border-red-200',
+    'yellow': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    'pink': 'bg-pink-100 text-pink-800 border-pink-200',
+    'indigo': 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    'teal': 'bg-teal-100 text-teal-800 border-teal-200',
+    'cyan': 'bg-cyan-100 text-cyan-800 border-cyan-200',
+    'gray': 'bg-gray-100 text-gray-800 border-gray-200'
+  };
+  return colorMap[color] || colorMap.gray;
+};
+
+const tagColorClasses = getColorClasses(tag.color);
+
+// 🔧 OBTENER CONTADOR SEGURO PARA TRENDING TAGS
+const getTagCount = (tagSlug: string): number => {
+  if (!(tagStats instanceof Map)) return 0;
+  return tagStats.get(tagSlug) || 0;
+};
+---
+
+<BaseLayout
+  title={`${tag.name} | Artículos sobre ${tag.name.toLowerCase()}`}
+  description={tag.description}
+>
+  {/* Breadcrumbs */}
+  <Container class="pt-6">
+    <Breadcrumb items={breadcrumbItems} currentPage={tag.name} />
+  </Container>
+
+  {/* Hero con colores de la paleta */}
+  <div class="relative bg-gradient-to-br from-green-500 to-green-600 text-white overflow-hidden">
+    {/* Patrón de fondo decorativo */}
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute -top-4 -right-4 w-32 h-32 bg-white rounded-full blur-xl"></div>
+      <div class="absolute top-1/2 -left-8 w-24 h-24 bg-yellow-300 rounded-full blur-lg"></div>
+      <div class="absolute -bottom-6 right-1/3 w-40 h-40 bg-white rounded-full blur-2xl"></div>
+    </div>
+    
+    <!-- Ondas decorativas -->
+    <div class="absolute bottom-0 left-0 right-0">
+      <svg viewBox="0 0 1200 120" class="w-full h-12 fill-current text-white">
+        <path d="M0,60 C300,120 900,0 1200,60 L1200,120 L0,120 Z" />
+      </svg>
+    </div>
+    
+    <Container>
+      <div class="py-16 md:py-20 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+          {/* Badge del tag */}
+          <div class="inline-block mb-6">
+            <span class="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm font-bold uppercase tracking-wider border border-white/30">
+              🏷️ Etiqueta
+            </span>
+          </div>
+          
+          <h1 class="text-4xl md:text-6xl font-bold mb-6 text-white leading-tight">
+            {tag.name}
+          </h1>
+          <p class="text-xl md:text-2xl opacity-95 mb-10 leading-relaxed max-w-3xl mx-auto">
+            {tag.description}
+          </p>
+          
+          {/* Estadísticas */}
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto mb-8">
+            <div class="bg-white/15 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div class="text-3xl font-bold text-yellow-300">{articles.length}</div>
+              <div class="text-sm opacity-90">Artículos</div>
+            </div>
+            <div class="bg-white/15 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div class="text-3xl font-bold text-yellow-300">{relatedTags.length}</div>
+              <div class="text-sm opacity-90">Tags relacionados</div>
+            </div>
+            <div class="bg-white/15 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+              <div class="text-3xl font-bold text-yellow-300">5★</div>
+              <div class="text-sm opacity-90">Calidad</div>
+            </div>
+          </div>
+          
+          {/* Enlaces rápidos */}
+          {tag.category && (
+            <div class="mt-8">
+              <a 
+                href={`/categorias/${generateTagSlug(tag.category)}`}
+                class="group bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 border border-white/20 hover:border-white/40 hover:scale-105"
+              >
+                <span class="group-hover:mr-2 transition-all duration-200">Ver categoría: {tag.category}</span>
+                <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-200">→</span>
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    </Container>
+  </div>
+  
+  <Container class="py-16">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      {/* Contenido principal */}
+      <div class="lg:col-span-8">
+        {articles.length > 0 ? (
+          <div>
+            <div class="mb-8 bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+              <p class="text-gray-900 text-lg">
+                Se encontraron <span class={`font-bold px-2 py-1 rounded ${tagColorClasses}`}>{articles.length}</span> artículos con la etiqueta "{tag.name}"
+              </p>
+            </div>
+            
+            <ArticleList 
+              articles={articles} 
+              layout="grid" 
+              columns={2}
+            />
+          </div>
+        ) : (
+          <div class="bg-white rounded-xl p-12 text-center border border-gray-200 shadow-sm">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span class="text-3xl">📝</span>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">No hay artículos aún</h2>
+            <p class="text-gray-600 mb-8 text-lg">
+              Aún no hay artículos publicados con la etiqueta "{tag.name}".
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button href="/blog" variant="primary" size="lg" class="bg-green-500 hover:bg-green-600 text-white border-none">
+                Explorar todos los artículos
+              </Button>
+              <Button href="/admin/" variant="outline" size="lg" class="border-green-500 text-green-600 hover:bg-green-500 hover:text-white">
+                Crear nuevo artículo
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+      
+      {/* Sidebar */}
+      <div class="lg:col-span-4">
+        <div class="sticky top-[140px] space-y-8">
+          {/* Tags relacionados */}
+          {relatedTags.length > 0 && (
+            <Card variant="default" padding="md" class="bg-white shadow-lg border border-gray-200">
+              <h3 class="text-xl font-bold mb-6 text-gray-900 flex items-center">
+                <span class={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${tagColorClasses}`}>
+                  🔗
+                </span>
+                Tags relacionados
+              </h3>
+              <div class="flex flex-wrap gap-3">
+                {relatedTags.map((relatedTag: TagData) => (
+                  <a 
+                    href={`/tag/${relatedTag.slug}`}
+                    class={`px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 transition-all duration-300 hover:scale-105 ${
+                      relatedTag.slug === tag.slug 
+                        ? tagColorClasses + ' shadow-md' 
+                        : `bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-200 hover:border-gray-300`
+                    }`}
+                  >
+                    {relatedTag.name}
+                    {relatedTag.articlesCount > 0 && (
+                      <span class="text-xs opacity-75 bg-white bg-opacity-50 px-2 py-1 rounded-full">
+                        {relatedTag.articlesCount}
+                      </span>
+                    )}
+                  </a>
+                ))}
+              </div>
+            </Card>
+          )}
+          
+          {/* Tags trending */}
+          {trendingTags.length > 0 && (
+            <Card variant="default" padding="md" class="bg-white shadow-lg border border-gray-200">
+              <h3 class="text-xl font-bold mb-6 text-gray-900 flex items-center">
+                <span class="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center mr-3">
+                  🔥
+                </span>
+                Tags populares
+              </h3>
+              <div class="flex flex-wrap gap-3">
+                {trendingTags.map((trendingTag: string, index: number) => {
+                  const isCurrentTag = trendingTag === tag.slug;
+                  const tagCount = getTagCount(trendingTag);
+                  const tagDisplayName = trendingTag
+                    .split('-')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                  
+                  return (
+                    <a 
+                      href={`/tag/${trendingTag}`}
+                      class={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                        isCurrentTag
+                          ? tagColorClasses + ' shadow-md' 
+                          : index === 0
+                          ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg hover:shadow-xl' 
+                          : 'bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      {tagDisplayName}
+                      <span class="ml-2 text-xs opacity-75 bg-white bg-opacity-30 px-2 py-1 rounded-full">
+                        {tagCount}
+                      </span>
+                    </a>
+                  );
+                })}
+              </div>
+            </Card>
+          )}
+          
+          {/* Artículos destacados del tag */}
+          {articles.length > 0 && (
+            <Card variant="default" padding="md" class="bg-white shadow-lg border border-gray-200">
+              <h3 class="text-xl font-bold mb-6 text-gray-900 flex items-center">
+                <span class={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${tagColorClasses}`}>
+                  ⭐
+                </span>
+                Artículos destacados
+              </h3>
+              <div class="space-y-4">
+                {articles.slice(0, 3).map((article: Article) => (
+                  <a href={`/articulos/${article.id}`} class="flex group p-3 rounded-lg hover:bg-gray-50 transition-colors duration-300 border border-transparent hover:border-gray-200">
+                    <div class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-gray-200">
+                      <img 
+                        src={article.image} 
+                        alt={article.title}
+                        class="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div class="ml-4">
+                      <h4 class="text-sm font-bold group-hover:text-green-600 transition-colors duration-300 line-clamp-2 mb-2">
+                        {article.title}
+                      </h4>
+                      <div class="flex items-center gap-2 text-xs text-gray-500">
+                        <span class={`px-2 py-1 rounded-full font-medium ${tagColorClasses}`}>
+                          {article.readingTime}m
+                        </span>
+                        <span>•</span>
+                        <span>{article.author.name}</span>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </Card>
+          )}
+          
+          {/* Newsletter */}
+          <Card variant="highlight" padding="md" class="bg-gradient-to-br from-green-500 to-green-600 text-white shadow-xl">
+            <div class="relative">
+              <h3 class="text-xl font-bold mb-4 flex items-center">
+                <span class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mr-3">
+                  💌
+                </span>
+                ¡Suscríbete!
+              </h3>
+              <p class="text-white/90 mb-6 leading-relaxed">
+                Recibe los mejores artículos sobre {tag.name.toLowerCase()} y más directamente en tu correo.
+              </p>
+              
+              <form class="space-y-4">
+                <div>
+                  <label for="email-sidebar" class="sr-only">Correo electrónico</label>
+                  <input
+                    type="email"
+                    id="email-sidebar"
+                    name="email"
+                    required
+                    placeholder="tu@email.com"
+                    class="w-full px-4 py-3 text-gray-900 bg-white/95 backdrop-blur-sm border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-white focus:bg-white transition-all duration-300 placeholder-gray-500"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="w-full bg-white text-gray-900 hover:bg-gray-100 py-3 px-6 rounded-xl text-sm font-bold transition-all duration-300 hover:scale-105 shadow-lg"
+                >
+                  🚀 Suscribirme gratis
+                </button>
+                <p class="text-xs text-white/70 text-center">
+                  Sin spam. Cancela cuando quieras.
+                </p>
+              </form>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </div>
+  </Container>
+</BaseLayout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .transition-all {
+    transition: all 0.3s ease;
+  }
+
+  .hover\:scale-105:hover {
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    .sticky {
+      position: relative;
+      top: auto;
+    }
+  }
+
+  input:focus,
+  button:focus,
+  a:focus {
+    outline: 2px solid #22c55e;
+    outline-offset: 2px;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Glassmorphism effects */
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+  }
+
+  /* Gradientes dinámicos */
+  .bg-gradient-to-br {
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+</style>

@@ -1,4 +1,4 @@
-# netlify.toml - CORREGIDO para Netlify CMS
+# netlify.toml - ACTUALIZADO para Netlify CMS + Airtable Integration
 [build]
   publish = "dist"
   command = "npm run build"
@@ -13,6 +13,12 @@
   to = "/admin/index.html"
   status = 200
 
+# ✅ NUEVO: Redirección para API routes de Astro (Airtable)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
 [[redirects]]
   from = "/blog/*"
   to = "/blog/[...slug]"
@@ -23,7 +29,7 @@
   to = "/404.html"
   status = 404
 
-# Headers de seguridad CORREGIDOS para Netlify CMS
+# Headers de seguridad para el sitio general
 [[headers]]
   for = "/*"
   [headers.values]
@@ -31,7 +37,7 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    # ✅ CSP CORREGIDO - Agregado 'unsafe-eval' para Netlify CMS
+    # CSP CORREGIDO - Agregado 'unsafe-eval' para Netlify CMS
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://identity.netlify.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https: blob:; font-src 'self' data: https:; connect-src 'self' https://api.netlify.com https://*.netlify.com;"
 
 # Cache para assets estáticos
@@ -46,10 +52,22 @@
   [headers.values]
     Cache-Control = "public, max-age=86400"
 
-# ✅ Headers específicos para Netlify CMS - MÁS PERMISIVOS
+# Headers específicos para Netlify CMS - MÁS PERMISIVOS
 [[headers]]
   for = "/admin/*"
   [headers.values]
     X-Frame-Options = "SAMEORIGIN"
     # CSP más permisivo solo para el admin
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https: blob:; font-src 'self' data: https:; connect-src 'self' https:;"
+
+# ✅ NUEVO: Headers específicos para API routes (Airtable)
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Cache-Control = "no-cache"
+
+# Variables de entorno necesarias (configurar en Netlify Dashboard):
+# AIRTABLE_API_KEY = "tu_api_key_de_airtable"

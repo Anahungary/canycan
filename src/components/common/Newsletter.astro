@@ -1,87 +1,194 @@
 ---
-// Newsletter.astro - Componente para suscripción a newsletter
+// src/components/common/Newsletter.astro - Versión conectada con Airtable
+interface Props {
+  source?: string; // Para identificar de dónde viene la suscripción
+  variant?: 'default' | 'inline' | 'modal';
+  showTitle?: boolean;
+  title?: string;
+  description?: string;
+}
+
+const { 
+  source = 'general',
+  variant = 'default',
+  showTitle = true,
+  title = 'Suscríbete a nuestra newsletter',
+  description = 'Recibe consejos, artículos y novedades sobre el cuidado de mascotas.'
+} = Astro.props;
+
+const newsletterId = `newsletter-${Math.random().toString(36).substring(2, 15)}`;
 ---
 
-<div class="newsletter-form">
-  <form id="newsletter-form" class="space-y-3">
-    <div>
-      <label for="email" class="sr-only">Correo electrónico</label>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        required
-        placeholder="Tu correo electrónico"
-        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AFC2D5] focus:border-transparent"
-      />
+<div class={`newsletter-component ${variant}`} data-source={source}>
+  {showTitle && (
+    <div class="mb-4">
+      <h3 class="text-lg font-bold mb-2">{title}</h3>
+      <p class="text-sm text-gray-600">{description}</p>
     </div>
-    <div class="flex">
-      <label class="flex items-start">
-        <input 
-          type="checkbox" 
-          name="accept-terms" 
+  )}
+  
+  <form id={newsletterId} class="newsletter-form">
+    <div class={variant === 'inline' ? 'flex gap-2' : 'space-y-3'}>
+      <div class={variant === 'inline' ? 'flex-1' : 'w-full'}>
+        <label for={`email-${newsletterId}`} class="sr-only">Correo electrónico</label>
+        <input
+          type="email"
+          id={`email-${newsletterId}`}
+          name="email"
           required
-          class="h-4 w-4 mt-1 rounded border-gray-300 text-[#AFC2D5] focus:ring-[#AFC2D5]" 
+          placeholder="tu@email.com"
+          class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AFC2D5] focus:border-transparent"
         />
-        <span class="ml-2 text-xs text-gray-500">
-          Acepto recibir correos y la política de privacidad
-        </span>
-      </label>
+      </div>
+      
+      {variant !== 'inline' && (
+        <div class="flex items-start">
+          <label class="flex items-start">
+            <input 
+              type="checkbox" 
+              name="accept-terms" 
+              required
+              class="h-4 w-4 mt-1 rounded border-gray-300 text-[#AFC2D5] focus:ring-[#AFC2D5]" 
+            />
+            <span class="ml-2 text-xs text-gray-500">
+              Acepto recibir correos y la política de privacidad
+            </span>
+          </label>
+        </div>
+      )}
+      
+      <button
+        type="submit"
+        class={`
+          ${variant === 'inline' ? 'px-4 py-2' : 'w-full py-2 px-4'} 
+          bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white rounded-md text-sm font-medium 
+          transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed
+        `}
+      >
+        <span class="button-text">Suscribirme</span>
+        <span class="loading-text hidden">Enviando...</span>
+      </button>
     </div>
-    <button
-      type="submit"
-      class="w-full bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200"
-    >
-      Suscribirme
-    </button>
+    
+    <!-- Mensaje de respuesta -->
+    <div class="message-container mt-3 hidden">
+      <div class="success-message hidden p-3 bg-green-100 border border-green-300 text-green-800 rounded-md text-sm">
+        ✅ ¡Suscripción exitosa! Revisa tu email para confirmar.
+      </div>
+      <div class="error-message hidden p-3 bg-red-100 border border-red-300 text-red-800 rounded-md text-sm">
+        ❌ <span class="error-text">Error al procesar la suscripción</span>
+      </div>
+    </div>
   </form>
-  <div id="newsletter-success" class="hidden mt-3 text-sm text-green-600">
-    ¡Gracias por suscribirte! Pronto recibirás nuestras actualizaciones.
-  </div>
-  <div id="newsletter-error" class="hidden mt-3 text-sm text-red-600">
-    Ocurrió un error. Por favor intenta nuevamente.
-  </div>
 </div>
 
-<script>
-  // Script para manejar la suscripción al newsletter
-  const form = document.getElementById('newsletter-form');
-  const successMessage = document.getElementById('newsletter-success');
-  const errorMessage = document.getElementById('newsletter-error');
+<script define:vars={{ newsletterId, source }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById(newsletterId);
+    if (!form) return;
 
-  if (form) {
+    const submitButton = form.querySelector('button[type="submit"]');
+    const buttonText = form.querySelector('.button-text');
+    const loadingText = form.querySelector('.loading-text');
+    const messageContainer = form.querySelector('.message-container');
+    const successMessage = form.querySelector('.success-message');
+    const errorMessage = form.querySelector('.error-message');
+    const errorText = form.querySelector('.error-text');
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      // Aquí iría la lógica para enviar los datos a una API o servicio
-      // Por ahora solo simularemos éxito:
-      
+
+      // Obtener datos del formulario
+      const formData = new FormData(form);
+      const email = formData.get('email');
+
+      if (!email) {
+        showError('Por favor, ingresa tu email');
+        return;
+      }
+
+      // Mostrar estado de carga
+      setLoading(true);
+      hideMessages();
+
       try {
-        // Simulación de envío (reemplazar con llamada real a API)
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mostrar mensaje de éxito
-        if (successMessage) successMessage.classList.remove('hidden');
-        if (errorMessage) errorMessage.classList.add('hidden');
-        
-        // Limpiar formulario
-        form.reset();
-        
-        // Ocultar mensaje después de 5 segundos
-        setTimeout(() => {
-          if (successMessage) successMessage.classList.add('hidden');
-        }, 5000);
-        
+        // Enviar a nuestra API que conecta con Airtable
+        const response = await fetch('/api/newsletter', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            source: source || 'general'
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showSuccess(result.message);
+          form.reset(); // Limpiar formulario
+          
+          // Opcional: Google Analytics event
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'newsletter_signup', {
+              'custom_parameter': source
+            });
+          }
+        } else {
+          showError(result.message || 'Error al procesar la suscripción');
+        }
+
       } catch (error) {
-        // Mostrar mensaje de error
-        if (errorMessage) errorMessage.classList.remove('hidden');
-        if (successMessage) successMessage.classList.add('hidden');
-        
-        // Ocultar mensaje después de 5 segundos
-        setTimeout(() => {
-          if (errorMessage) errorMessage.classList.add('hidden');
-        }, 5000);
+        console.error('Error newsletter:', error);
+        showError('Error de conexión. Inténtalo de nuevo.');
+      } finally {
+        setLoading(false);
       }
     });
-  }
+
+    function setLoading(isLoading) {
+      if (submitButton) {
+        submitButton.disabled = isLoading;
+      }
+      if (buttonText && loadingText) {
+        if (isLoading) {
+          buttonText.classList.add('hidden');
+          loadingText.classList.remove('hidden');
+        } else {
+          buttonText.classList.remove('hidden');
+          loadingText.classList.add('hidden');
+        }
+      }
+    }
+
+    function showSuccess(message) {
+      if (messageContainer && successMessage) {
+        messageContainer.classList.remove('hidden');
+        successMessage.classList.remove('hidden');
+        successMessage.textContent = message;
+      }
+    }
+
+    function showError(message) {
+      if (messageContainer && errorMessage && errorText) {
+        messageContainer.classList.remove('hidden');
+        errorMessage.classList.remove('hidden');
+        errorText.textContent = message;
+      }
+    }
+
+    function hideMessages() {
+      if (messageContainer) {
+        messageContainer.classList.add('hidden');
+      }
+      if (successMessage) {
+        successMessage.classList.add('hidden');
+      }
+      if (errorMessage) {
+        errorMessage.classList.add('hidden');
+      }
+    }
+  });
 </script>

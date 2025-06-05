@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import QuizQuestion from './QuizQuestion';
 import DualBreedRecommendationResults from './DualBreedRecommendationResults';
+import LeadCaptureForm from './LeadCaptureForm';
 import { getDynamicQuizQuestions, collectUserResponses, shouldShowQuestion } from '../../../utils/quizHelpers';
 import { getDualBreedRecommendations, calculateCompatibilityScore, identifyStrengths, identifyChallenges } from '../../../utils/breedMatcher';
 import { breedsData } from '../../../data/breeds/index.js';
@@ -16,6 +17,11 @@ const BreedMatchQuiz = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [quizProgress, setQuizProgress] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+   // 🆕 Estados para captura de datos
+  const [showLeadCapture, setShowLeadCapture] = useState(false);
+  const [userLeadData, setUserLeadData] = useState(null);
+  const [quizCompleted, setQuizCompleted] = useState(false);
   
   // Estados para exploración y comparación
   const [showAllBreeds, setShowAllBreeds] = useState(false);
@@ -195,7 +201,8 @@ const BreedMatchQuiz = () => {
       if (currentQuestionIndex < relevantQuestions.length - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
       } else {
-        calculateDualResults();
+        setQuizCompleted(true);
+        setShowLeadCapture(true);
       }
       setIsTransitioning(false);
     }, 300);
@@ -210,6 +217,21 @@ const BreedMatchQuiz = () => {
       setIsTransitioning(false);
     }, 300);
   };
+
+  // 🆕 Manejar envío de datos de captura
+const handleLeadSubmit = (leadData) => {
+  console.log('📧 Datos capturados:', leadData);
+  setUserLeadData(leadData);
+  setShowLeadCapture(false);
+  calculateDualResults();
+};
+
+// 🆕 Manejar omisión de captura
+const handleLeadSkip = () => {
+  console.log('⏭️ Usuario omitió el registro');
+  setShowLeadCapture(false);
+  calculateDualResults();
+};
   
   // Calcular resultados duales (Colombia + Global)
   const calculateDualResults = () => {
@@ -274,6 +296,10 @@ const BreedMatchQuiz = () => {
     setShowComparator(false);
     setSearchTerm('');
     setCurrentPage(1);
+  // 🆕 Resetear estados de captura
+    setShowLeadCapture(false);
+    setUserLeadData(null);
+    setQuizCompleted(false);
   };
 
   // Funciones para exploración de razas
@@ -501,21 +527,48 @@ const BreedMatchQuiz = () => {
           {breeds.length === 0 ? 'Cargando datos de razas...' : 'Preparando el cuestionario...'}
         </p>
         {breeds.length > 0 && (
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-green-500 mt-2">
             {breeds.length} razas disponibles
           </p>
         )}
       </div>
     );
   }
+
+  // 🆕 PANTALLA DE CAPTURA DE DATOS
+if (showLeadCapture && quizCompleted) {
+  return (
+    <div className="space-y-8">
+      <LeadCaptureForm 
+        onSubmit={handleLeadSubmit}
+        onSkip={handleLeadSkip}
+        userAnswers={answers}
+      />
+    </div>
+  );
+}
+
   
   // 🆕 PANTALLA DE RESULTADOS DUALES
   if (dualRecommendations) {
     return (
       <div className="space-y-8">
+        {userLeadData && (
+    <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 text-center">
+      <h2 className="text-2xl font-bold text-green-800 mb-2">
+        ¡Hola {userLeadData.nombre}! 👋
+      </h2>
+      <p className="text-green-700">
+        Aquí están tus recomendaciones personalizadas. También hemos enviado un resumen a {userLeadData.correo}.
+      </p>
+    </div>
+  )}
+
+
         {/* Componente principal de resultados duales */}
         <DualBreedRecommendationResults 
           results={dualRecommendations}
+          userLeadData={userLeadData}
           onCompareBreeds={(breedsToCompare) => {
             console.log('🔍 Comparando razas sugeridas:', breedsToCompare);
             
@@ -564,7 +617,7 @@ const BreedMatchQuiz = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               {getPaginatedBreeds().map(breed => (
                 <div key={breed.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="h-32 overflow-hidden">
+                  <div className="h-22 overflow-hidden">
                     <img 
                       src={breed.image || '/images/breeds/default.jpg'} 
                       alt={breed.name}
@@ -596,7 +649,7 @@ const BreedMatchQuiz = () => {
                         isSelectedForComparison(breed.id)
                           ? 'bg-red-500 hover:bg-red-600 text-white'
                           : selectedForComparison.length >= 3
-                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            ? 'bg-gray-300 text-green-500 cursor-not-allowed'
                             : 'bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white'
                       }`}
                     >
@@ -702,16 +755,16 @@ const BreedMatchQuiz = () => {
       {/* Barra de progreso mejorada */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-500">
+          <span className="text-sm font-medium text-green-500">
             Pregunta {currentQuestionIndex + 1} de {relevantQuestions.length}
           </span>
-          <span className="text-sm font-medium text-gray-500">
+          <span className="text-sm font-medium text-green-500">
             {Math.round(quizProgress)}% completado
           </span>
         </div>
         <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
           <div 
-            className="h-full bg-gradient-to-r from-[#AFC2D5] to-[#9DB3C6] rounded-full transition-all duration-500 ease-out"
+            className="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${quizProgress}%` }}
           ></div>
         </div>
@@ -719,7 +772,7 @@ const BreedMatchQuiz = () => {
         {/* Indicador de tipo de pregunta */}
         {relevantQuestions[currentQuestionIndex] && (
           <div className="mt-2 text-center">
-            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+            <span className="text-xs text-green-500 bg-gray-100 px-2 py-1 rounded-full">
               {getQuestionCategory(relevantQuestions[currentQuestionIndex].id)}
             </span>
           </div>
@@ -768,7 +821,7 @@ const BreedMatchQuiz = () => {
         </button>
         
         <div className="text-center">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-green-500">
             {currentQuestionIndex < relevantQuestions.length - 1 
               ? `${relevantQuestions.length - currentQuestionIndex - 1} preguntas restantes`
               : '¡Última pregunta!'
@@ -780,7 +833,7 @@ const BreedMatchQuiz = () => {
               <div
                 key={i}
                 className={`w-2 h-2 rounded-full ${
-                  i <= currentQuestionIndex ? 'bg-[#AFC2D5]' : 'bg-gray-300'
+                  i <= currentQuestionIndex ? 'bg-green-500' : 'bg-green-800'
                 }`}
               />
             ))}
@@ -791,7 +844,7 @@ const BreedMatchQuiz = () => {
           className={`flex items-center px-6 py-3 rounded-md text-sm font-medium transition-all ${
             answers[relevantQuestions[currentQuestionIndex]?.id] 
               ? 'bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white shadow-md hover:shadow-lg' 
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-gray-300 text-white cursor-not-allowed'
           }`}
           onClick={goToNextQuestion}
           disabled={!answers[relevantQuestions[currentQuestionIndex]?.id]}

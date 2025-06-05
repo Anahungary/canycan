@@ -1,36 +1,50 @@
 ---
-// src/pages/articulos/[slug].astro - CORREGIDO PARA USAR ARTÍCULOS REALES
-import { getCollection } from 'astro:content';
+// src/pages/articulos/[slug].astro - SIN ERRORES TYPESCRIPT
+import { getCollection, type CollectionEntry } from 'astro:content';
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
+
+type ArticuloEntry = CollectionEntry<'articulos'>;
+
+export const prerender = true;
 
 export async function getStaticPaths() {
   const articulos = await getCollection('articulos');
   
-  return articulos.map((articulo) => ({
+  // Filtrar solo artículos publicados
+  const publishedArticles = articulos.filter(article => 
+    article.data.status === 'published'
+  );
+  
+  return publishedArticles.map((articulo) => ({
     params: { slug: articulo.slug },
     props: { articulo }
   }));
 }
 
 const { articulo } = Astro.props;
-const { Content, headings } = await articulo.render();
 
-// 🔥 CARGAR ARTÍCULOS REALES DEL CMS PARA EL SIDEBAR
-let allArticles: any[] = [];
+if (!articulo) {
+  return Astro.redirect('/404');
+}
+
+const { Content } = await articulo.render();
+
+// 🔥 CARGAR ARTÍCULOS REALES DEL CMS PARA EL SIDEBAR - CON TIPOS CORRECTOS
+let allArticles: ArticuloEntry[] = [];
 try {
   allArticles = await getCollection('articulos');
-  // Filtrar solo artículos publicados
-  allArticles = allArticles.filter((art: any) => art.data.status === 'published');
+  allArticles = allArticles.filter((art: ArticuloEntry) => art.data.status === 'published');
 } catch (error) {
-  console.log('Error cargando artículos para sidebar:', error);
+  console.log('ℹ️ No se pudieron cargar artículos para sidebar');
+  allArticles = [];
 }
 
 // 📈 GENERAR ARTÍCULOS POPULARES REALES (ordenados por fecha)
 const popularArticles = allArticles
-  .filter((art: any) => art.slug !== articulo.slug) // Excluir artículo actual
-  .sort((a: any, b: any) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .filter((art: ArticuloEntry) => art.slug !== articulo.slug)
+  .sort((a: ArticuloEntry, b: ArticuloEntry) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
   .slice(0, 5)
-  .map((art: any) => ({
+  .map((art: ArticuloEntry) => ({
     title: art.data.title,
     slug: art.slug,
     readingTime: art.data.readingTime || 5,
@@ -39,35 +53,35 @@ const popularArticles = allArticles
 
 // 📰 GENERAR ARTÍCULOS RELACIONADOS (misma categoría)
 const relatedArticles = allArticles
-  .filter((art: any) => 
+  .filter((art: ArticuloEntry) => 
     art.slug !== articulo.slug && 
     art.data.category === articulo.data.category
   )
   .slice(0, 3)
-  .map((art: any) => ({
+  .map((art: ArticuloEntry) => ({
     id: art.slug,
     title: art.data.title,
     image: art.data.image || '/images/articles/default.jpg',
     readingTime: art.data.readingTime || 5
   }));
 
-// Preparar datos para el layout con valores por defecto
+// Preparar datos para TU LAYOUT ORIGINAL con todos los estilos
 const articleData = {
   title: articulo.data.title,
   description: articulo.data.description,
   author: {
-    name: articulo.data.author || 'Editor PataDigital',
+    name: articulo.data.author,
     avatar: '/images/authors/default.jpg',
     bio: articulo.data.authorBio || 'Especialista en cuidado y bienestar de mascotas'
   },
   date: articulo.data.date.toISOString(),
   readingTime: articulo.data.readingTime || 5,
-  categories: articulo.data.tags || [articulo.data.category || 'General'],
-  image: articulo.data.image || '/images/articles/default.jpg',
-  views: 0,
+  categories: articulo.data.tags || [articulo.data.category],
+  image: articulo.data.image,
+  views: articulo.data.views || 0,
   showTableOfContents: true,
-  popularArticles: popularArticles, // 🎯 USAR ARTÍCULOS REALES
-  relatedArticles: relatedArticles   // 🎯 USAR ARTÍCULOS RELACIONADOS REALES
+  popularArticles: popularArticles,
+  relatedArticles: relatedArticles
 };
 ---
 
