@@ -7,7 +7,7 @@ authorBio: "Veterinaria especialista en bienestar animal y ética veterinaria. A
 tags: ["adopcion-mascotas", "compra-responsable", "bienestar-animal", "decision-familiar", "colombia"]
 category: "decision-familiar"
 featured: true
-image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+image: "/images/articulos/adoptar-perro.jpg"
 imageAlt: "Familia decidiendo entre adoptar o comprar una mascota"
 readingTime: 18
 status: "published"
@@ -20,6 +20,8 @@ articleType: "Article"
 # ¿Comprar o adoptar una mascota? Ventajas, desventajas y cómo tomar la mejor decisión en 2025
 
 **La decisión de traer una mascota a tu hogar es una de las más importantes que puedes tomar como familia.** En Colombia, donde existe una creciente tendencia hacia la adopción gracias a la labor de refugios y albergues, y donde recientemente se implementó un IVA del 19% a la compra de mascotas para desincentivar el comercio, esta decisión tiene implicaciones económicas, éticas y emocionales profundas.
+
+![perros felice por adopción](/images/articulos/adoptar.webp)
 
 Con **3 millones de perros y gatos en situación de calle** según datos oficiales y más de **1,777 denuncias por maltrato animal** solo entre 2021 y 2022, la elección entre adoptar o comprar trasciende lo personal para convertirse en un acto de responsabilidad social.
 

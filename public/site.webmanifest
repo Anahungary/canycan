@@ -1,0 +1,31 @@
+{
+  "name": "PataDigital - Revista de Mascotas",
+  "short_name": "PataDigital",
+  "description": "Revista digital especializada en cuidado, salud y bienestar de perros y gatos",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAFAFA",
+  "theme_color": "#AFC2D5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/images/icon-512.png", 
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["lifestyle", "health", "education"],
+  "lang": "es-ES"
+}

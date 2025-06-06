@@ -7,7 +7,7 @@ authorBio: "Médico Veterinario especializado en nutrición animal con 15 años 
 tags: ["nutricion-canina", "dieta-barf", "alimento-comercial", "salud-animal"]
 category: "nutricion"
 featured: true
-image: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+image: /images/articulos/perros-natural-barf.webp
 imageAlt: "Comparación entre diferentes tipos de alimentación para perros"
 readingTime: 20
 status: "published"
