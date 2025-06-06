@@ -1,19 +1,35 @@
 ---
+// src/pages/razas/[slug].astro - SOLO CMS, todas las razas migradas
 import BreedLayout from '../../layouts/BreedLayout.astro';
 import { getCollection } from 'astro:content';
 
+export const prerender = true;
+
 export async function getStaticPaths() {
+  // 🎯 SOLO CMS - todas las razas están en /content/razas/
   const razas = await getCollection('razas');
-  return razas.map(r => ({ params: { slug: r.slug }, props: { raza: r } }));
+  
+  console.log(`✅ CMS: ${razas.length} razas encontradas y migradas`);
+  
+  return razas.map((raza) => ({
+    params: { slug: raza.slug },
+    props: { raza }
+  }));
 }
 
 const { raza } = Astro.props;
-if (!raza) return Astro.redirect('/404');
 
+if (!raza) {
+  return Astro.redirect('/404');
+}
+
+// Renderizar el contenido markdown del CMS
 const { Content } = await raza.render();
+
+console.log(`🎯 Renderizando raza: ${raza.data.name} desde CMS`);
 ---
 
 <BreedLayout breed={raza.data}>
-  <!-- Slot: pasamos el markup completo para que BreedLayout lo divida en tabs -->
+  <!-- Contenido directo del CMS markdown -->
   <Content />
 </BreedLayout>

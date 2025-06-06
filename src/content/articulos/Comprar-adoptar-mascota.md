@@ -14,7 +14,7 @@ status: "published"
 seoTitle: "Comprar vs Adoptar mascota Colombia - Guía completa 2025"
 seoDescription: "¿Comprar o adoptar una mascota? Ventajas, desventajas, costos y consideraciones éticas. Guía completa para tomar la mejor decisión en Colombia."
 keywords: ["adoptar vs comprar mascota", "costo mascota colombia", "adopcion perros bogota", "temperamento perros adoptados"]
-articleType: "Decision Guide"
+articleType: "Article"
 ---
 
 # ¿Comprar o adoptar una mascota? Ventajas, desventajas y cómo tomar la mejor decisión en 2025

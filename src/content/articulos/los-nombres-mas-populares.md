@@ -14,7 +14,7 @@ status: "published"
 seoTitle: "Nombres populares mascotas Colombia 2025 - Lista completa"
 seoDescription: "Los nombres más usados para perros y gatos en Colombia. Tendencias 2025, nombres por ciudades y consejos para elegir el nombre perfecto para tu mascota."
 keywords: ["nombres mascotas colombia", "nombres perros populares", "nombres gatos colombia", "como llamar mascota"]
-articleType: "Trend Guide"
+articleType: "Article"
 ---
 
 # Los nombres más populares para mascotas en Colombia 2025: ¿Cómo elegir el nombre perfecto?

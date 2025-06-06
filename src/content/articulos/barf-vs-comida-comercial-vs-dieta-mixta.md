@@ -14,7 +14,7 @@ status: "published"
 seoTitle: "BARF vs Alimento Comercial: Guía Completa de Alimentación Canina 2025"
 seoDescription: "Análisis científico completo de dietas BARF, alimento comercial y mixtas para perros. Pros, contras, marcas recomendadas por veterinarios y evidencia científica."
 keywords: ["dieta BARF", "alimento comercial perros", "Royal Canin", "Hill's", "Purina Pro Plan", "nutrición canina", "alimentación perros"]
-articleType: "Comparative Guide"
+articleType: "Article"
 ---
 
 # BARF vs Comida Comercial vs Dieta Mixta: Análisis Científico Completo de Alimentación Canina

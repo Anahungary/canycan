@@ -14,7 +14,7 @@ status: "published"
 seoTitle: "Guía Completa Cachorros Primerizos 2025 - Veterinario Experto"
 seoDescription: "Todo sobre el cuidado de cachorros: cronograma de vacunas, alimentación, entrenamiento y socialización. Guía veterinaria para las primeras 16 semanas críticas."
 keywords: ["cuidado de cachorros", "primer cachorro", "vacunas cachorros", "entrenamiento cachorro", "socialización temprana"]
-articleType: "Complete Guide"
+articleType: "Article"
 ---
 
 # Guía Completa para Dueños Primerizos de Cachorros: Todo lo que Necesitas Saber

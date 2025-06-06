@@ -14,7 +14,7 @@ status: "published"
 seoTitle: "Alimentación mascotas Colombia 2025 - Mejores marcas y precios"
 seoDescription: "Todo sobre alimentación de perros y gatos en Colombia. Marcas recomendadas, precios actuales, tendencias premium y guía nutricional completa por veterinarios."
 keywords: ["alimento para perros colombia", "comida gatos premium", "royal canin precios", "hills science diet", "mejor alimento mascotas"]
-articleType: "Nutrition Guide"
+articleType: "Article"
 ---
 
 # Alimentación para mascotas en Colombia 2025: Mejores marcas, precios y tendencias nutricionales

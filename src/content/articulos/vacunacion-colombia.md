@@ -14,7 +14,7 @@ status: "published"
 seoTitle: "Vacunas mascotas Colombia 2025 - Esquemas y precios completos"
 seoDescription: "Guía oficial de vacunación para perros y gatos en Colombia. Esquemas actualizados, precios 2025, vacunación gratuita gobierno y calendario por edades."
 keywords: ["vacunas perros colombia", "vacunacion gatos", "esquema vacunacion mascotas", "vacuna antirrabica gratuita"]
-articleType: "Medical Guide"
+articleType: "Article"
 ---
 
 # Vacunas para mascotas en Colombia 2025: Esquemas, costos y calendario completo
