@@ -1,6 +1,5 @@
-// src/components/features/breeds-comparison/FilterableBreedsList.jsx - VERSIÓN CORREGIDA CON FILTROS FUNCIONANDO
+// src/components/features/breeds-comparison/FilterableBreedsList.jsx - BASADO EN EL ORIGINAL FUNCIONAL
 import React, { useState, useEffect, useMemo } from 'react';
-import BreedFilters from './BreedFilters.jsx';
 
 const FilterableBreedsList = ({ 
   initialBreeds = [], 
@@ -18,10 +17,11 @@ const FilterableBreedsList = ({
     type: [],
     size: [],
     energyLevel: [],
+    furLength: [],
+    hypoallergenic: null,
     goodWith: [],
     experience: [],
     apartmentFriendly: null,
-    hypoallergenic: null,
     ...activeFilters
   });
   
@@ -29,9 +29,8 @@ const FilterableBreedsList = ({
 
   // 🔧 DEBUG: Log para verificar datos
   useEffect(() => {
-    console.log('🐕 Initial breeds:', initialBreeds?.length, initialBreeds?.slice(0, 2));
-    console.log('🔍 Active filters:', localFilters);
-  }, [initialBreeds, localFilters]);
+    console.log('🐕 FilterableBreedsList - Initial breeds:', initialBreeds?.length);
+  }, [initialBreeds]);
 
   // Efecto para actualizar las razas cuando cambien las props
   useEffect(() => {
@@ -41,7 +40,7 @@ const FilterableBreedsList = ({
     }
   }, [initialBreeds]);
 
-  // 🔧 LÓGICA DE FILTRADO MEJORADA
+  // 🔧 LÓGICA DE FILTRADO SIMPLIFICADA
   const filteredAndSearchedBreeds = useMemo(() => {
     if (!breeds || breeds.length === 0) {
       console.log('❌ No breeds to filter');
@@ -61,25 +60,20 @@ const FilterableBreedsList = ({
         
         return nameMatch || typeMatch || sizeMatch;
       });
-      console.log('🔍 After search:', results.length, 'breeds');
     }
     
     // 2. FILTRO POR TIPO (perro/gato)
     if (localFilters.type && localFilters.type.length > 0) {
       results = results.filter(breed => {
-        const match = localFilters.type.includes(breed.type);
-        return match;
+        return localFilters.type.includes(breed.type);
       });
-      console.log('🐕 After type filter:', results.length, 'breeds');
     }
     
     // 3. FILTRO POR TAMAÑO
     if (localFilters.size && localFilters.size.length > 0) {
       results = results.filter(breed => {
-        const match = localFilters.size.includes(breed.size);
-        return match;
+        return localFilters.size.includes(breed.size);
       });
-      console.log('📏 After size filter:', results.length, 'breeds');
     }
     
     // 4. FILTRO POR NIVEL DE ENERGÍA
@@ -92,64 +86,35 @@ const FilterableBreedsList = ({
         else if (energy <= 3) energyCategory = 'medium'; 
         else energyCategory = 'high';
         
-        const match = localFilters.energyLevel.includes(energyCategory);
-        return match;
+        return localFilters.energyLevel.includes(energyCategory);
       });
-      console.log('⚡ After energy filter:', results.length, 'breeds');
     }
     
-    // 5. FILTRO POR "BUENO CON"
-    if (localFilters.goodWith && localFilters.goodWith.length > 0) {
+    // 5. FILTRO POR TIPO DE PELO
+    if (localFilters.furLength && localFilters.furLength.length > 0) {
       results = results.filter(breed => {
-        if (!breed.goodWith || !Array.isArray(breed.goodWith)) {
-          return false;
+        // Si el breed tiene furLength, usarlo directamente
+        if (breed.furLength) {
+          return localFilters.furLength.includes(breed.furLength);
         }
         
-        // Verificar si la raza tiene TODOS los traits seleccionados
-        const hasAllTraits = localFilters.goodWith.every(trait => 
-          breed.goodWith.includes(trait)
-        );
+        // Si no, inferir del grooming level (lógica de fallback)
+        const grooming = parseInt(breed.grooming) || 0;
+        let furType;
         
-        return hasAllTraits;
+        if (grooming <= 2) furType = 'short';
+        else if (grooming <= 3) furType = 'medium';
+        else furType = 'long';
+        
+        return localFilters.furLength.includes(furType);
       });
-      console.log('👶 After goodWith filter:', results.length, 'breeds');
     }
     
-    // 6. FILTRO POR EXPERIENCIA REQUERIDA
-    if (localFilters.experience && localFilters.experience.length > 0) {
-      results = results.filter(breed => {
-        const training = parseInt(breed.training) || 0;
-        let expCategory;
-        
-        if (training <= 2) expCategory = 'beginner';
-        else if (training <= 3) expCategory = 'intermediate';
-        else expCategory = 'advanced';
-        
-        const match = localFilters.experience.includes(expCategory);
-        return match;
-      });
-      console.log('🎓 After experience filter:', results.length, 'breeds');
-    }
-    
-    // 7. FILTRO APARTAMENTO FRIENDLY
-    if (localFilters.apartmentFriendly !== null && localFilters.apartmentFriendly !== undefined) {
-      results = results.filter(breed => {
-        const isApartmentFriendly = 
-          breed.size === 'small' || 
-          (breed.size === 'medium' && parseInt(breed.energyLevel || 0) <= 3) ||
-          (breed.goodWith && Array.isArray(breed.goodWith) && breed.goodWith.includes('apartments'));
-        
-        return localFilters.apartmentFriendly === isApartmentFriendly;
-      });
-      console.log('🏠 After apartment filter:', results.length, 'breeds');
-    }
-    
-    // 8. FILTRO HIPOALERGÉNICO
+    // 6. FILTRO HIPOALERGÉNICO
     if (localFilters.hypoallergenic !== null && localFilters.hypoallergenic !== undefined) {
       results = results.filter(breed => {
         return breed.hypoallergenic === localFilters.hypoallergenic;
       });
-      console.log('🤧 After hypoallergenic filter:', results.length, 'breeds');
     }
     
     console.log('✅ Final filtered results:', results.length, 'breeds');
@@ -160,39 +125,6 @@ const FilterableBreedsList = ({
   useEffect(() => {
     setCurrentPage(1);
   }, [filteredAndSearchedBreeds]);
-
-  // 🔧 FUNCIÓN PARA APLICAR FILTROS CORREGIDA
-  const applyFilters = (newFilters) => {
-    console.log('🔄 Applying filters:', newFilters);
-    setLocalFilters(prev => ({
-      ...prev,
-      ...newFilters
-    }));
-    
-    if (onFilterChange) {
-      onFilterChange(newFilters);
-    }
-  };
-
-  // 🔧 FUNCIÓN PARA LIMPIAR FILTROS
-  const clearAllFilters = () => {
-    const emptyFilters = {
-      type: [],
-      size: [],
-      energyLevel: [],
-      goodWith: [],
-      experience: [],
-      apartmentFriendly: null,
-      hypoallergenic: null
-    };
-    
-    setLocalFilters(emptyFilters);
-    setSearchTerm('');
-    
-    if (onFilterChange) {
-      onFilterChange(emptyFilters);
-    }
-  };
 
   // Obtener razas de la página actual
   const getPaginatedBreeds = () => {
@@ -211,12 +143,6 @@ const FilterableBreedsList = ({
     console.log('🔍 Search term changed:', newSearchTerm);
     setSearchTerm(newSearchTerm);
     setCurrentPage(1);
-  };
-
-  // 🔧 FUNCIÓN DE ORDENAMIENTO CORREGIDA
-  const handleSort = (sortBy) => {
-    console.log('📊 Sorting by:', sortBy);
-    // La ordenación se maneja en el estado local, no modifica los filtros
   };
 
   // Renderizar tarjeta de raza
@@ -239,50 +165,186 @@ const FilterableBreedsList = ({
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-6">
-      {/* Sidebar con filtros */}
-      <div className="w-full md:w-1/4 lg:w-1/5">
-        <div className="sticky top-4">
-          <BreedFilters 
-            onFilterChange={applyFilters} 
-            activeFilters={localFilters}
-          />
-          
-          {/* 🔧 BOTÓN PARA LIMPIAR FILTROS */}
-          <div className="mt-4">
-            <button
-              onClick={clearAllFilters}
-              className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              Limpiar todos los filtros
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      {/* Lista de razas */}
-      <div className="w-full md:w-3/4 lg:w-4/5">
-        {/* Buscador */}
-        <div className="mb-6">
-          <div className="max-w-md">
+    <div className="space-y-6">
+      {/* Controles básicos de filtrado */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Filtros y búsqueda
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          {/* Búsqueda */}
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Buscar razas
+              Buscar raza
             </label>
             <input
               type="text"
-              placeholder="Buscar por nombre, tipo o tamaño..."
+              placeholder="Nombre de la raza..."
               value={searchTerm}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#AFC2D5] focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
+          </div>
+
+          {/* Filtro por tipo */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tipo de mascota
+            </label>
+            <select
+              value={localFilters.type.length > 0 ? localFilters.type[0] : 'all'}
+              onChange={(e) => {
+                const newType = e.target.value === 'all' ? [] : [e.target.value];
+                setLocalFilters(prev => ({ ...prev, type: newType }));
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            >
+              <option value="all">Todos</option>
+              <option value="dog">🐕 Perros</option>
+              <option value="cat">🐱 Gatos</option>
+            </select>
+          </div>
+
+          {/* Filtro por tamaño */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tamaño
+            </label>
+            <select
+              value={localFilters.size.length > 0 ? localFilters.size[0] : 'all'}
+              onChange={(e) => {
+                const newSize = e.target.value === 'all' ? [] : [e.target.value];
+                setLocalFilters(prev => ({ ...prev, size: newSize }));
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            >
+              <option value="all">Todos los tamaños</option>
+              <option value="small">Pequeño</option>
+              <option value="medium">Mediano</option>
+              <option value="large">Grande</option>
+            </select>
+          </div>
+
+          {/* Filtro por nivel de energía */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Nivel de energía
+            </label>
+            <select
+              value={localFilters.energyLevel.length > 0 ? localFilters.energyLevel[0] : 'all'}
+              onChange={(e) => {
+                const newEnergy = e.target.value === 'all' ? [] : [e.target.value];
+                setLocalFilters(prev => ({ ...prev, energyLevel: newEnergy }));
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            >
+              <option value="all">Todos los niveles</option>
+              <option value="low">⚡ Baja energía</option>
+              <option value="medium">⚡⚡ Energía moderada</option>
+              <option value="high">⚡⚡⚡ Alta energía</option>
+            </select>
+          </div>
+
+          {/* Filtro por tipo de pelo */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tipo de pelo
+            </label>
+            <select
+              value={localFilters.furLength.length > 0 ? localFilters.furLength[0] : 'all'}
+              onChange={(e) => {
+                const newFur = e.target.value === 'all' ? [] : [e.target.value];
+                setLocalFilters(prev => ({ ...prev, furLength: newFur }));
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            >
+              <option value="all">Todos los tipos</option>
+              <option value="short">✂️ Pelo corto</option>
+              <option value="medium">✂️ Pelo medio</option>
+              <option value="long">✂️ Pelo largo</option>
+            </select>
+          </div>
+           <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Hipoalergénico
+            </label>
+            <select
+              value={localFilters.hypoallergenic === null ? 'all' : localFilters.hypoallergenic.toString()}
+              onChange={(e) => {
+                const value = e.target.value === 'all' ? null : e.target.value === 'true';
+                setLocalFilters(prev => ({ ...prev, hypoallergenic: value }));
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            >
+              <option value="all">Todos</option>
+              <option value="true">🌿 Solo hipoalergénicos</option>
+              <option value="false">❌ No hipoalergénicos</option>
+            </select>
           </div>
         </div>
 
+        {/* Segunda fila de filtros - Características especiales */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-200">
+          {/* Filtro hipoalergénico */}
+         
 
+          {/* Estadísticas de filtros activos */}
+          <div className="md:col-span-2 flex items-end">
+            <div className="text-sm text-gray-500">
+              {Object.values(localFilters).some(filter => 
+                (Array.isArray(filter) && filter.length > 0) || 
+                (filter !== null && filter !== undefined && !Array.isArray(filter))
+              ) && (
+                <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                  {[
+                    ...localFilters.type,
+                    ...localFilters.size,
+                    ...localFilters.energyLevel,
+                    ...localFilters.furLength,
+                    ...(localFilters.hypoallergenic !== null ? ['hipoalergénico'] : [])
+                  ].length} filtros activos
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
 
+        {/* Resultados de búsqueda */}
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-sm text-gray-600">
+            {filteredAndSearchedBreeds.length} raza{filteredAndSearchedBreeds.length !== 1 ? 's' : ''} encontrada{filteredAndSearchedBreeds.length !== 1 ? 's' : ''}
+          </p>
+          
+          {/* Botón para limpiar filtros */}
+          {(searchTerm || localFilters.type.length > 0 || localFilters.size.length > 0 || 
+            localFilters.energyLevel.length > 0 || localFilters.furLength.length > 0 || 
+            localFilters.hypoallergenic !== null) && (
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setLocalFilters(prev => ({ 
+                  ...prev, 
+                  type: [], 
+                  size: [], 
+                  energyLevel: [], 
+                  furLength: [], 
+                  hypoallergenic: null 
+                }));
+              }}
+              className="text-sm text-green-600 hover:text-green-700 font-medium"
+            >
+              Limpiar todos los filtros
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Lista de razas */}
+      <div>
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#AFC2D5]"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
           </div>
         ) : (
           <div>
@@ -296,7 +358,7 @@ const FilterableBreedsList = ({
                   Página {currentPage} de {getTotalPages() || 1}
                 </p>
                 {selectedBreeds.length > 0 && (
-                  <p className="text-xs text-[#AFC2D5] font-medium">
+                  <p className="text-xs text-green-600 font-medium">
                     {selectedBreeds.length}/3 razas seleccionadas para comparar
                   </p>
                 )}
@@ -306,120 +368,38 @@ const FilterableBreedsList = ({
             {filteredAndSearchedBreeds.length > 0 ? (
               <>
                 {/* Renderizar razas */}
-                <div id="filtered-breeds-container">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-                    {getPaginatedBreeds().map(breed => renderBreedCard(breed))}
-                  </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                  {getPaginatedBreeds().map(breed => renderBreedCard(breed))}
                 </div>
 
+                {/* Paginación simple */}
                 {getTotalPages() > 1 && (
-  <div className="flex flex-col sm:flex-row justify-center items-center space-y-3 sm:space-y-0 sm:space-x-4 py-6 px-4">
-    {/* Botón Anterior */}
-    <button
-      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-      disabled={currentPage === 1}
-      className="flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors min-w-[100px] justify-center"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-      </svg>
-      <span className="hidden xs:inline">Anterior</span>
-      <span className="xs:hidden">Ant</span>
-    </button>
-    
-    {/* Números de página - Versión responsiva */}
-    <div 
-      className="flex items-center space-x-1 overflow-x-auto max-w-full scroll-smooth"
-      ref={(el) => {
-        // Reset scroll position cuando cambie la página
-        if (el) {
-          setTimeout(() => {
-            el.scrollLeft = 0;
-          }, 0);
-        }
-      }}
-      key={`pagination-${currentPage}`} // Forzar re-render
-    >
-      {(() => {
-        const totalPages = getTotalPages();
-        const current = currentPage;
-        let pages = [];
-        
-        if (totalPages <= 7) {
-          // Si hay 7 o menos páginas, mostrar todas
-          pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-        } else {
-          // Lógica para páginas con puntos suspensivos
-          if (current <= 4) {
-            // Cerca del inicio: 1 2 3 4 5 ... 10
-            pages = [1, 2, 3, 4, 5, '...', totalPages];
-          } else if (current >= totalPages - 3) {
-            // Cerca del final: 1 ... 6 7 8 9 10
-            pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
-          } else {
-            // En el medio: 1 ... 4 5 6 ... 10
-            pages = [1, '...', current - 1, current, current + 1, '...', totalPages];
-          }
-        }
-        
-        return pages.map((page, index) => {
-          if (page === '...') {
-            return (
-              <span
-                key={`ellipsis-${index}`}
-                className="px-2 py-2 text-gray-500 text-sm"
-              >
-                ...
-              </span>
-            );
-          }
-          
-          return (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors min-w-[40px] flex-shrink-0 ${
-                currentPage === page
-                  ? 'bg-[#AFC2D5] text-white'
-                  : 'text-gray-700 hover:bg-gray-100 border border-gray-200'
-              }`}
-            >
-              {page}
-            </button>
-          );
-        });
-      })()}
-    </div>
-    
-    {/* Botón Siguiente */}
-    <button
-      onClick={() => setCurrentPage(prev => Math.min(getTotalPages(), prev + 1))}
-      disabled={currentPage === getTotalPages()}
-      className="flex items-center px-3 py-2 text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors min-w-[100px] justify-center"
-    >
-      <span className="hidden xs:inline">Siguiente</span>
-      <span className="xs:hidden">Sig</span>
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-      </svg>
-    </button>
-  </div>
-)}
-
-{/* Información adicional en pantallas pequeñas */}
-{getTotalPages() > 1 && (
-  <div className="text-center text-sm text-gray-600 pb-4 sm:hidden">
-    Página {currentPage} de {getTotalPages()}
-  </div>
-)}
+                  <div className="flex justify-center items-center space-x-4 py-6">
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      disabled={currentPage === 1}
+                      className="px-4 py-2 text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                    >
+                      Anterior
+                    </button>
+                    
+                    <span className="text-sm text-gray-600">
+                      Página {currentPage} de {getTotalPages()}
+                    </span>
+                    
+                    <button
+                      onClick={() => setCurrentPage(prev => Math.min(getTotalPages(), prev + 1))}
+                      disabled={currentPage === getTotalPages()}
+                      className="px-4 py-2 text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors"
+                    >
+                      Siguiente
+                    </button>
+                  </div>
+                )}
               </>
             ) : (
               <div className="bg-gray-50 rounded-lg p-8 text-center">
-                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
+                <div className="text-6xl mb-4">🔍</div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                   No se encontraron razas
                 </h3>
@@ -430,10 +410,20 @@ const FilterableBreedsList = ({
                   }
                 </p>
                 <button
-                  onClick={clearAllFilters}
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#AFC2D5] hover:bg-[#9DB3C6] transition-colors"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setLocalFilters(prev => ({ 
+                      ...prev, 
+                      type: [], 
+                      size: [], 
+                      energyLevel: [], 
+                      furLength: [], 
+                      hypoallergenic: null 
+                    }));
+                  }}
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium"
                 >
-                  Limpiar filtros
+                  Limpiar todos los filtros
                 </button>
               </div>
             )}

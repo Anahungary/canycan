@@ -69,7 +69,8 @@ const getBaseCosts = (breed: BreedCharacteristics) => {
   if (breed.type === 'dog') {
     const size = breed.size || 'medium'; // Valor por defecto
     
-    switch (size) {
+    switch (size.toLowerCase()) {
+      case 'tiny':      // 🔧 AÑADIDO: Soporte para "tiny"
       case 'small':
         return {
           veterinary: 80000,
@@ -83,6 +84,7 @@ const getBaseCosts = (breed: BreedCharacteristics) => {
           grooming: 80000
         };
       case 'large':
+      case 'giant':     // 🔧 AÑADIDO: Soporte para "giant"
         return {
           veterinary: 120000,
           accessories: 80000,

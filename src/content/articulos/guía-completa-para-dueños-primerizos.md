@@ -7,7 +7,7 @@ authorBio: "Médico veterinario especializado en comportamiento animal con 15 a�
 tags: ["cachorros", "dueños-primerizos", "entrenamiento", "salud-canina", "socialización"]
 category: "cuidado-salud"
 featured: true
-image: /images/articulos/primera-mascora.jpg
+image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
 imageAlt: "Cachorro dorado siendo examinado por veterinario en consulta"
 readingTime: 18
 status: "published"

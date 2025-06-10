@@ -7,7 +7,7 @@ authorBio: "Veterinaria especializada en comportamiento canino con 15 años de e
 tags: ["bienestar-integral", "salud-canina", "nutricion-perros", "ejercicio-perros", "cuidados-preventivos"]
 category: "cuidado"
 featured: true
-image: "/images/articulos/duenos_primerizos.jpg"
+image: "https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
 imageAlt: "Perro feliz corriendo en un campo verde representando bienestar completo"
 readingTime: 15
 status: "published"
@@ -23,7 +23,7 @@ articleType: "Article"
 
 **Esta guía te llevará paso a paso por los cuatro pilares fundamentales del bienestar canino**: nutrición óptima, ejercicio adecuado, salud preventiva y bienestar emocional. Al final, tendrás las herramientas necesarias para que tu mejor amigo no solo viva más años, sino que viva mejor.
 
-![Perro feliz corriendo en un campo verde](/images/articulos/beagle-salta.jpg)
+![Perro feliz corriendo en un campo verde](/images/articulos/perro-feliz-corriendo.webp)
 
 *Un perro que disfruta de bienestar integral muestra alegría natural en cada actividad*
 

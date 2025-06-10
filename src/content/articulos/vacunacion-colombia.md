@@ -7,7 +7,7 @@ authorBio: "Médico Veterinario con especialización en medicina preventiva. Dir
 tags: ["vacunas", "salud-mascotas", "colombia", "prevención", "veterinaria"]
 category: "salud"
 featured: true
-image: "/images/articulos/vacunas.webp"
+image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
 imageAlt: "Veterinario aplicando vacuna a perro en Colombia"
 readingTime: 15
 status: "published"

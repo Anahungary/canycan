@@ -7,7 +7,7 @@ authorBio: "Veterinario especializado en nutrición canina con 12 años de exper
 tags: ["nutricion-economica", "alimentacion-casera", "perros", "latinoamerica"]
 category: "nutricion"
 featured: true
-image: "/images/articulos/alimentacion-saludable.webp"
+image: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
 imageAlt: "Perro feliz comiendo alimento casero nutritivo y económico"
 readingTime: 15
 status: "published"
@@ -23,7 +23,7 @@ articleType: "Article"
 
 La buena noticia es que **es posible proporcionar una alimentación de calidad tanto para perros como para gatos sin comprometer tu presupuesto familiar**. Con los ingredientes correctos y el conocimiento adecuado, puedes preparar comidas caseras nutritivas que rivalicen con los alimentos comerciales premium.
 
-![Perro feliz comiendo alimento casero nutritivo y económico](/images/articulos/alimentacion-mascotas.webp)
+![Perro feliz comiendo alimento casero nutritivo y económico](https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80)
 
 *La alimentación casera puede ser más nutritiva y económica que muchos alimentos comerciales*
 
