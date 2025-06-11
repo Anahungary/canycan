@@ -1,26 +1,10 @@
 ---
-// src/pages/entrenamiento/index.astro - SOLO CMS CON AVATARES REALES
 import { getCollection } from 'astro:content';
 import CategoryLayout from '../../layouts/CategoryLayout.astro';
 
-// 🔧 FUNCIÓN DE AVATARES REALES
-function getAuthorAvatar(authorName: string): string {
-  const authorAvatars: Record<string, string> = {
-    'Ana María Prieto': '/images/ana-p2.webp',
-    'Manuel Alejandro Bedoya': '/images/manuel-p1.webp',
-    'Equipo Editorial Balto': '/images/baltologo.svg',
-    'Editor Balto': '/images/baltologo.svg'
-  };
-  
-  return authorAvatars[authorName] || '/images/baltologo.svg';
-}
-
-// Obtener datos del CMS
 const todosLosArticulos = await getCollection('articulos');
 const todasLasCategorias = await getCollection('categorias');
-const todasLasEtiquetas = await getCollection('etiquetas');
 
-// Filtrar artículos de entrenamiento
 const articles = todosLosArticulos
   .filter(articulo => {
     const categoria = articulo.data.category;
@@ -31,8 +15,7 @@ const articles = todosLosArticulos
            etiquetas.includes('training') ||
            etiquetas.includes('adiestramiento') ||
            etiquetas.includes('obediencia') ||
-           etiquetas.includes('comandos') ||
-           etiquetas.includes('cachorros');
+           etiquetas.includes('comandos');
   })
   .map(articulo => ({
     id: articulo.slug,
@@ -42,47 +25,23 @@ const articles = todosLosArticulos
     date: articulo.data.date.toISOString().split('T')[0],
     author: {
       name: articulo.data.author || 'Editor Balto',
-      avatar: getAuthorAvatar(articulo.data.author || 'Editor Balto')
+      avatar: '/images/authors/default.jpg'
     },
     readingTime: articulo.data.readingTime || 5,
     categories: [articulo.data.category, ...(articulo.data.tags || [])].filter(Boolean)
   }));
 
-// Obtener datos de categoría del CMS
 const categoriaEntrenamiento = todasLasCategorias.find(cat => cat.slug === 'entrenamiento');
+const featuredArticle = articles.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
-// Artículo destacado (el más reciente)
-const featuredArticle = articles
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-
-// Obtener etiquetas relacionadas con entrenamiento
-const popularTags = todasLasEtiquetas
-  .filter(tag => {
-    const relatedCategories = tag.data.categories || [];
-    return relatedCategories.includes('entrenamiento');
-  })
-  .map(tag => tag.data.name);
-
-// Subcategorías dinámicas basadas en etiquetas
-const subcategories = todasLasEtiquetas
-  .filter(tag => {
-    const relatedCategories = tag.data.categories || [];
-    return relatedCategories.includes('entrenamiento');
-  })
-  .map(tag => tag.data.name);
-
-const title = categoriaEntrenamiento?.data.name || "Entrenamiento de Mascotas";
-const description = categoriaEntrenamiento?.data.description || "Descubre técnicas efectivas y consejos de expertos para entrenar a tu perro o gato. Guías paso a paso para todos los niveles.";
-const image = categoriaEntrenamiento?.data.image || "/images/categories/training-banner.jpg";
+const title = categoriaEntrenamiento?.data.name || "🎯 Entrenamiento";
+const description = categoriaEntrenamiento?.data.description || "Guías completas para entrenar a tu mascota con técnicas efectivas y refuerzo positivo";
 ---
 
 <CategoryLayout
   title={title}
   description={description}
-  image={image}
   category="entrenamiento"
-  subcategories={subcategories}
   articles={articles}
-  popularTags={popularTags}
   featuredArticle={featuredArticle}
 />

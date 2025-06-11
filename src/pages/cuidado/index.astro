@@ -1,14 +1,10 @@
 ---
-// src/pages/cuidado/index.astro - SOLO CMS
 import { getCollection } from 'astro:content';
 import CategoryLayout from '../../layouts/CategoryLayout.astro';
 
-// Obtener datos del CMS
 const todosLosArticulos = await getCollection('articulos');
 const todasLasCategorias = await getCollection('categorias');
-const todasLasEtiquetas = await getCollection('etiquetas');
 
-// Filtrar artículos de cuidado
 const articles = todosLosArticulos
   .filter(articulo => {
     const categoria = articulo.data.category;
@@ -17,11 +13,9 @@ const articles = todosLosArticulos
     return categoria === 'cuidado' || 
            etiquetas.includes('cuidado') ||
            etiquetas.includes('care') ||
-           etiquetas.includes('salud') ||
-           etiquetas.includes('nutricion') ||
            etiquetas.includes('higiene') ||
-           etiquetas.includes('bienestar') ||
-           etiquetas.includes('grooming');
+           etiquetas.includes('grooming') ||
+           etiquetas.includes('bienestar');
   })
   .map(articulo => ({
     id: articulo.slug,
@@ -37,41 +31,17 @@ const articles = todosLosArticulos
     categories: [articulo.data.category, ...(articulo.data.tags || [])].filter(Boolean)
   }));
 
-// Obtener datos de categoría del CMS
 const categoriaCuidado = todasLasCategorias.find(cat => cat.slug === 'cuidado');
+const featuredArticle = articles.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
-// Artículo destacado (el más reciente)
-const featuredArticle = articles
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-
-// Obtener etiquetas relacionadas con cuidado
-const popularTags = todasLasEtiquetas
-  .filter(tag => {
-    const relatedCategories = tag.data.categories || [];
-    return relatedCategories.includes('cuidado');
-  })
-  .map(tag => tag.data.name);
-
-// Subcategorías dinámicas basadas en etiquetas
-const subcategories = todasLasEtiquetas
-  .filter(tag => {
-    const relatedCategories = tag.data.categories || [];
-    return relatedCategories.includes('cuidado');
-  })
-  .map(tag => tag.data.name);
-
-const title = categoriaCuidado?.data.name || "Cuidado y Bienestar";
-const description = categoriaCuidado?.data.description || "Todo lo que necesitas saber sobre el cuidado integral de tu mascota: nutrición, higiene, salud preventiva y bienestar.";
-const image = categoriaCuidado?.data.image || "/images/categories/care-banner.jpg";
+const title = categoriaCuidado?.data.name || "💚 Cuidado y Bienestar";
+const description = categoriaCuidado?.data.description || "Todo lo que necesitas saber para mantener a tu mascota limpia, sana y feliz";
 ---
 
 <CategoryLayout
   title={title}
   description={description}
-  image={image}
   category="cuidado"
-  subcategories={subcategories}
   articles={articles}
-  popularTags={popularTags}
   featuredArticle={featuredArticle}
 />

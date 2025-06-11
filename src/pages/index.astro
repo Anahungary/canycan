@@ -5,6 +5,8 @@ import Container from '../components/ui/Container.astro';
 import Button from '../components/ui/Button.astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
+import Newsletter from '../components/common/Newsletter.astro';
+
 
 // 🔍 CARGAR SOLO ARTÍCULOS REALES DEL CMS
 let allArticles: any[] = [];
@@ -318,34 +320,15 @@ const getCategoryColor = (category: string) => {
     </Container>
   </section>
 
-  {/* 📧 NEWSLETTER CON AMARILLO */}
-  <section class="py-16 bg-yellow-50">
-    <Container size="lg">
-      <div class="max-w-3xl mx-auto text-center">
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">
-          Mantente al día con Balto
-        </h2>
-        <p class="text-lg text-gray-600 mb-8">
-          Recibe las últimas noticias, guías exclusivas y consejos de expertos 
-          directamente en tu inbox.
-        </p>
-        
-        <div class="bg-white rounded-2xl border-2 border-yellow-200 p-8 shadow-sm">
-          <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="tu@email.com"
-              class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-400 focus:border-transparent outline-none"
-              required
-            />
-            <Button type="submit" variant="primary" size="lg" class="bg-green-600 hover:bg-green-700 text-white">
-              Suscribirme
-            </Button>
-          </form>
-        </div>
-      </div>
-    </Container>
-  </section>
+ {/* 📧 NEWSLETTER */}
+<section class="py-16 bg-yellow-50">
+  <Container size="lg">
+    <div class="max-w-3xl mx-auto text-center">
+      <Newsletter variant="homepage" />
+
+    </div>
+  </Container>
+</section>
 </BaseLayout>
 
 <style>

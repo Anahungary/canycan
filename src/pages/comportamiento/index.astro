@@ -1,129 +1,47 @@
 ---
-// src/pages/comportamiento/index.astro - CORREGIDO CON AVATARES REALES
+import { getCollection } from 'astro:content';
 import CategoryLayout from '../../layouts/CategoryLayout.astro';
 
-// 🔧 FUNCIÓN DE AVATARES REALES
-function getAuthorAvatar(authorName: string): string {
-  const authorAvatars: Record<string, string> = {
-    'Ana María Prieto': '/images/ana-p2.webp',
-    'Manuel Alejandro Bedoya': '/images/manuel-p1.webp',
-    'Equipo Editorial Balto': '/images/baltologo.svg',
-    'Editor Balto': '/images/baltologo.svg'
-  };
-  
-  return authorAvatars[authorName] || '/images/baltologo.svg';
-}
+const todosLosArticulos = await getCollection('articulos');
+const todasLasCategorias = await getCollection('categorias');
 
-let todosLosArticulos: any[] = [];
-let todasLasCategorias: any[] = [];
-let todasLasEtiquetas: any[] = [];
-
-try {
-  const { getCollection } = await import('astro:content');
-  
-  todosLosArticulos = await getCollection('articulos').catch(() => []);
-  todasLasCategorias = await getCollection('categorias').catch(() => []);
-  todasLasEtiquetas = await getCollection('etiquetas').catch(() => []);
-  
-  console.log(`✅ CMS cargado: ${todosLosArticulos.length} artículos, ${todasLasCategorias.length} categorías`);
-} catch (error) {
-  console.log('⚠️ CMS no disponible, usando datos de fallback');
-}
-
-// Filtrar artículos de comportamiento
 const articles = todosLosArticulos
-  .filter((articulo: any) => {
-    if (!articulo?.data) return false;
+  .filter(articulo => {
+    const categoria = articulo.data.category;
+    const etiquetas = articulo.data.tags || [];
     
-    const categoria = articulo.data.category?.toLowerCase() || '';
-    const etiquetas = (articulo.data.tags || []).map((tag: string) => tag.toLowerCase());
-    const titulo = articulo.data.title?.toLowerCase() || '';
-    const descripcion = articulo.data.description?.toLowerCase() || '';
-    
-    return categoria.includes('comportamiento') || 
-           etiquetas.some((tag: string) => 
-             tag.includes('comportamiento') ||
-             tag.includes('behavior') ||
-             tag.includes('agresividad') ||
-             tag.includes('ansiedad') ||
-             tag.includes('socializacion') ||
-             tag.includes('entrenamiento') ||
-             tag.includes('adiestramiento')
-           ) ||
-           titulo.includes('comportamiento') ||
-           descripcion.includes('comportamiento');
+    return categoria === 'comportamiento' || 
+           etiquetas.includes('comportamiento') ||
+           etiquetas.includes('behavior') ||
+           etiquetas.includes('agresividad') ||
+           etiquetas.includes('ansiedad') ||
+           etiquetas.includes('socializacion');
   })
-  .map((articulo: any) => ({
+  .map(articulo => ({
     id: articulo.slug,
-    title: articulo.data.title || 'Artículo sin título',
-    excerpt: articulo.data.description || articulo.data.excerpt || 'Descripción no disponible',
+    title: articulo.data.title,
+    excerpt: articulo.data.description || articulo.data.excerpt,
     image: articulo.data.image || '/images/articles/default.jpg',
-    date: articulo.data.date ? articulo.data.date.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    date: articulo.data.date.toISOString().split('T')[0],
     author: {
       name: articulo.data.author || 'Editor Balto',
-      avatar: getAuthorAvatar(articulo.data.author || 'Editor Balto')
+      avatar: '/images/authors/default.jpg'
     },
     readingTime: articulo.data.readingTime || 5,
     categories: [articulo.data.category, ...(articulo.data.tags || [])].filter(Boolean)
   }));
 
-// Si no hay artículos, mostrar algunos de prueba
-let finalArticles = articles;
-if (articles.length === 0) {
-  console.log('⚠️ No se encontraron artículos de comportamiento, mostrando todos los artículos');
-  finalArticles = todosLosArticulos
-    .slice(0, 6)
-    .map((articulo: any) => ({
-      id: articulo.slug,
-      title: articulo.data.title || 'Artículo sin título',
-      excerpt: articulo.data.description || articulo.data.excerpt || 'Descripción no disponible',
-      image: articulo.data.image || '/images/articles/default.jpg',
-      date: articulo.data.date ? articulo.data.date.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-      author: {
-        name: articulo.data.author || 'Editor Balto',
-        avatar: getAuthorAvatar(articulo.data.author || 'Editor Balto')
-      },
-      readingTime: articulo.data.readingTime || 5,
-      categories: [articulo.data.category, ...(articulo.data.tags || [])].filter(Boolean)
-    }));
-}
+const categoriaComportamiento = todasLasCategorias.find(cat => cat.slug === 'comportamiento');
+const featuredArticle = articles.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
-const categoriaComportamiento = todasLasCategorias.find((cat: any) => cat.slug === 'comportamiento');
-
-let featuredArticle = null;
-if (finalArticles.length > 0) {
-  featuredArticle = finalArticles
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-}
-
-const popularTagsFromCMS = todasLasEtiquetas
-  .filter((tag: any) => {
-    const relatedCategories = tag.data?.categories || [];
-    return relatedCategories.includes('comportamiento');
-  })
-  .map((tag: any) => tag.data.name)
-  .filter(Boolean);
-
-const fallbackTags = [
-  'Agresividad', 'Ansiedad', 'Socialización', 'Entrenamiento', 'Miedos', 'Juegos'
-];
-
-const finalPopularTags = popularTagsFromCMS.length > 0 ? popularTagsFromCMS : fallbackTags;
-
-const subcategories = ['Problemas de conducta', 'Socialización', 'Ansiedad y estrés', 'Agresividad', 'Entrenamiento positivo'];
-
-const title = categoriaComportamiento?.data?.name || "Comportamiento Animal";
-const description = categoriaComportamiento?.data?.description || "Comprende mejor a tu mascota con nuestros artículos sobre comportamiento canino y felino.";
-const image = categoriaComportamiento?.data?.image || "/images/categories/behavior-banner.jpg";
+const title = categoriaComportamiento?.data.name || "🧠 Comportamiento";
+const description = categoriaComportamiento?.data.description || "Entiende y mejora el comportamiento de tu mascota con técnicas profesionales";
 ---
 
 <CategoryLayout
   title={title}
   description={description}
-  image={image}
   category="comportamiento"
-  subcategories={subcategories}
-  articles={finalArticles}
-  popularTags={finalPopularTags}
+  articles={articles}
   featuredArticle={featuredArticle}
 />

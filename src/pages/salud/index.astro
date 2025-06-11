@@ -10,12 +10,12 @@ const articles = todosLosArticulos
     const categoria = articulo.data.category;
     const etiquetas = articulo.data.tags || [];
     
-    return categoria === 'nuevos-duenos' || 
-           etiquetas.includes('nuevos-duenos') ||
-           etiquetas.includes('primer-mascota') ||
-           etiquetas.includes('adopcion') ||
-           etiquetas.includes('preparacion') ||
-           etiquetas.includes('primeros-dias');
+    return categoria === 'salud' || 
+           etiquetas.includes('salud') ||
+           etiquetas.includes('health') ||
+           etiquetas.includes('veterinario') ||
+           etiquetas.includes('medicina') ||
+           etiquetas.includes('enfermedad');
   })
   .map(articulo => ({
     id: articulo.slug,
@@ -31,17 +31,17 @@ const articles = todosLosArticulos
     categories: [articulo.data.category, ...(articulo.data.tags || [])].filter(Boolean)
   }));
 
-const categoriaNuevosDuenos = todasLasCategorias.find(cat => cat.slug === 'nuevos-duenos');
+const categoriaSalud = todasLasCategorias.find(cat => cat.slug === 'salud');
 const featuredArticle = articles.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
-const title = categoriaNuevosDuenos?.data.name || "🏠 Nuevos Dueños";
-const description = categoriaNuevosDuenos?.data.description || "Guía completa para quienes adoptan su primera mascota. Todo lo esencial paso a paso";
+const title = categoriaSalud?.data.name || "🏥 Salud";
+const description = categoriaSalud?.data.description || "Mantén a tu mascota saludable con información veterinaria confiable y actualizada";
 ---
 
 <CategoryLayout
   title={title}
   description={description}
-  category="nuevos-duenos"
+  category="salud"
   articles={articles}
   featuredArticle={featuredArticle}
 />
