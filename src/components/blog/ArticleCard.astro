@@ -1,5 +1,5 @@
 ---
-// src/components/blog/ArticleCard.astro - CON COLORES VERDES Y AMARILLOS
+// src/components/blog/ArticleCard.astro - CON COLORES VERDES Y AMARILLOS Y ALT CORREGIDO
 import { Image } from 'astro:assets';
 import Badge from '../ui/Badge.astro';
 import Button from '../ui/Button.astro';
@@ -51,6 +51,10 @@ const truncate = (text: string, length: number) => {
 // Preparar categorías
 const allCategories = category ? [category, ...categories] : categories;
 
+// ✅ TEXTO ALT SEGURO
+const safeTitle = title || 'Artículo sobre cuidado de mascotas';
+const safeAltText = `${safeTitle} - Artículo de Balto`;
+
 // Determinar clases según variante
 let cardClasses = 'group relative transition-all duration-300 ';
 let imageContainerClasses = 'relative overflow-hidden ';
@@ -89,8 +93,8 @@ if (variant === 'default') {
   
   <div class={imageContainerClasses}>
     <Image 
-      src={image} 
-      alt={title}
+      src={image || '/images/articles/default.jpg'} 
+      alt={safeAltText}
       width={800}
       height={450}
       class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -129,13 +133,13 @@ if (variant === 'default') {
     
     <h3 class={titleClasses}>
       <a href={`/articulos/${id}`} class="hover:text-green-600">
-        {truncate(title, variant === 'compact' ? 60 : 100)}
+        {truncate(safeTitle, variant === 'compact' ? 60 : 100)}
       </a>
     </h3>
     
     {variant !== 'compact' && (
       <p class={`${variant === 'overlay' ? 'text-gray-200' : 'text-gray-600'} mb-4 text-sm`}>
-        {truncate(excerpt, variant === 'horizontal' ? 100 : 120)}
+        {truncate(excerpt || 'Descubre más sobre este interesante tema de cuidado de mascotas.', variant === 'horizontal' ? 100 : 120)}
       </p>
     )}
     
@@ -146,19 +150,19 @@ if (variant === 'default') {
             {author.avatar ? (
               <Image 
                 src={author.avatar} 
-                alt={author.name}
+                alt={`Avatar de ${author.name || 'Autor'}`}
                 width={32}
                 height={32}
                 class="w-8 h-8 rounded-full"
               />
             ) : (
               <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-sm font-bold">
-                {author.name.charAt(0)}
+                {(author.name || 'A').charAt(0)}
               </div>
             )}
             <div>
               <span class={`text-xs ${variant === 'overlay' ? 'text-gray-300' : 'text-gray-600'}`}>Por </span>
-              <span class={`text-xs font-medium ${variant === 'overlay' ? 'text-white' : 'text-gray-900'}`}>{author.name}</span>
+              <span class={`text-xs font-medium ${variant === 'overlay' ? 'text-white' : 'text-gray-900'}`}>{author.name || 'Autor'}</span>
             </div>
           </div>
         )}

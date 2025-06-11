@@ -1,12 +1,56 @@
 ---
-// src/pages/articulos/index.astro - PÁGINA PRINCIPAL DE ARTÍCULOS REVISADA
+// src/pages/articulos/index.astro - PAGINACIÓN CORREGIDA
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/ui/Container.astro';
-import ArticleList from '../../components/blog/ArticleList.astro';
 import Button from '../../components/ui/Button.astro';
 import Badge from '../../components/ui/Badge.astro';
+import ArticleList from '../../components/blog/ArticleList.astro';
+import Card from '../../components/ui/Card.astro';
 import { Image } from 'astro:assets';
+
+// 🔧 FUNCIÓN PARA AVATARES REALES DE AUTORES
+function getAuthorAvatar(authorName: string): string {
+  const authorAvatars: Record<string, string> = {
+    'Ana María Prieto': '/images/ana-p2.webp',
+    'Manuel Alejandro Bedoya': '/images/manuel-p1.webp',
+    'Equipo Editorial Balto': '/images/baltologo.svg',
+    'Editor Balto': '/images/baltologo.svg'
+  };
+  
+  return authorAvatars[authorName] || '/images/baltologo.svg';
+}
+
+// 🔧 FUNCIÓN PARA OBTENER TAGS POPULARES REALES DE ARTÍCULOS
+function getPopularTagsFromArticles(articles: any[], limit: number = 8) {
+  const allTags: string[] = [];
+  
+  articles.forEach(article => {
+    if (article.data?.category) {
+      allTags.push(article.data.category);
+    }
+    if (article.data?.tags && Array.isArray(article.data.tags)) {
+      allTags.push(...article.data.tags);
+    }
+  });
+  
+  // Contar frecuencia de cada tag
+  const tagCounts = allTags.reduce((acc, tag) => {
+    const normalizedTag = tag.toLowerCase().trim();
+    acc[normalizedTag] = (acc[normalizedTag] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  
+  // Ordenar por frecuencia y tomar los más populares
+  return Object.entries(tagCounts)
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, limit)
+    .map(([tag, count]) => ({
+      name: tag.charAt(0).toUpperCase() + tag.slice(1), // Capitalizar
+      slug: tag.toLowerCase().replace(/\s+/g, '-'),
+      count: count
+    }));
+}
 
 // 🔍 CARGAR ARTÍCULOS REALES DEL CMS
 let allArticles: any[] = [];
@@ -22,32 +66,51 @@ try {
   allArticles = [];
 }
 
-// 📊 CONFIGURACIÓN DE PAGINACIÓN
-const ARTICLES_PER_PAGE = 9;
-const firstPageArticles = allArticles.slice(0, ARTICLES_PER_PAGE);
+// 📊 CONFIGURACIÓN DE PAGINACIÓN - ✅ CORREGIDA
+const ARTICLES_PER_PAGE = 9; // Artículos por página
 const totalPages = Math.ceil(allArticles.length / ARTICLES_PER_PAGE);
 
+// ✅ LÓGICA CORREGIDA: La página 1 (index) muestra los primeros 9 artículos COMPLETOS
+const firstPageArticles = allArticles.slice(0, ARTICLES_PER_PAGE);
+
 // 🎯 ARTÍCULO DESTACADO (el más reciente)
-const featuredArticle = allArticles[0] || null;
-const otherArticles = allArticles.slice(1, ARTICLES_PER_PAGE);
+const featuredArticle = firstPageArticles[0] || null;
+
+// ✅ ARTÍCULOS RESTANTES PARA LA GRILLA (8 artículos después del destacado)
+const otherArticles = firstPageArticles.slice(1); // Los 8 restantes
+
+console.log(`📊 Index - Total artículos: ${allArticles.length}, Por página: ${ARTICLES_PER_PAGE}, Total páginas: ${totalPages}`);
+console.log(`📊 Index - Mostrando artículos 1-${firstPageArticles.length} (Destacado: 1, Grilla: ${otherArticles.length})`);
 
 // 📈 ESTADÍSTICAS PARA MOSTRAR
 const stats = {
   total: allArticles.length,
-  categories: [...new Set(allArticles.map(article => article.data.category))].length,
-  authors: [...new Set(allArticles.map(article => article.data.author))].length,
-  readingTime: Math.round(allArticles.reduce((sum, article) => sum + (article.data.readingTime || 5), 0) / allArticles.length)
+  categories: [...new Set(allArticles.map(a => a.data?.category).filter(Boolean))].length,
+  authors: [...new Set(allArticles.map(a => a.data?.author).filter(Boolean))].length,
+  readingTime: 6
 };
 
 // 🏷️ CATEGORÍAS PRINCIPALES
 const categories = [
-  { name: 'Entrenamiento', slug: 'entrenamiento', color: 'blue', icon: '🎯' },
-  { name: 'Alimentación', slug: 'alimentacion', color: 'green', icon: '🍽️' },
-  { name: 'Salud', slug: 'salud', color: 'red', icon: '🏥' },
-  { name: 'Comportamiento', slug: 'comportamiento', color: 'purple', icon: '🧠' },
-  { name: 'Cachorros', slug: 'cachorros', color: 'yellow', icon: '🐶' },
-  { name: 'Cuidado', slug: 'cuidado', color: 'teal', icon: '💚' }
+  { name: 'Entrenamiento', slug: 'entrenamiento', count: 24, color: 'primary' as const, icon: '🎯' },
+  { name: 'Alimentación', slug: 'alimentacion', count: 18, color: 'secondary' as const, icon: '🍽️' },
+  { name: 'Salud', slug: 'salud', count: 31, color: 'success' as const, icon: '🏥' },
+  { name: 'Comportamiento', slug: 'comportamiento', count: 27, color: 'info' as const, icon: '🧠' },
+  { name: 'Cachorros', slug: 'cachorros', count: 15, color: 'warning' as const, icon: '🐶' },
+  { name: 'Cuidado', slug: 'cuidado', count: 22, color: 'primary' as const, icon: '💚' }
 ];
+
+// ✅ ETIQUETAS POPULARES REALES - USAR LOS ARTÍCULOS CARGADOS
+let allArticlesForTags: any[] = [];
+try {
+  allArticlesForTags = await getCollection('articulos');
+  allArticlesForTags = allArticlesForTags.filter((article: any) => article.data.status === 'published');
+} catch (error) {
+  allArticlesForTags = [];
+}
+
+const popularTagsData = getPopularTagsFromArticles(allArticlesForTags, 8);
+const popularTags = popularTagsData.map(tag => tag.name);
 
 // Funciones utilitarias
 const formatDate = (date: string | Date) => {
@@ -72,294 +135,281 @@ const getTimeAgo = (date: string | Date) => {
   }
 };
 
-// 🎨 FUNCIÓN PARA OBTENER COLORES DE CATEGORÍAS - PALETA VIBRANTE
-const getCategoryColor = (category: string) => {
-  const colorMap: Record<string, string> = {
-    'Entrenamiento': 'bg-green-100 text-green-800 border-green-300 hover:bg-green-200',
-    'Alimentación': 'bg-yellow-100 text-yellow-800 border-yellow-300 hover:bg-yellow-200',
-    'Salud': 'bg-red-100 text-red-800 border-red-300 hover:bg-red-200',
-    'Comportamiento': 'bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200',
-    'Cachorros': 'bg-orange-100 text-orange-800 border-orange-300 hover:bg-orange-200',
-    'Cuidado': 'bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-200',
-    'default': 'bg-gray-100 text-gray-800 border-gray-300 hover:bg-gray-200'
-  };
-  return colorMap[category] || colorMap.default;
-};
+const title = "Blog de Balto - Artículos sobre cuidado de mascotas";
+const description = "Descubre artículos especializados sobre entrenamiento, alimentación, salud y comportamiento de perros y gatos. Consejos de expertos para mejorar la vida de tu mascota.";
 ---
 
-<BaseLayout 
-  title="Artículos de Cuidado de Mascotas | Balto"
-  description="Descubre consejos expertos sobre entrenamiento, alimentación, salud y cuidado de perros y gatos. Artículos profesionales para amantes de las mascotas."
->
-  <Container class="py-8">
-    
-    {/* 📊 HEADER CON ESTADÍSTICAS */}
-    <div class="text-center mb-12">
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-        Centro de Conocimiento de Balto
-      </h1>
-      <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-        Artículos profesionales sobre cuidado, entrenamiento y bienestar de tus mascotas, 
-        escritos por expertos veterinarios y especialistas en comportamiento animal.
-      </p>
+<BaseLayout title={title} description={description}>
+  {/* 🎯 HERO SECTION */}
+  <div class="bg-gradient-to-r from-green-500 to-green-600">
+    <Container>
+      <div class="py-16 md:py-20 text-center">
+        <Badge variant="secondary" size="md" class="mb-4 bg-white bg-opacity-20 text-white border-white">
+          🐾 Artículos Profesionales
+        </Badge>
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">Blog de Balto</h1>
+        <p class="text-lg text-white text-opacity-90 max-w-2xl mx-auto mb-8">
+          Artículos, consejos y guías escritos por expertos para mejorar la calidad de vida de tus mascotas
+        </p>
+        
+        <div class="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
+          {categories.slice(0, 6).map(category => (
+            <a 
+              href={`/blog/categoria/${category.slug}`}
+              class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 text-white transition-all duration-200"
+            >
+              <span class="mr-2">{category.icon}</span>
+              {category.name}
+            </a>
+          ))}
+        </div>
+      </div>
+    </Container>
+  </div>
+
+  {/* 📰 CONTENIDO PRINCIPAL */}
+  <Container class="py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
       
-      {/* Estadísticas con colores vibrantes */}
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
-        <div class="bg-white rounded-lg p-4 border-2 border-green-500 shadow-md hover:shadow-lg transition-shadow">
-          <div class="text-2xl font-bold text-green-600">{stats.total}</div>
-          <div class="text-sm text-gray-600">Artículos</div>
-        </div>
-        <div class="bg-white rounded-lg p-4 border-2 border-yellow-500 shadow-md hover:shadow-lg transition-shadow">
-          <div class="text-2xl font-bold text-yellow-600">{stats.categories}</div>
-          <div class="text-sm text-gray-600">Categorías</div>
-        </div>
-        <div class="bg-white rounded-lg p-4 border-2 border-green-600 shadow-md hover:shadow-lg transition-shadow">
-          <div class="text-2xl font-bold text-green-700">{stats.authors}</div>
-          <div class="text-sm text-gray-600">Autores</div>
-        </div>
-        <div class="bg-white rounded-lg p-4 border-2 border-yellow-600 shadow-md hover:shadow-lg transition-shadow">
-          <div class="text-2xl font-bold text-yellow-700">{stats.readingTime}min</div>
-          <div class="text-sm text-gray-600">Promedio</div>
-        </div>
-      </div>
-    </div>
-
-    {/* 🏷️ CATEGORÍAS RÁPIDAS */}
-    <section class="mb-12">
-      <h2 class="text-xl font-bold text-gray-900 mb-6 text-center">Explora por Categorías</h2>
-      <div class="flex flex-wrap justify-center gap-3">
-        {categories.map((category) => (
-          <a 
-            href={`/etiquetas/${category.slug}`}
-            class={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border-2 transition-all hover:shadow-lg hover:scale-105 ${getCategoryColor(category.name)}`}
-          >
-            <span>{category.icon}</span>
-            <span>{category.name}</span>
-          </a>
-        ))}
-      </div>
-    </section>
-
-    {allArticles.length > 0 ? (
-      <div class="space-y-12">
+      {/* 📝 COLUMNA PRINCIPAL - ARTÍCULOS */}
+      <div class="lg:col-span-8">
         
         {/* 🌟 ARTÍCULO DESTACADO */}
         {featuredArticle && (
           <section class="mb-12">
-            <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
+                <span class="text-white text-sm">⭐</span>
+              </div>
               <h2 class="text-2xl font-bold text-gray-900">Artículo Destacado</h2>
-              <Badge variant="secondary" class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold shadow-md">
-                ⭐ Más reciente
-              </Badge>
+              <div class="flex-1 h-px bg-gradient-to-r from-yellow-200 to-transparent"></div>
             </div>
             
-            <a href={`/articulos/${featuredArticle.slug}`} class="block group">
-              <article class="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white rounded-2xl overflow-hidden shadow-xl border-2 border-green-500 hover:shadow-2xl hover:border-green-600 transition-all duration-300">
-                <div class="aspect-[16/10] lg:aspect-[4/3] overflow-hidden">
+            <Card class="overflow-hidden hover:shadow-xl transition-shadow duration-200">
+              <div class="grid grid-cols-1 md:grid-cols-5 gap-0">
+                <div class="md:col-span-2">
                   <Image 
-                    src={featuredArticle.data.image || '/images/articles/default.jpg'} 
-                    alt={featuredArticle.data.title}
-                    width={600}
-                    height={400}
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    src={featuredArticle.data?.image || '/images/articles/default.jpg'} 
+                    alt={featuredArticle.data?.title || 'Artículo destacado'}
+                    width={400}
+                    height={250}
+                    class="w-full h-48 md:h-full object-cover"
                   />
                 </div>
-                
-                <div class="p-6 lg:p-8 flex flex-col justify-center">
-                  <div class="mb-4">
-                    <span class={`inline-block px-4 py-2 rounded-full text-sm font-bold border-2 shadow-md ${getCategoryColor(featuredArticle.data.category)}`}>
-                      {featuredArticle.data.category}
+                <div class="md:col-span-3 p-6">
+                  <div class="flex items-center gap-2 mb-3">
+                    <Badge variant="secondary" size="sm">
+                      {featuredArticle.data?.category || 'General'}
+                    </Badge>
+                    <span class="text-sm text-gray-500">
+                      {getTimeAgo(featuredArticle.data?.date)}
                     </span>
                   </div>
                   
-                  <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-tight group-hover:text-green-600 transition-colors">
-                    {featuredArticle.data.title}
+                  <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                    <a href={`/blog/${featuredArticle.slug}`} class="hover:text-green-600 transition-colors">
+                      {featuredArticle.data?.title}
+                    </a>
                   </h3>
                   
-                  <p class="text-gray-600 mb-6 text-lg leading-relaxed">
-                    {featuredArticle.data.description}
+                  <p class="text-gray-600 mb-4 line-clamp-2">
+                    {featuredArticle.data?.description}
                   </p>
                   
-                  <div class="flex items-center justify-between text-sm text-gray-500">
-                    <div class="flex items-center gap-4">
-                      <span>👤 {featuredArticle.data.author}</span>
-                      <span>📅 {formatDate(featuredArticle.data.date)}</span>
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <Image 
+                        src={getAuthorAvatar(featuredArticle.data?.author || 'Editor Balto')}
+                        alt={featuredArticle.data?.author || 'Editor Balto'}
+                        width={32}
+                        height={32}
+                        class="w-8 h-8 rounded-full object-cover"
+                      />
+                      <span class="text-sm text-gray-600">
+                        {featuredArticle.data?.author || 'Editor Balto'}
+                      </span>
                     </div>
-                    <span class="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-full font-bold shadow-md">
-                      🕒 {featuredArticle.data.readingTime || 5} min
-                    </span>
+                    <Button 
+                      href={`/blog/${featuredArticle.slug}`} 
+                      variant="primary" 
+                      size="sm"
+                    >
+                      Leer más
+                    </Button>
                   </div>
                 </div>
-              </article>
-            </a>
+              </div>
+            </Card>
           </section>
         )}
-
-        {/* 📰 GRID DE ARTÍCULOS */}
-        {otherArticles.length > 0 && (
-          <section>
-            <h2 class="text-2xl font-bold text-gray-900 mb-8">Últimos Artículos</h2>
+        
+        {/* 📰 ARTÍCULOS RECIENTES */}
+        <section class="mb-12">
+          <div class="flex items-center gap-3 mb-8">
+            <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+              <span class="text-white text-sm">📚</span>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900">Artículos Recientes</h2>
+            <div class="flex-1 h-px bg-gradient-to-r from-green-200 to-transparent"></div>
+          </div>
+          
+          {otherArticles.length > 0 ? (
+            <ArticleList 
+              articles={otherArticles.map(article => ({
+                id: article.slug,
+                title: article.data?.title || 'Título del artículo',
+                excerpt: article.data?.description || 'Descripción del artículo',
+                image: article.data?.image || '/images/articles/default.jpg',
+                author: {
+                  name: article.data?.author || 'Editor Balto',
+                  avatar: getAuthorAvatar(article.data?.author || 'Editor Balto')
+                },
+                date: article.data?.date ? article.data.date.toISOString() : new Date().toISOString(),
+                readingTime: article.data?.readingTime || 5,
+                categories: article.data?.tags || [],
+                featured: false
+              }))} 
+              layout="grid" 
+              columns={2}
+            />
+          ) : (
+            <div class="bg-gradient-to-br from-green-50 to-yellow-50 rounded-lg p-8 text-center border-2 border-green-200">
+              <span class="text-4xl mb-4 block">📝</span>
+              <h3 class="text-lg font-medium text-gray-900 mb-2">
+                No hay más artículos disponibles
+              </h3>
+              <p class="text-gray-600 mb-4">
+                Vuelve pronto para ver nuevo contenido.
+              </p>
+            </div>
+          )}
+        </section>
+        
+        {/* 🔗 PAGINACIÓN CORREGIDA */}
+        {totalPages > 1 && (
+          <div class="mt-12 text-center">
+            <div class="inline-flex items-center gap-4">
+              <span class="text-gray-600 font-medium">
+                Página 1 de {totalPages} • {allArticles.length} artículos totales
+              </span>
+              <a 
+                href="/articulos/page/2"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                <span>Ver más artículos</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+      
+      {/* 📍 SIDEBAR - COLUMNA LATERAL */}
+      <div class="lg:col-span-4">
+        <div class="sticky top-[140px] space-y-8">
+          
+          {/* 📊 ESTADÍSTICAS */}
+          <Card class="p-8 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                <span class="text-white text-sm">📊</span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900">Estadísticas</h3>
+            </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {otherArticles.map((article) => (
-                <a href={`/articulos/${article.slug}`} class="block group">
-                  <article class="bg-white rounded-xl overflow-hidden shadow-lg border-2 border-gray-200 hover:shadow-xl hover:border-green-500 transition-all duration-300 hover:scale-[1.02]">
-                    <div class="aspect-[16/10] overflow-hidden">
-                      <Image 
-                        src={article.data.image || '/images/articles/default.jpg'} 
-                        alt={article.data.title}
-                        width={400}
-                        height={250}
-                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    
-                    <div class="p-6">
-                      <div class="flex items-center justify-between mb-3">
-                        <span class={`px-3 py-1 rounded-full text-xs font-bold border-2 shadow-sm ${getCategoryColor(article.data.category)}`}>
-                          {article.data.category}
-                        </span>
-                        <span class="text-xs text-gray-400 font-medium">
-                          {getTimeAgo(article.data.date)}
-                        </span>
-                      </div>
-                      
-                      <h3 class="text-lg font-bold text-gray-900 mb-3 leading-tight group-hover:text-green-600 transition-colors line-clamp-2">
-                        {article.data.title}
-                      </h3>
-                      
-                      <p class="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
-                        {article.data.description}
-                      </p>
-                      
-                      <div class="flex items-center justify-between text-xs text-gray-500">
-                        <span class="font-medium">👤 {article.data.author}</span>
-                        <span class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-3 py-1 rounded-full font-bold shadow-md">
-                          🕒 {article.data.readingTime || 5}min
-                        </span>
-                      </div>
-                    </div>
-                  </article>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="text-center">
+                <div class="text-2xl font-bold text-green-600">{stats.total}</div>
+                <div class="text-sm text-gray-600">Artículos</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-blue-600">{stats.categories}</div>
+                <div class="text-sm text-gray-600">Categorías</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-purple-600">{stats.authors}</div>
+                <div class="text-sm text-gray-600">Autores</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-orange-600">{stats.readingTime}</div>
+                <div class="text-sm text-gray-600">Min. promedio</div>
+              </div>
+            </div>
+          </Card>
+          
+          {/* 🏷️ CATEGORÍAS POPULARES */}
+          <Card class="p-8">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <span class="text-white text-sm">🏷️</span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900">Categorías</h3>
+            </div>
+            
+            <div class="space-y-3">
+              {categories.map(category => (
+                <a 
+                  href={`/blog/categoria/${category.slug}`}
+                  class="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 group"
+                >
+                  <div class="flex items-center gap-3">
+                    <span class="text-lg">{category.icon}</span>
+                    <span class="font-medium text-gray-900 group-hover:text-green-600 transition-colors">
+                      {category.name}
+                    </span>
+                  </div>
+                  <Badge variant="secondary" size="sm">
+                    {category.count}
+                  </Badge>
                 </a>
               ))}
             </div>
-          </section>
-        )}
-
-        {/* 🔗 PAGINACIÓN MEJORADA CON COLORES VIBRANTES */}
-        {totalPages > 1 && (
-          <section class="mt-16">
-            <div class="flex justify-center">
-              <nav class="flex items-center space-x-2" aria-label="Paginación">
-                
-                {/* Página actual (siempre página 1 en index) */}
-                <span class="px-5 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg text-sm font-bold shadow-lg">
-                  1
-                </span>
-                
-                {/* Páginas siguientes */}
-                {Array.from({ length: Math.min(totalPages - 1, 4) }, (_, i) => i + 2).map(pageNum => (
+          </Card>
+          
+          {/* 🔥 ETIQUETAS POPULARES */}
+          {popularTags.length > 0 && (
+            <Card class="p-8">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                  <span class="text-white text-sm">🔥</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900">Temas Populares</h3>
+              </div>
+              
+              <div class="flex flex-wrap gap-2">
+                {popularTags.map(tag => (
                   <a 
-                    href={`/articulos/page/${pageNum}`}
-                    class="px-5 py-3 border-2 border-green-500 text-green-600 rounded-lg text-sm font-bold hover:bg-green-500 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
-                    aria-label={`Ir a página ${pageNum}`}
+                    href={`/blog/etiqueta/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 hover:from-orange-200 hover:to-red-200 transition-all duration-200"
                   >
-                    {pageNum}
+                    {tag}
                   </a>
                 ))}
-                
-                {/* Puntos suspensivos y última página */}
-                {totalPages > 5 && (
-                  <>
-                    <span class="px-2 text-gray-400 font-bold">...</span>
-                    <a 
-                      href={`/articulos/page/${totalPages}`}
-                      class="px-5 py-3 border-2 border-green-500 text-green-600 rounded-lg text-sm font-bold hover:bg-green-500 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
-                      aria-label={`Ir a última página ${totalPages}`}
-                    >
-                      {totalPages}
-                    </a>
-                  </>
-                )}
-                
-                {/* Botón Siguiente */}
-                {totalPages > 1 && (
-                  <a 
-                    href="/articulos/page/2"
-                    class="ml-3 px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg text-sm font-bold hover:from-yellow-600 hover:to-yellow-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 hover:scale-105"
-                    aria-label="Página siguiente"
-                  >
-                    <span>Siguiente</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </a>
-                )}
-              </nav>
-            </div>
-            
-            {/* Información adicional */}
-            <div class="text-center mt-6">
-              <p class="text-sm text-gray-500 font-medium">
-                Mostrando {Math.min(ARTICLES_PER_PAGE, allArticles.length)} de {allArticles.length} artículos
+              </div>
+            </Card>
+          )}
+          
+          {/* 📱 NEWSLETTER */}
+          <Card class="p-8 bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200">
+            <div class="text-center">
+              <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <span class="text-white text-xl">📧</span>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 mb-2">
+                ¡No te pierdas nada!
+              </h3>
+              <p class="text-sm text-gray-600 mb-4">
+                Recibe semanalmente los mejores consejos para tu mascota
               </p>
+              <Button variant="primary" size="sm" class="w-full">
+                Suscribirse
+              </Button>
             </div>
-          </section>
-        )}
-
+          </Card>
+        </div>
       </div>
-    ) : (
-      /* 📝 ESTADO VACÍO MEJORADO CON COLORES VIBRANTES */
-      <section class="text-center py-20 bg-gradient-to-br from-green-50 to-yellow-50 rounded-2xl border-2 border-green-500 shadow-lg">
-        <div class="w-32 h-32 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-          <span class="text-6xl">📝</span>
-        </div>
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">
-          ¡Bienvenido al Centro de Conocimiento de Balto!
-        </h2>
-        <p class="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
-          Pronto tendremos artículos increíbles sobre cuidado de mascotas. 
-          Mientras tanto, explora otras secciones de Balto.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button href="/comparador-razas" variant="primary" size="lg" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all">
-            🔍 Comparar Razas
-          </Button>
-          <Button href="/" variant="outline" size="lg" class="border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white font-bold shadow-md hover:shadow-lg transition-all">
-            🏠 Volver al inicio
-          </Button>
-        </div>
-      </section>
-    )}
+    </div>
   </Container>
-
 </BaseLayout>
-
-<style>
-  /* Clase para truncar texto */
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* Hover effects mejorados */
-  article:hover {
-    transform: translateY(-2px);
-  }
-  
-  /* Animaciones suaves */
-  * {
-    transition-property: transform, box-shadow, border-color, background-color;
-    transition-duration: 0.2s;
-    transition-timing-function: ease-in-out;
-  }
-</style>

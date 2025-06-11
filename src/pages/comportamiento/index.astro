@@ -1,6 +1,18 @@
 ---
-// src/pages/comportamiento/index.astro - FILTRO CORREGIDO
+// src/pages/comportamiento/index.astro - CORREGIDO CON AVATARES REALES
 import CategoryLayout from '../../layouts/CategoryLayout.astro';
+
+// 🔧 FUNCIÓN DE AVATARES REALES
+function getAuthorAvatar(authorName: string): string {
+  const authorAvatars: Record<string, string> = {
+    'Ana María Prieto': '/images/ana-p2.webp',
+    'Manuel Alejandro Bedoya': '/images/manuel-p1.webp',
+    'Equipo Editorial Balto': '/images/baltologo.svg',
+    'Editor Balto': '/images/baltologo.svg'
+  };
+  
+  return authorAvatars[authorName] || '/images/baltologo.svg';
+}
 
 let todosLosArticulos: any[] = [];
 let todasLasCategorias: any[] = [];
@@ -18,7 +30,7 @@ try {
   console.log('⚠️ CMS no disponible, usando datos de fallback');
 }
 
-// 🔧 FILTRO MÁS AMPLIO - INCLUYE MÁS ARTÍCULOS
+// Filtrar artículos de comportamiento
 const articles = todosLosArticulos
   .filter((articulo: any) => {
     if (!articulo?.data) return false;
@@ -28,7 +40,6 @@ const articles = todosLosArticulos
     const titulo = articulo.data.title?.toLowerCase() || '';
     const descripcion = articulo.data.description?.toLowerCase() || '';
     
-    // 🔧 BUSCAR EN MÚLTIPLES CAMPOS
     return categoria.includes('comportamiento') || 
            etiquetas.some((tag: string) => 
              tag.includes('comportamiento') ||
@@ -50,18 +61,18 @@ const articles = todosLosArticulos
     date: articulo.data.date ? articulo.data.date.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     author: {
       name: articulo.data.author || 'Editor Balto',
-      avatar: '/images/authors/default.jpg'
+      avatar: getAuthorAvatar(articulo.data.author || 'Editor Balto')
     },
     readingTime: articulo.data.readingTime || 5,
     categories: [articulo.data.category, ...(articulo.data.tags || [])].filter(Boolean)
   }));
 
-// 🔧 SI NO HAY ARTÍCULOS, MOSTRAR TODOS (PARA TESTING)
+// Si no hay artículos, mostrar algunos de prueba
 let finalArticles = articles;
 if (articles.length === 0) {
   console.log('⚠️ No se encontraron artículos de comportamiento, mostrando todos los artículos');
   finalArticles = todosLosArticulos
-    .slice(0, 6) // Limitar a 6 para testing
+    .slice(0, 6)
     .map((articulo: any) => ({
       id: articulo.slug,
       title: articulo.data.title || 'Artículo sin título',
@@ -70,7 +81,7 @@ if (articles.length === 0) {
       date: articulo.data.date ? articulo.data.date.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       author: {
         name: articulo.data.author || 'Editor Balto',
-        avatar: '/images/authors/default.jpg'
+        avatar: getAuthorAvatar(articulo.data.author || 'Editor Balto')
       },
       readingTime: articulo.data.readingTime || 5,
       categories: [articulo.data.category, ...(articulo.data.tags || [])].filter(Boolean)

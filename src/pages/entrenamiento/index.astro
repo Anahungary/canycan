@@ -1,7 +1,19 @@
 ---
-// src/pages/entrenamiento/index.astro - SOLO CMS
+// src/pages/entrenamiento/index.astro - SOLO CMS CON AVATARES REALES
 import { getCollection } from 'astro:content';
 import CategoryLayout from '../../layouts/CategoryLayout.astro';
+
+// 🔧 FUNCIÓN DE AVATARES REALES
+function getAuthorAvatar(authorName: string): string {
+  const authorAvatars: Record<string, string> = {
+    'Ana María Prieto': '/images/ana-p2.webp',
+    'Manuel Alejandro Bedoya': '/images/manuel-p1.webp',
+    'Equipo Editorial Balto': '/images/baltologo.svg',
+    'Editor Balto': '/images/baltologo.svg'
+  };
+  
+  return authorAvatars[authorName] || '/images/baltologo.svg';
+}
 
 // Obtener datos del CMS
 const todosLosArticulos = await getCollection('articulos');
@@ -30,7 +42,7 @@ const articles = todosLosArticulos
     date: articulo.data.date.toISOString().split('T')[0],
     author: {
       name: articulo.data.author || 'Editor Balto',
-      avatar: '/images/authors/default.jpg'
+      avatar: getAuthorAvatar(articulo.data.author || 'Editor Balto')
     },
     readingTime: articulo.data.readingTime || 5,
     categories: [articulo.data.category, ...(articulo.data.tags || [])].filter(Boolean)

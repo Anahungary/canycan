@@ -1,68 +1,166 @@
 ---
-// src/pages/articulos/page/[page].astro - PÁGINA DINÁMICA PARA PAGINACIÓN
+// src/pages/articulos/page/[page].astro - VERSIÓN CON DEBUG COMPLETO
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Container from '../../../components/ui/Container.astro';
 import Button from '../../../components/ui/Button.astro';
 import Badge from '../../../components/ui/Badge.astro';
+import ArticleList from '../../../components/blog/ArticleList.astro';
+import Card from '../../../components/ui/Card.astro';
 import { Image } from 'astro:assets';
 
-// 📊 CONFIGURACIÓN DE PAGINACIÓN
+// 🔧 FUNCIÓN PARA AVATARES REALES DE AUTORES
+function getAuthorAvatar(authorName: string): string {
+  const authorAvatars: Record<string, string> = {
+    'Ana María Prieto': '/images/ana-p2.webp',
+    'Manuel Alejandro Bedoya': '/images/manuel-p1.webp',
+    'Equipo Editorial Balto': '/images/baltologo.svg',
+    'Editor Balto': '/images/baltologo.svg'
+  };
+  
+  return authorAvatars[authorName] || '/images/baltologo.svg';
+}
+
+// 📊 CONFIGURACIÓN DE PAGINACIÓN - ✅ DEBE COINCIDIR CON INDEX.ASTRO
 const ARTICLES_PER_PAGE = 9;
 
-// Generar rutas dinámicas para la paginación
+// 🚨 GENERAR RUTAS DINÁMICAS CON DEBUG COMPLETO
 export async function getStaticPaths() {
+  console.log('🚀 =================================');
+  console.log('🚀 INICIANDO getStaticPaths() [page].astro');
+  console.log('🚀 =================================');
+  
   // 🔍 CARGAR ARTÍCULOS REALES DEL CMS
   let allArticles: any[] = [];
   try {
+    console.log('📝 Intentando cargar artículos del CMS...');
     allArticles = await getCollection('articulos');
-    allArticles = allArticles
-      .filter((article: any) => article.data.status === 'published')
-      .sort((a: any, b: any) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+    console.log(`📰 Total artículos cargados del CMS: ${allArticles.length}`);
+    
+    // Filtrar artículos publicados
+    const beforeFilter = allArticles.length;
+    allArticles = allArticles.filter((article: any) => article.data.status === 'published');
+    console.log(`📰 Artículos después del filtro 'published': ${allArticles.length} (eliminados: ${beforeFilter - allArticles.length})`);
+    
+    // Ordenar por fecha
+    allArticles = allArticles.sort((a: any, b: any) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+    console.log(`📰 Artículos ordenados por fecha (más recientes primero)`);
+    
+    // Mostrar primeros 3 artículos para debug
+    console.log('📰 Primeros 3 artículos:');
+    allArticles.slice(0, 3).forEach((article, index) => {
+      console.log(`  ${index + 1}. ${article.data?.title || 'Sin título'} (${article.slug})`);
+    });
+    
   } catch (error) {
-    console.log('⚠️ No se pudieron cargar los artículos:', error);
+    console.error('⚠️ ERROR cargando artículos:', error);
     allArticles = [];
   }
 
-  // Si no hay artículos suficientes, retorna array vacío para evitar páginas innecesarias
+  // 🚨 VERIFICAR SI HAY SUFICIENTES ARTÍCULOS
+  console.log(`📊 Verificando paginación:`);
+  console.log(`📊 - Total artículos: ${allArticles.length}`);
+  console.log(`📊 - Artículos por página: ${ARTICLES_PER_PAGE}`);
+  console.log(`📊 - ¿Suficientes para páginas adicionales?: ${allArticles.length > ARTICLES_PER_PAGE}`);
+
+  // ✅ CAMBIO CRÍTICO: GENERAR RUTAS INCLUSO CON POCOS ARTÍCULOS PARA DEBUG
   if (allArticles.length <= ARTICLES_PER_PAGE) {
-    return [];
+    console.log('⚠️ POCOS ARTÍCULOS - Pero generando rutas de prueba para debug');
+    
+    // Generar al menos la página 2 para testing (incluso si está vacía)
+    return [{
+      params: { page: '2' },
+      props: { 
+        page: 2,
+        articles: [],
+        totalPages: 1,
+        allArticlesCount: allArticles.length,
+        startIndex: ARTICLES_PER_PAGE + 1,
+        endIndex: ARTICLES_PER_PAGE,
+        debugInfo: 'Página de prueba - pocos artículos'
+      }
+    }];
   }
 
   // Calcular total de páginas
   const totalPages = Math.ceil(allArticles.length / ARTICLES_PER_PAGE);
+  console.log(`📊 Total de páginas calculadas: ${totalPages}`);
   
-  // Crear rutas para cada página (empezando desde la página 2)
+  // ✅ CAMBIO: Crear rutas para TODAS las páginas (incluyendo página 2, 3, etc.)
   const pages = Array.from({ length: Math.max(0, totalPages - 1) }, (_, i) => i + 2);
+  console.log(`🔗 Páginas a crear: ${pages.join(', ')}`);
   
-  return pages.map(pageNum => {
+  const paths = pages.map(pageNum => {
+    // Calcular qué artículos van en esta página
     const startIndex = (pageNum - 1) * ARTICLES_PER_PAGE;
     const endIndex = startIndex + ARTICLES_PER_PAGE;
     const pageArticles = allArticles.slice(startIndex, endIndex);
+    
+    console.log(`📄 Página ${pageNum}:`);
+    console.log(`   - Índices: ${startIndex} a ${endIndex - 1}`);
+    console.log(`   - Artículos asignados: ${pageArticles.length}`);
+    console.log(`   - Títulos:`, pageArticles.map(a => a.data?.title || 'Sin título').slice(0, 2));
     
     return {
       params: { page: pageNum.toString() },
       props: { 
         page: pageNum,
-        articles: pageArticles || [],
+        articles: pageArticles,
         totalPages: totalPages,
-        allArticlesCount: allArticles.length
+        allArticlesCount: allArticles.length,
+        startIndex: startIndex + 1,
+        endIndex: Math.min(endIndex, allArticles.length),
+        debugInfo: `Página ${pageNum} con ${pageArticles.length} artículos`
       }
     };
   });
+
+  console.log('🚀 =================================');
+  console.log(`🚀 PATHS GENERADOS: ${paths.length}`);
+  console.log('🚀 Paths creados:', paths.map(p => `página ${p.params.page}`).join(', '));
+  console.log('🚀 =================================');
+  
+  return paths;
 }
 
-const { page, articles = [], totalPages = 1, allArticlesCount = 0 } = Astro.props;
+// 📋 OBTENER PROPS CON DEBUG
+const { 
+  page, 
+  articles = [], 
+  totalPages = 1, 
+  allArticlesCount = 0, 
+  startIndex = 0, 
+  endIndex = 0,
+  debugInfo = ''
+} = Astro.props;
+
+// 🚨 DEBUG EN RUNTIME
+console.log('🎯 =================================');
+console.log('🎯 PÁGINA RENDERIZÁNDOSE');
+console.log('🎯 =================================');
+console.log(`🎯 Página actual: ${page}`);
+console.log(`🎯 Artículos recibidos: ${articles.length}`);
+console.log(`🎯 Total páginas: ${totalPages}`);
+console.log(`🎯 Debug info: ${debugInfo}`);
+console.log('🎯 =================================');
 
 // 🏷️ CATEGORÍAS PRINCIPALES
 const categories = [
-  { name: 'Entrenamiento', slug: 'entrenamiento', color: 'blue', icon: '🎯' },
-  { name: 'Alimentación', slug: 'alimentacion', color: 'green', icon: '🍽️' },
-  { name: 'Salud', slug: 'salud', color: 'red', icon: '🏥' },
-  { name: 'Comportamiento', slug: 'comportamiento', color: 'purple', icon: '🧠' },
-  { name: 'Cachorros', slug: 'cachorros', color: 'yellow', icon: '🐶' },
-  { name: 'Cuidado', slug: 'cuidado', color: 'teal', icon: '💚' }
+  { name: 'Entrenamiento', slug: 'entrenamiento', count: 24, color: 'primary' as const, icon: '🎯' },
+  { name: 'Alimentación', slug: 'alimentacion', count: 18, color: 'secondary' as const, icon: '🍽️' },
+  { name: 'Salud', slug: 'salud', count: 31, color: 'success' as const, icon: '🏥' },
+  { name: 'Comportamiento', slug: 'comportamiento', count: 27, color: 'info' as const, icon: '🧠' },
+  { name: 'Cachorros', slug: 'cachorros', count: 15, color: 'warning' as const, icon: '🐶' },
+  { name: 'Cuidado', slug: 'cuidado', count: 22, color: 'primary' as const, icon: '💚' }
 ];
+
+// 📈 ESTADÍSTICAS
+const stats = {
+  total: allArticlesCount,
+  categories: categories.length,
+  authors: 8,
+  readingTime: 6
+};
 
 // Funciones utilitarias
 const formatDate = (date: string | Date) => {
@@ -86,123 +184,115 @@ const getTimeAgo = (date: string | Date) => {
     return formatDate(date);
   }
 };
-
-// 🎨 FUNCIÓN PARA OBTENER COLORES DE CATEGORÍAS - PALETA VIBRANTE
-const getCategoryColor = (category: string) => {
-  const colorMap: Record<string, string> = {
-    'Entrenamiento': 'bg-green-100 text-green-800 border-green-300 hover:bg-green-200',
-    'Alimentación': 'bg-yellow-100 text-yellow-800 border-yellow-300 hover:bg-yellow-200',
-    'Salud': 'bg-red-100 text-red-800 border-red-300 hover:bg-red-200',
-    'Comportamiento': 'bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200',
-    'Cachorros': 'bg-orange-100 text-orange-800 border-orange-300 hover:bg-orange-200',
-    'Cuidado': 'bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-200',
-    'default': 'bg-gray-100 text-gray-800 border-gray-300 hover:bg-gray-200'
-  };
-  return colorMap[category] || colorMap.default;
-};
 ---
 
 <BaseLayout 
   title={`Artículos - Página ${page} | Balto`}
   description={`Explora más artículos sobre cuidado de mascotas en la página ${page}. Consejos expertos sobre entrenamiento, alimentación, salud y comportamiento animal.`}
+  ogImage="/images/og/articulos.jpg"
 >
-  <Container class="py-8">
-    
-    {/* 📊 HEADER DE PÁGINA */}
-    <div class="text-center mb-12">
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-        Artículos de Balto - Página {page}
-      </h1>
-      <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-        Continúa explorando nuestros artículos profesionales sobre cuidado y bienestar de mascotas.
-      </p>
-      
-      {/* Breadcrumb con colores vibrantes */}
-      <nav class="flex justify-center items-center text-sm text-gray-500 mb-8">
-        <a href="/" class="hover:text-green-600 transition-colors">Inicio</a>
-        <span class="mx-2">→</span>
-        <a href="/articulos" class="hover:text-green-600 transition-colors">Artículos</a>
-        <span class="mx-2">→</span>
-        <span class="text-green-600 font-medium">Página {page}</span>
-      </nav>
-      
-      {/* Información de paginación */}
-      <div class="bg-gradient-to-r from-green-50 to-yellow-50 rounded-lg p-4 border border-green-200">
-        <p class="text-sm text-gray-600">
-          Mostrando artículos {(page - 1) * ARTICLES_PER_PAGE + 1} - {Math.min(page * ARTICLES_PER_PAGE, allArticlesCount)} de {allArticlesCount} total
+
+  {/* 🎯 HERO SECTION */}
+  <div class="bg-gradient-to-r from-green-500 to-green-600">
+    <Container>
+      <div class="py-12 md:py-16 text-center">
+        <Badge variant="secondary" size="md" class="mb-3 bg-white bg-opacity-20 text-white border-white">
+          Página {page} {debugInfo && `(${debugInfo})`}
+        </Badge>
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">
+          Más Artículos de Balto
+        </h1>
+        <p class="text-lg text-white text-opacity-90 max-w-2xl mx-auto mb-8">
+          Continúa explorando nuestros artículos profesionales sobre cuidado y bienestar de mascotas.
         </p>
-      </div>
-    </div>
-
-    {/* 🏷️ CATEGORÍAS RÁPIDAS */}
-    <section class="mb-12">
-      <h2 class="text-xl font-bold text-gray-900 mb-6 text-center">Explora por Categorías</h2>
-      <div class="flex flex-wrap justify-center gap-3">
-        {categories.map((category) => (
-          <a 
-            href={`/etiquetas/${category.slug}`}
-            class={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border-2 transition-all hover:shadow-lg hover:scale-105 ${getCategoryColor(category.name)}`}
-          >
-            <span>{category.icon}</span>
-            <span>{category.name}</span>
-          </a>
-        ))}
-      </div>
-    </section>
-
-    {(articles && articles.length > 0) ? (
-      <div class="space-y-12">
         
-        {/* 📰 GRID DE ARTÍCULOS */}
-        <section>
-          <h2 class="text-2xl font-bold text-gray-900 mb-8">Artículos de la Página {page}</h2>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {articles && articles.map((article) => (
-              <a href={`/articulos/${article.slug}`} class="block group">
-                <article class="bg-white rounded-xl overflow-hidden shadow-lg border-2 border-gray-200 hover:shadow-xl hover:border-green-500 transition-all duration-300 hover:scale-[1.02]">
-                  <div class="aspect-[16/10] overflow-hidden">
-                    <Image 
-                      src={article.data?.image || '/images/articles/default.jpg'} 
-                      alt={article.data?.title || 'Artículo'}
-                      width={400}
-                      height={250}
-                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  
-                  <div class="p-6">
-                    <div class="flex items-center justify-between mb-3">
-                      <span class={`px-3 py-1 rounded-full text-xs font-bold border-2 shadow-sm ${getCategoryColor(article.data?.category || 'default')}`}>
-                        {article.data?.category || 'General'}
-                      </span>
-                      <span class="text-xs text-gray-400 font-medium">
-                        {article.data?.date ? getTimeAgo(article.data.date) : 'Reciente'}
-                      </span>
-                    </div>
-                    
-                    <h3 class="text-lg font-bold text-gray-900 mb-3 leading-tight group-hover:text-green-600 transition-colors line-clamp-2">
-                      {article.data?.title || 'Título del artículo'}
-                    </h3>
-                    
-                    <p class="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
-                      {article.data?.description || 'Descripción del artículo'}
-                    </p>
-                    
-                    <div class="flex items-center justify-between text-xs text-gray-500">
-                      <span class="font-medium">👤 {article.data?.author || 'Autor'}</span>
-                      <span class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-3 py-1 rounded-full font-bold shadow-md">
-                        🕒 {article.data?.readingTime || 5}min
-                      </span>
-                    </div>
-                  </div>
-                </article>
-              </a>
-            ))}
-          </div>
-        </section>
+        {/* Breadcrumbs */}
+        <div class="flex justify-center items-center text-sm text-white text-opacity-70">
+          <a href="/" class="hover:text-white transition-colors">Inicio</a>
+          <span class="mx-2">/</span>
+          <a href="/articulos" class="hover:text-white transition-colors">Artículos</a>
+          <span class="mx-2">/</span>
+          <span class="text-white">Página {page}</span>
+        </div>
+      </div>
+    </Container>
+  </div>
 
-        {/* 🔗 PAGINACIÓN MEJORADA CON COLORES VIBRANTES */}
+  {/* 📰 CONTENIDO PRINCIPAL */}
+  <Container class="py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      {/* 📝 LISTA DE ARTÍCULOS */}
+      <div class="lg:col-span-8">
+        
+        {/* 🚨 DEBUG INFO VISIBLE */}
+        {debugInfo && (
+          <div class="mb-6 p-4 bg-yellow-100 border border-yellow-300 rounded-lg">
+            <h3 class="font-bold text-yellow-800">🔍 Debug Info</h3>
+            <p class="text-sm text-yellow-700">{debugInfo}</p>
+            <p class="text-xs text-yellow-600">
+              Artículos en props: {articles.length} | Total artículos: {allArticlesCount} | Páginas: {totalPages}
+            </p>
+          </div>
+        )}
+        
+        {/* Header con información de página */}
+        <div class="mb-8">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+              <span class="text-2xl text-white">📚</span>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900">Artículos - Página {page}</h2>
+            <div class="flex-1 h-px bg-gradient-to-r from-green-200 to-transparent"></div>
+          </div>
+          
+          {/* Información de paginación */}
+          <div class="bg-gradient-to-r from-green-50 to-yellow-50 rounded-lg p-4 border border-green-200">
+            <p class="text-sm text-gray-600">
+              📊 Mostrando artículos {startIndex} - {endIndex} de {allArticlesCount} total • Página {page} de {totalPages}
+            </p>
+          </div>
+        </div>
+        
+        {(articles && articles.length > 0) ? (
+          <ArticleList 
+            articles={articles.map(article => ({
+              id: article.slug,
+              title: article.data?.title || 'Título del artículo',
+              excerpt: article.data?.description || 'Descripción del artículo',
+              image: article.data?.image || '/images/articles/default.jpg',
+              author: {
+                name: article.data?.author || 'Editor Balto',
+                avatar: getAuthorAvatar(article.data?.author || 'Editor Balto')
+              },
+              date: article.data?.date ? article.data.date.toISOString() : new Date().toISOString(),
+              readingTime: article.data?.readingTime || 5,
+              categories: article.data?.tags || [],
+              category: article.data?.category || 'General',
+              featured: false
+            }))} 
+            layout="grid" 
+            columns={2}
+          />
+        ) : (
+          <div class="bg-gradient-to-br from-green-50 to-yellow-50 rounded-lg p-8 text-center border-2 border-green-200">
+            <span class="text-4xl mb-4 block">📝</span>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">
+              No hay artículos en esta página
+            </h3>
+            <p class="text-gray-600 mb-4">
+              {allArticlesCount === 0 
+                ? 'No hay artículos en el CMS.' 
+                : `Solo hay ${allArticlesCount} artículos total, no suficientes para la página ${page}.`
+              }
+            </p>
+            <Button href="/articulos" variant="primary">
+              Volver a la página principal
+            </Button>
+          </div>
+        )}
+
+        {/* 🔗 PAGINACIÓN MEJORADA */}
         {totalPages > 1 && (
           <section class="mt-16">
             <div class="flex justify-center">
@@ -212,7 +302,7 @@ const getCategoryColor = (category: string) => {
                 {page > 1 && (
                   <a 
                     href={page === 2 ? '/articulos' : `/articulos/page/${page - 1}`}
-                    class="mr-3 px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg text-sm font-bold hover:from-yellow-600 hover:to-yellow-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 hover:scale-105"
+                    class="mr-3 px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg text-sm font-bold hover:from-yellow-600 hover:to-yellow-700 transition-colors duration-200 shadow-lg flex items-center gap-2"
                     aria-label="Página anterior"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,7 +317,7 @@ const getCategoryColor = (category: string) => {
                   <>
                     <a 
                       href="/articulos"
-                      class="px-5 py-3 border-2 border-green-500 text-green-600 rounded-lg text-sm font-bold hover:bg-green-500 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+                      class="px-5 py-3 border-2 border-green-500 text-green-600 rounded-lg text-sm font-bold hover:bg-green-500 hover:text-white transition-colors duration-200 shadow-md"
                       aria-label="Ir a página 1"
                     >
                       1
@@ -242,7 +332,7 @@ const getCategoryColor = (category: string) => {
                 {page > 1 && (
                   <a 
                     href={page === 2 ? '/articulos' : `/articulos/page/${page - 1}`}
-                    class="px-5 py-3 border-2 border-green-500 text-green-600 rounded-lg text-sm font-bold hover:bg-green-500 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+                    class="px-5 py-3 border-2 border-gray-300 text-gray-600 rounded-lg text-sm font-bold hover:bg-gray-100 transition-colors duration-200 shadow-md"
                     aria-label={`Ir a página ${page - 1}`}
                   >
                     {page - 1}
@@ -250,7 +340,10 @@ const getCategoryColor = (category: string) => {
                 )}
                 
                 {/* Página actual */}
-                <span class="px-5 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg text-sm font-bold shadow-lg">
+                <span 
+                  class="px-5 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg text-sm font-bold shadow-lg"
+                  aria-current="page"
+                >
                   {page}
                 </span>
                 
@@ -258,7 +351,7 @@ const getCategoryColor = (category: string) => {
                 {page < totalPages && (
                   <a 
                     href={`/articulos/page/${page + 1}`}
-                    class="px-5 py-3 border-2 border-green-500 text-green-600 rounded-lg text-sm font-bold hover:bg-green-500 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+                    class="px-5 py-3 border-2 border-gray-300 text-gray-600 rounded-lg text-sm font-bold hover:bg-gray-100 transition-colors duration-200 shadow-md"
                     aria-label={`Ir a página ${page + 1}`}
                   >
                     {page + 1}
@@ -273,7 +366,7 @@ const getCategoryColor = (category: string) => {
                     )}
                     <a 
                       href={`/articulos/page/${totalPages}`}
-                      class="px-5 py-3 border-2 border-green-500 text-green-600 rounded-lg text-sm font-bold hover:bg-green-500 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+                      class="px-5 py-3 border-2 border-green-500 text-green-600 rounded-lg text-sm font-bold hover:bg-green-500 hover:text-white transition-colors duration-200 shadow-md"
                       aria-label={`Ir a página ${totalPages}`}
                     >
                       {totalPages}
@@ -285,7 +378,7 @@ const getCategoryColor = (category: string) => {
                 {page < totalPages && (
                   <a 
                     href={`/articulos/page/${page + 1}`}
-                    class="ml-3 px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg text-sm font-bold hover:from-yellow-600 hover:to-yellow-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 hover:scale-105"
+                    class="ml-3 px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg text-sm font-bold hover:from-yellow-600 hover:to-yellow-700 transition-colors duration-200 shadow-lg flex items-center gap-2"
                     aria-label="Página siguiente"
                   >
                     <span>Siguiente</span>
@@ -306,60 +399,89 @@ const getCategoryColor = (category: string) => {
             </div>
           </section>
         )}
-
       </div>
-    ) : (
-      /* 📝 ESTADO VACÍO */
-      <section class="text-center py-20 bg-gradient-to-br from-green-50 to-yellow-50 rounded-2xl border-2 border-green-500 shadow-lg">
-        <div class="w-32 h-32 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
-          <span class="text-6xl">📄</span>
+      
+      {/* 📍 SIDEBAR */}
+      <div class="lg:col-span-4">
+        <div class="sticky top-[140px] space-y-8">
+          
+          {/* 📊 ESTADÍSTICAS */}
+          <Card class="p-8">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                <span class="text-white text-sm">📊</span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900">Estadísticas</h3>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+              <div class="text-center">
+                <div class="text-2xl font-bold text-green-600">{stats.total}</div>
+                <div class="text-sm text-gray-600">Artículos</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-blue-600">{stats.categories}</div>
+                <div class="text-sm text-gray-600">Categorías</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-purple-600">{stats.authors}</div>
+                <div class="text-sm text-gray-600">Autores</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-orange-600">{stats.readingTime}</div>
+                <div class="text-sm text-gray-600">Min. promedio</div>
+              </div>
+            </div>
+          </Card>
+          
+          {/* 🏷️ CATEGORÍAS POPULARES */}
+          <Card class="p-8">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <span class="text-white text-sm">🏷️</span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900">Categorías</h3>
+            </div>
+            
+            <div class="space-y-3">
+              {categories.map(category => (
+                <a 
+                  href={`/blog/categoria/${category.slug}`}
+                  class="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 group"
+                >
+                  <div class="flex items-center gap-3">
+                    <span class="text-lg">{category.icon}</span>
+                    <span class="font-medium text-gray-900 group-hover:text-green-600 transition-colors">
+                      {category.name}
+                    </span>
+                  </div>
+                  <Badge variant="secondary" size="sm">
+                    {category.count}
+                  </Badge>
+                </a>
+              ))}
+            </div>
+          </Card>
+          
+          {/* 📱 NEWSLETTER */}
+          <Card class="p-8 bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200">
+            <div class="text-center">
+              <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <span class="text-white text-xl">📧</span>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 mb-2">
+                ¡No te pierdas nada!
+              </h3>
+              <p class="text-sm text-gray-600 mb-4">
+                Recibe semanalmente los mejores consejos para tu mascota
+              </p>
+              <Button variant="primary" size="sm" class="w-full">
+                Suscribirse
+              </Button>
+            </div>
+          </Card>
         </div>
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">
-          No hay artículos en esta página
-        </h2>
-        <p class="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
-          Parece que no hay suficientes artículos para esta página. 
-          Regresa a la página principal para ver todo nuestro contenido.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button href="/articulos" variant="primary" size="lg" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all">
-            📚 Ver todos los artículos
-          </Button>
-          <Button href="/" variant="outline" size="lg" class="border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white font-bold shadow-md hover:shadow-lg transition-all">
-            🏠 Volver al inicio
-          </Button>
-        </div>
-      </section>
-    )}
+      </div>
+    </div>
   </Container>
-
 </BaseLayout>
-
-<style>
-  /* Clase para truncar texto */
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* Hover effects mejorados */
-  article:hover {
-    transform: translateY(-2px);
-  }
-  
-  /* Animaciones suaves */
-  * {
-    transition-property: transform, box-shadow, border-color, background-color;
-    transition-duration: 0.2s;
-    transition-timing-function: ease-in-out;
-  }
-</style>
