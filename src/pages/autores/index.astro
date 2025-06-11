@@ -1,93 +1,126 @@
 ---
-// src/pages/autores/index.astro - Versión simple y funcional
+// src/pages/autores/index.astro - Autores reales de Balto humanizados
 const autores = [
   {
-    name: "Dra. Elena Martínez",
-    slug: "elena-martinez",
-    avatar: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-    shortBio: "Veterinaria especializada en comportamiento canino",
-    role: "Veterinaria Senior",
-    specialties: ["Comportamiento Animal", "Psicología Canina", "Terapia Asistida"],
+    name: "Ana María Prieto",
+    slug: "ana-maria-prieto",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",  
+    shortBio: "Mamá de Río, amante incondicional de los perros y administradora",
+    role: "Administradora",
+    personalStory: "Como mamá de Río, he vivido cada etapa del amor incondicional que solo un perro puede dar. Mi experiencia cuidando peluditos me inspiró a escribir un libro y compartir todo lo que he aprendido en este hermoso camino.",
+    specialties: ["Cuidado Canino", "Experiencias Reales", "Amor por las Mascotas", "Administración"],
+    articlesCount: 15,
+    featured: true,
+    funFact: "Río me enseñó más sobre paciencia y amor que cualquier libro 🐕💙",
+    favoriteTopic: "Las historias reales de conexión entre humanos y perros"
+  },
+  {
+    name: "Manuel Alejandro Bedoya",
+    slug: "manuel-alejandro-bedoya", 
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    shortBio: "Papá de Río, tío y amigo de muchos peluditos, se esmera en amaestrar a su perro",
+    role: "Administrador",
+    personalStory: "He sido papá, tío y amigo de muchos peluditos a lo largo de mi vida. Cada uno me ha enseñado algo diferente, pero todos me han llenado de alegría. Me gusta entrenar y me esmero en amaestrar a Río, aprendiendo junto a él cada día.",
+    specialties: ["Entrenamiento Amateur", "Experiencias con Mascotas", "Aprendizaje Constante", "Administración"],
     articlesCount: 12,
-    featured: true
+    featured: true,
+    funFact: "Creo que los perros entrenan más a los humanos que nosotros a ellos 😄",
+    favoriteTopic: "Experiencias reales de un papá perruno aprendiendo a entrenar"
   },
   {
-    name: "Dr. Carlos Ruiz",
-    slug: "carlos-ruiz", 
-    avatar: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-    shortBio: "Alergólogo veterinario especialista en dermatología",
-    role: "Especialista en Alergias",
-    specialties: ["Alergias Alimentarias", "Dermatología Veterinaria", "Nutrición Clínica"],
-    articlesCount: 8,
-    featured: true
-  },
-  {
-    name: "Editor PataDigital",
-    slug: "editor-patadigital",
-    avatar: "https://images.unsplash.com/photo-1566492031773-4f4e44671d66?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-    shortBio: "Equipo editorial especializado en mascotas",
-    role: "Editor Principal",
-    specialties: ["Investigación", "Contenido Editorial", "Comunicación"],
+    name: "Equipo Editorial Balto",
+    slug: "equipo-editorial-balto",
+    avatar: "https://images.unsplash.com/photo-1516914943479-89db7d9ae7f2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+    shortBio: "El corazón de Balto: investigamos, verificamos y compartimos amor por las mascotas",
+    role: "Equipo Editorial",
+    personalStory: "Somos un grupo de amantes de las mascotas que trabajamos día a día para crear contenido útil, verificado y lleno de amor. Cada artículo que publicamos viene del corazón y de nuestra experiencia real con nuestros peluditos.",
+    specialties: ["Investigación", "Verificación de Contenido", "Tendencias en Mascotas", "Comunicación"],
     articlesCount: 25,
-    featured: false
+    featured: false,
+    funFact: "En nuestras reuniones virtuales siempre aparece algún peludito en cámara 🐶🐱",
+    favoriteTopic: "Conectar a las familias con información confiable sobre sus mascotas"
   }
 ];
 ---
 
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nuestros Expertos - PataDigital</title>
-  <meta name="description" content="Conoce al equipo de veterinarios y expertos que crean el contenido de PataDigital" />
+  <title>Nuestro Equipo - Balto</title>
+  <meta name="description" content="Conoce al equipo humano detrás de Balto: Ana María, Manuel y nuestro equipo editorial" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .author-card:hover {
+      transform: translateY(-4px);
+      transition: transform 0.3s ease;
+    }
+  </style>
 </head>
 
-<body class="bg-gray-50">
+<body class="bg-[#FAFAFA]">
   <div class="container mx-auto px-4 py-8">
     <header class="text-center mb-12">
-      <h1 class="text-4xl font-bold text-gray-900 mb-4">Nuestros Expertos</h1>
-      <p class="text-xl text-gray-600">Conoce al equipo de profesionales detrás de PataDigital</p>
+      <h1 class="text-4xl font-bold text-[#2E2E2E] mb-4">Nuestro Equipo</h1>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        Las personas reales detrás de Balto: amantes de las mascotas que comparten sus experiencias desde el corazón
+      </p>
     </header>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
       {autores.map((autor) => (
-        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-          <div class="p-6 text-center">
+        <div class="author-card bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300">
+          <div class="p-8 text-center">
             <img 
               src={autor.avatar} 
               alt={autor.name}
-              class="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+              class="w-28 h-28 rounded-full mx-auto mb-6 object-cover border-4 border-[#AFC2D5]"
             />
             
-            <h2 class="text-xl font-bold text-gray-900 mb-2">{autor.name}</h2>
-            <p class="text-blue-600 font-medium mb-2">{autor.role}</p>
-            <p class="text-gray-600 text-sm mb-4">{autor.shortBio}</p>
+            <h2 class="text-2xl font-bold text-[#2E2E2E] mb-2">{autor.name}</h2>
+            <p class="text-[#AFC2D5] font-semibold mb-3">{autor.role}</p>
+            <p class="text-gray-600 text-sm mb-6 leading-relaxed">{autor.shortBio}</p>
             
-            <div class="mb-4">
-              <h3 class="text-sm font-semibold text-gray-700 mb-2">Especialidades:</h3>
+            {/* Historia personal */}
+            <div class="bg-[#F4E2D8] rounded-lg p-4 mb-6 text-left">
+              <h3 class="text-sm font-bold text-[#2E2E2E] mb-2">💭 Su historia:</h3>
+              <p class="text-sm text-gray-700 leading-relaxed">{autor.personalStory}</p>
+            </div>
+            
+            {/* Especialidades */}
+            <div class="mb-6">
+              <h3 class="text-sm font-semibold text-[#2E2E2E] mb-3">Lo que más le gusta:</h3>
               <div class="flex flex-wrap gap-2 justify-center">
                 {autor.specialties.map((specialty) => (
-                  <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                  <span class="bg-[#C8D6B9] bg-opacity-50 text-[#2E2E2E] text-xs px-3 py-1 rounded-full">
                     {specialty}
                   </span>
                 ))}
               </div>
             </div>
             
-            <div class="flex items-center justify-between text-sm text-gray-500">
+            {/* Dato curioso */}
+            <div class="bg-yellow-50 rounded-lg p-3 mb-4">
+              <p class="text-sm text-gray-700 italic">"{autor.funFact}"</p>
+            </div>
+            
+            <div class="flex items-center justify-between text-sm text-gray-500 mb-6">
               <span>{autor.articlesCount} artículos</span>
               {autor.featured && (
-                <span class="text-yellow-500">⭐ Destacado</span>
+                <span class="text-yellow-600 font-medium">⭐ Fundador</span>
               )}
             </div>
             
-            <div class="mt-4">
+            <div class="space-y-3">
+              <p class="text-xs text-gray-600 font-medium">Escribe sobre:</p>
+              <p class="text-sm text-[#2E2E2E] italic">"{autor.favoriteTopic}"</p>
+              
               <a 
                 href={`/autores/${autor.slug}/`}
-                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                class="inline-flex items-center px-6 py-3 bg-[#AFC2D5] text-white font-medium rounded-lg hover:bg-[#9DB3C6] transition-colors text-sm w-full justify-center"
               >
-                Ver perfil →
+                Ver sus artículos →
               </a>
             </div>
           </div>
@@ -95,16 +128,28 @@ const autores = [
       ))}
     </div>
     
-    <div class="text-center mt-12">
-      <div class="bg-white rounded-lg p-8 shadow-sm">
-        <h2 class="text-2xl font-bold text-gray-900 mb-4">¿Quieres colaborar con nosotros?</h2>
-        <p class="text-gray-600 mb-6">Si eres veterinario, especialista en comportamiento animal o tienes experiencia relevante, nos encantaría conocerte.</p>
-        <a 
-          href="/contacto/" 
-          class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
-        >
-          Contactar →
-        </a>
+    {/* Call to action humanizado */}
+    <div class="text-center mt-16">
+      <div class="bg-gradient-to-r from-[#AFC2D5] to-[#C8D6B9] rounded-2xl p-8 shadow-lg max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold text-white mb-4">¿Tienes una historia que contar?</h2>
+        <p class="text-white text-opacity-90 mb-6 text-lg max-w-2xl mx-auto">
+          Si tienes experiencias reales con tus mascotas, historias que puedan ayudar a otros papás y mamás perrunes, 
+          o simplemente quieres compartir el amor por los peluditos, ¡nos encantaría conocerte!
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a 
+            href="/contacto/" 
+            class="inline-flex items-center px-8 py-4 bg-white text-[#AFC2D5] font-bold rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            💌 Comparte tu historia
+          </a>
+          <a 
+            href="/articulos/" 
+            class="inline-flex items-center px-8 py-4 bg-white bg-opacity-20 text-white font-medium rounded-lg hover:bg-opacity-30 transition-colors border border-white border-opacity-30"
+          >
+            📚 Lee nuestros artículos
+          </a>
+        </div>
       </div>
     </div>
   </div>

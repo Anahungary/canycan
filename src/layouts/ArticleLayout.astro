@@ -49,6 +49,31 @@ const {
 
 const currentUrl = Astro.url.pathname;
 
+
+function getMarketingViews(articleSlug: string, category?: string, originalViews?: number): number {
+  if (originalViews && originalViews >= 50) {
+    return originalViews;
+  }
+  
+  const hash = (articleSlug || '').split('').reduce((a, b) => {
+    a = ((a << 5) - a) + b.charCodeAt(0);
+    return a & a;
+  }, 0);
+  
+  const seed = Math.abs(hash);
+  const popularCategories = ['entrenamiento', 'alimentacion', 'salud', 'cachorros'];
+  const isPopular = Boolean(category && popularCategories.includes(category.toLowerCase()));
+  
+  if (isPopular) {
+    return 180 + (seed % 670);
+  } else {
+    return 50 + (seed % 230);
+  }
+}
+
+const articleSlug = currentUrl.split('/').pop() || '';
+const displayViews = getMarketingViews(articleSlug, category, views);
+
 // 🔧 FUNCIÓN PARA OBTENER LA CATEGORÍA PRINCIPAL REAL
 function getRealCategory(): string | null {
   const realCategoryNames = [
@@ -250,9 +275,15 @@ if (breadcrumb.length === 0) {
                   month: 'long', 
                   day: 'numeric' 
                 })}</p>
-                {views && (
-                  <p class="text-sm text-gray-500">👁️ {views.toLocaleString()} visualizaciones</p>
-                )}
+                <p class="text-sm text-gray-500">
+  👁️ {displayViews.toLocaleString()} visualizaciones
+</p>
+
+{displayViews > 400 && (
+  <p class="text-xs text-orange-600 font-medium mt-1">
+    🔥 Trending
+  </p>
+)}
               </div>
             </div>
 
@@ -332,7 +363,7 @@ if (breadcrumb.length === 0) {
           <!-- Artículos populares -->
           <div class="sidebar-card bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
             <div class="flex items-center gap-3 mb-6">
-              <span class="text-3xl">🔥</span>
+              <img src="/images/perro3.svg" alt="Destacado" class="w-20" />
               <h3 class="text-xl font-bold text-gray-900">Más leídos</h3>
             </div>
             
@@ -554,6 +585,8 @@ if (breadcrumb.length === 0) {
           setLoading(false);
         }
       });
+
+      
 
       function setLoading(isLoading: boolean): void {
         if (submitButton) {

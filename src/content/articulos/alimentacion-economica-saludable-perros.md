@@ -2,12 +2,12 @@
 title: "Alimentación económica y saludable para perros y gatos: Guía completa para Latinoamérica 2025"
 description: "Descubre cómo alimentar a tus perros y gatos de forma saludable y económica en Latinoamérica. Recetas caseras, ingredientes accesibles y cantidades exactas para que tus mascotas tengan una vida plena sin arruinar tu presupuesto."
 date: 2025-05-30T10:00:00.000Z
-author: "dr-alejandro-ruiz"
-authorBio: "Veterinario especializado en nutrición canina con 12 años de experiencia en Latinoamérica. Asesor en alimentación natural y promotor de la nutrición accesible para mascotas en comunidades de bajos recursos."
+author: "Equipo Editorial Balto"
+authorBio: "El equipo de Balto investiga y verifica información con fuentes confiables para brindarte contenido útil y real sobre el cuidado de mascotas."
 tags: ["nutricion-economica", "alimentacion-casera", "perros", "latinoamerica"]
 category: "nutricion"
 featured: true
-image: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+image: /images/articulos/comida-perros-gatos.webp
 imageAlt: "Perro feliz comiendo alimento casero nutritivo y económico"
 readingTime: 15
 status: "published"
@@ -23,7 +23,8 @@ articleType: "Article"
 
 La buena noticia es que **es posible proporcionar una alimentación de calidad tanto para perros como para gatos sin comprometer tu presupuesto familiar**. Con los ingredientes correctos y el conocimiento adecuado, puedes preparar comidas caseras nutritivas que rivalicen con los alimentos comerciales premium.
 
-![Perro feliz comiendo alimento casero nutritivo y económico](https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80)
+![Perro feliz comiendo alimento casero nutritivo y económico](/images/articulos/alimentacion-saludable.webp)
+
 
 *La alimentación casera puede ser más nutritiva y económica que muchos alimentos comerciales*
 

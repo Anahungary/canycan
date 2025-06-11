@@ -2,8 +2,8 @@
 title: "Vacunas para mascotas en Colombia 2025: Esquemas, costos y calendario completo"
 description: "Todo lo que necesitas saber sobre vacunación de perros y gatos en Colombia. Esquemas oficiales, precios actuales, vacunación gratuita y cronograma por edades."
 date: 2025-05-30T18:00:00.000Z
-author: "dr-fernando-lopez"
-authorBio: "Médico Veterinario con especialización en medicina preventiva. Director de programas de vacunación en Bogotá con más de 12 años de experiencia en salud pública veterinaria."
+author: "Equipo Editorial Balto"
+authorBio: "El equipo de Balto investiga y verifica información con fuentes confiables para brindarte contenido útil y real sobre el cuidado de mascotas."
 tags: ["vacunas", "salud-mascotas", "colombia", "prevención", "veterinaria"]
 category: "salud"
 featured: true

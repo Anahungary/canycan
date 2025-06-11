@@ -1,7 +1,9 @@
 ---
-// src/pages/articulos/[slug].astro - SIN ERRORES TYPESCRIPT
+// src/pages/articulos/[slug].astro - VERSIÓN COMPATIBLE CON TU TAGS.TS
 import { getCollection, type CollectionEntry } from 'astro:content';
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import { generateTagSlug } from '../../utils/tags.ts';
+
 
 type ArticuloEntry = CollectionEntry<'articulos'>;
 
@@ -11,14 +13,29 @@ export async function getStaticPaths() {
   const articulos = await getCollection('articulos');
   
   // Filtrar solo artículos publicados
-  const publishedArticles = articulos.filter(article => 
+  const publishedArticles = articulos.filter((article: ArticuloEntry) => 
     article.data.status === 'published'
   );
+
+  console.log(`📰 Generando ${publishedArticles.length} artículos para Balto`);
   
-  return publishedArticles.map((articulo) => ({
-    params: { slug: articulo.slug },
-    props: { articulo }
-  }));
+  return publishedArticles.map((articulo: ArticuloEntry) => {
+    // 🔧 VALIDACIÓN SIMPLE USANDO TU FUNCIÓN EXISTENTE
+    if (import.meta.env.DEV) {
+      // Solo en desarrollo, verificar que el slug sea válido
+      if (!articulo.slug || articulo.slug.length < 3) {
+        console.warn(`⚠️ Slug problemático: ${articulo.slug}`);
+        // Sugerir slug usando tu función existente
+        const suggestedSlug = generateTagSlug(articulo.data.title);
+        console.log(`💡 Slug sugerido: ${suggestedSlug}`);
+      }
+    }
+
+    return {
+      params: { slug: articulo.slug },
+      props: { articulo }
+    };
+  });
 }
 
 const { articulo } = Astro.props;
@@ -28,6 +45,40 @@ if (!articulo) {
 }
 
 const { Content } = await articulo.render();
+
+function getAuthorAvatar(authorName: string): string {
+  // Normalizar el nombre removiendo acentos y espacios extra
+  const normalizedName = authorName?.trim().toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, ''); // Remueve acentos
+  
+  const authorAvatars: Record<string, string> = {
+    // Versiones con acentos
+    'Ana María Prieto': '/images/ana-p2.webp',
+    'Manuel Alejandro Bedoya': '/images/manuel-p1.webp',
+    'Equipo Editorial Balto': '/images/baltologo.svg',
+    
+  };
+  
+  // Primero intentar con el nombre original
+  if (authorAvatars[authorName]) {
+    console.log(`✅ Avatar encontrado para: "${authorName}"`);
+    return authorAvatars[authorName];
+  }
+  
+  // Luego intentar con el nombre normalizado
+  if (authorAvatars[normalizedName]) {
+    console.log(`✅ Avatar encontrado (normalizado) para: "${authorName}" → "${normalizedName}"`);
+    return authorAvatars[normalizedName];
+  }
+  
+  // Debug: mostrar qué nombre está llegando
+  console.log(`❌ No se encontró avatar para: "${authorName}" (normalizado: "${normalizedName}")`);
+  console.log('📝 Nombres disponibles:', Object.keys(authorAvatars));
+  
+  return '/images/authors/default.jpg';
+}
+
 
 // 🔥 CARGAR ARTÍCULOS REALES DEL CMS PARA EL SIDEBAR - CON TIPOS CORRECTOS
 let allArticles: ArticuloEntry[] = [];
@@ -65,13 +116,28 @@ const relatedArticles = allArticles
     readingTime: art.data.readingTime || 5
   }));
 
+// 🎯 GENERAR BREADCRUMBS DINÁMICOS PARA BALTO
+const breadcrumbItems = [
+  { label: 'Inicio', href: '/', icon: '🏠' },
+  { label: 'Artículos', href: '/articulos', icon: '📰' }
+];
+
+// Agregar categoría si existe
+if (articulo.data.category) {
+  breadcrumbItems.push({
+    label: articulo.data.category.charAt(0).toUpperCase() + articulo.data.category.slice(1),
+    href: `/categorias/${articulo.data.category}`,
+    icon: '📂'
+  });
+}
+
 // Preparar datos para TU LAYOUT ORIGINAL con todos los estilos
 const articleData = {
   title: articulo.data.title,
   description: articulo.data.description,
   author: {
     name: articulo.data.author,
-    avatar: '/images/authors/default.jpg',
+    avatar: getAuthorAvatar(articulo.data.author || 'Editor Balto'), // ← CAMBIO AQUÍ
     bio: articulo.data.authorBio || 'Especialista en cuidado y bienestar de mascotas'
   },
   date: articulo.data.date.toISOString(),
@@ -83,6 +149,13 @@ const articleData = {
   popularArticles: popularArticles,
   relatedArticles: relatedArticles
 };
+
+// 🎯 LOG PARA DEBUGGING (solo en desarrollo)
+if (import.meta.env.DEV) {
+  console.log(`🎯 Renderizando artículo: ${articulo.data.title}`);
+  console.log(`📊 Artículos relacionados: ${relatedArticles.length}`);
+  console.log(`🔥 Artículos populares: ${popularArticles.length}`);
+}
 ---
 
 <ArticleLayout {...articleData}>

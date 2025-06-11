@@ -462,23 +462,69 @@
       margin: 3rem 0;
     }
 
-    /* PROGRESS BAR */
-    .reading-progress {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-    }
+    /* PROGRESS BAR - CORREGIDO */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
 
-    .reading-progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #3b82f6, #1d4ed8);
-      width: 0%;
-      transition: width 0.3s ease;
-    }
+.reading-progress-bar {
+  height: 100%;
+  /* Cambia estos colores según tu preferencia */
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8); /* Azul */
+  /* O usa verde: background: linear-gradient(90deg, #10b981, #059669); */
+  /* O usa tu color personalizado: background: linear-gradient(90deg, #AFC2D5, #8fb5d4); */
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* RESPONSIVE MEJORADO PARA LA BARRA */
+@media (max-width: 768px) {
+  .reading-progress {
+    height: 4px; /* Más visible en móvil */
+    background: rgba(0, 0, 0, 0.15); /* Un poco más visible */
+  }
+  
+  .reading-progress-bar {
+    transition: width 0.2s ease; /* Transición más rápida en móvil */
+  }
+}
+
+@media (max-width: 480px) {
+  .reading-progress {
+    height: 5px; /* Aún más visible en pantallas pequeñas */
+  }
+}
+
+/* ASEGURAR QUE ESTÉ SIEMPRE VISIBLE */
+.reading-progress {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* MEJORAS DE ACCESIBILIDAD */
+@media (prefers-reduced-motion: reduce) {
+  .reading-progress-bar {
+    transition: none !important;
+  }
+}
+
+/* MODO OSCURO (opcional) */
+@media (prefers-color-scheme: dark) {
+  .reading-progress {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .reading-progress-bar {
+    background: linear-gradient(90deg, #60a5fa, #3b82f6);
+  }
+}
 
     /* RESPONSIVE */
     @media (max-width: 768px) {

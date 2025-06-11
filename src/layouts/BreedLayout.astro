@@ -83,7 +83,7 @@ const generateOptimizedDescription = (breedData: any): string => {
     description += `Tamaño: ${breedData.size}. `;
   }
   
-  description += `Guía completa en PataDigital.`;
+  description += `Guía completa en Balto.`;
   
   // Truncar a 160 caracteres para WhatsApp
   return description.length > 160 ? `${description.substring(0, 157)}...` : description;
@@ -166,11 +166,11 @@ const canonicalUrl = `/razas/${breed.id}`;
       "image": "{optimizedImage}",
       "author": {
         "@type": "Organization",
-        "name": "PataDigital"
+        "name": "Balto"
       },
       "publisher": {
         "@type": "Organization",
-        "name": "PataDigital",
+        "name": "Balto",
         "logo": {
           "@type": "ImageObject",
           "url": "{import.meta.env.SITE || 'https://canicat.netlify.app'}/logo.png"

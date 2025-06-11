@@ -2,8 +2,8 @@
 title: "La guía definitiva para el bienestar de tu perro: Todo lo que necesitas saber"
 description: "Descubre todo lo que necesitas para mantener a tu mejor amigo feliz, sano y en perfecta forma. Guía completa sobre nutrición, ejercicio, salud preventiva y bienestar emocional canino."
 date: 2024-01-25T09:00:00.000Z
-author: "elena-martinez"
-authorBio: "Veterinaria especializada en comportamiento canino con 15 años de experiencia. Defensora del bienestar animal integral y fundadora de la clínica 'Perros Felices'."
+author: "Equipo Editorial Balto"
+authorBio: "El equipo de Balto investiga y verifica información con fuentes confiables para brindarte contenido útil y real sobre el cuidado de mascotas."
 tags: ["bienestar-integral", "salud-canina", "nutricion-perros", "ejercicio-perros", "cuidados-preventivos"]
 category: "cuidado"
 featured: true

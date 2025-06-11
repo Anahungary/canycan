@@ -2,8 +2,8 @@
 title: "¿Comprar o adoptar una mascota? Ventajas, desventajas y cómo tomar la mejor decisión en 2025"
 description: "Análisis completo sobre comprar vs adoptar mascotas en Colombia. Costos reales, consideraciones éticas, legales y prácticas para elegir la opción correcta para tu familia."
 date: 2025-05-29T22:00:00.000Z
-author: "dra-sofia-valencia"
-authorBio: "Veterinaria especialista en bienestar animal y ética veterinaria. Asesora de fundaciones de rescate y criaderos responsables en Colombia durante 14 años."
+author: "Manuel Alejandro Bedoya"
+authorBio: "Papá de Río, tío y amigo de muchos peluditos, se esmera en amaestrar a su perro"
 tags: ["adopcion-mascotas", "compra-responsable", "bienestar-animal", "decision-familiar", "colombia"]
 category: "decision-familiar"
 featured: true

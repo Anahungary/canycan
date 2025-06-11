@@ -2,8 +2,8 @@
 title: "Golden Retriever vs Labrador: ¿Cuál es la mejor opción para tu familia?"
 description: "Análisis completo de las dos razas más populares para familias. Descubre las diferencias clave en temperamento, cuidados y compatibilidad con niños para elegir tu compañero perfecto."
 date: 2024-01-22T10:00:00.000Z
-author: "elena-martinez"
-authorBio: "Veterinaria especializada en comportamiento canino con 15 años de experiencia. Madre de dos niños y propietaria de un Golden Retriever llamado Bruno."
+author: "Manuel Alejandro Bedoya"
+authorBio: Papá de Río, tío y amigo de muchos peluditos, se esmera en amaestrar a su perro"
 tags: ["ansiedad-separacion", "comportamiento", "perros"]
 category: "comportamiento"
 featured: true

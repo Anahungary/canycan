@@ -2,8 +2,8 @@
 title: "Mi perro de 7 meses aún no aprende a ir al baño: Mi experiencia y lo que realmente funciona"
 description: "La historia real de cómo mi cachorro se tardó 8 meses en aprender a ir al baño. Todo lo que viví, mis errores y lo que finalmente funcionó para que dejara de orinar en toda la casa."
 date: 2025-05-30T10:00:00.000Z
-author: "Ana Maria Prieto"
-authorBio: "Dueña de perro primeriza que pasó por la pesadilla del entrenamiento de baño durante 8 meses. Ahora comparto mis experiencias para ayudar a otras dueñas desesperadas."
+author: "Ana María Prieto"
+authorBio: "Mamá de Río, administradora de Balto y amante incondicional de los perros que comparte experiencias reales del día a día con mascotas."
 tags: ["entrenamiento-bano", "cachorro", "problemas-comportamiento", "experiencia-real"]
 category: "entrenamiento"
 featured: true

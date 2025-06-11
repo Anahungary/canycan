@@ -1,4 +1,4 @@
-// astro.config.mjs - CORREGIDO PARA CARGAR .env
+// astro.config.mjs - CONFIGURACIÓN QUE FUNCIONA
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
@@ -14,7 +14,7 @@ export default defineConfig({
     tailwind()
   ],
   
-  site: 'https://patadigital.com',
+  site: 'https://Balto.com',
   
   output: 'server',
   adapter: netlify(),
@@ -22,5 +22,32 @@ export default defineConfig({
   server: {
     port: 4321,
     host: true,
+  },
+  
+  // 🔧 CONFIGURACIÓN VITE PARA EVITAR PROCESAMIENTO DE IMÁGENES EN CONTENT
+  vite: {
+    plugins: [
+      // Plugin para desactivar procesamiento de assets en content collections
+      {
+        name: 'disable-content-assets',
+        resolveId(id) {
+          // Si es una imagen desde content collections, retornar null para que no se procese
+          if (id.includes('?astroContentImageFlag=')) {
+            return null;
+          }
+        }
+      }
+    ],
+    optimizeDeps: {
+      exclude: ['@astrojs/content-assets']
+    }
+  },
+  
+  // 🔧 CONFIGURACIÓN DE MARKDOWN SIMPLE
+  markdown: {
+    shikiConfig: {
+      theme: 'github-dark',
+      wrap: true
+    }
   }
 });

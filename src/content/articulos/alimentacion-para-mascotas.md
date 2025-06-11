@@ -2,12 +2,12 @@
 title: "Alimentación para mascotas en Colombia 2025: Mejores marcas, precios y tendencias nutricionales"
 description: "Guía completa sobre alimentación de perros y gatos en Colombia. Mejores marcas, comparativa de precios, tendencias premium y consejos de veterinarios especializados."
 date: 2025-05-29T20:00:00.000Z
-author: "dra-patricia-henao"
-authorBio: "Veterinaria especialista en nutrición animal con 18 años de experiencia. Consultora nutricional para las principales marcas de alimento para mascotas en Colombia."
+author: "Equipo Editorial Balto"
+authorBio: "El equipo de Balto investiga y verifica información con fuentes confiables para brindarte contenido útil y real sobre el cuidado de mascotas."
 tags: ["alimentacion-mascotas", "nutricion-animal", "colombia", "marcas-premium", "cuidado-mascotas"]
 category: "nutricion"
 featured: true
-image: "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+image: /images/articulos/comida-perros-gatos.jpg
 imageAlt: "Variedad de alimentos premium para mascotas en Colombia"
 readingTime: 16
 status: "published"
@@ -22,6 +22,8 @@ articleType: "Article"
 **El mercado de alimentos para mascotas en Colombia experimentó un crecimiento explosivo del 30% en 2024, convirtiéndose en una industria de $1.2 billones de pesos.** Con el 70% de los hogares colombianos teniendo al menos una mascota, la decisión sobre qué alimentar a nuestros compañeros nunca ha sido más importante.
 
 Los colombianos ahora gastan más en comida para mascotas que en pañales para bebés, triplicando la inversión en productos para animales comparado con el cuidado infantil. **Esta transformación refleja cómo las mascotas se han convertido en verdaderos miembros de la familia, mereciendo la mejor nutrición disponible.**
+
+![Perro y gato  coiendo alimento casero nutritivo ](/images/articulos/nutricion-gato.webp)
 
 Esta guía completa te ayudará a navegar por el complejo mundo de la alimentación animal, desde marcas premium hasta opciones económicas, tendencias nutricionales y consejos de expertos.
 
@@ -154,6 +156,8 @@ La tendencia hacia alimentos que se adaptan a las necesidades específicas de ca
 ### **2. Ingredientes premium y naturales**
 Los colombianos buscan cada vez más alimentos con ingredientes reconocibles y naturales.
 
+![Perro feliz comiendo alimento casero nutritivo y económico](/images/articulos/alimentacion-saludable-gatos-perros.webp)
+
 #### **Tendencias dominantes:**
 - **Proteína como primer ingrediente:** Pollo, salmón, cordero
 - **Sin subproductos:** Carnes frescas identificables
@@ -210,6 +214,8 @@ Los treats ya no son solo premios, ahora cumplen funciones nutricionales especí
 - **DHA:** Esencial para desarrollo cognitivo
 - **Calcio y fósforo:** Proporción 1.2:1 para huesos
 - **Calorías:** 2-3 veces más que adultos por peso
+
+![Perro feliz comiendo alimento casero nutritivo y económico](/images/articulos/libre-de-grano.webp)
 
 #### **Frecuencia de alimentación:**
 - **2-4 meses:** 4 comidas diarias
@@ -296,6 +302,8 @@ Los treats ya no son solo premios, ahora cumplen funciones nutricionales especí
 - **Practicidad:** Fácil dosificación
 
 #### **Recomendación expert:** Combinación 70% húmedo, 30% seco
+
+![Perro feliz comiendo alimento casero nutritivo y económico](/images/articulos/mascotas-perros-gatos-comiendo.webp)
 
 ### **Problemas comunes y alimentación terapéutica:**
 

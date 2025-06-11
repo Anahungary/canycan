@@ -1,0 +1,306 @@
+---
+// src/pages/articulos/index.astro - PÁGINA PRINCIPAL DE ARTÍCULOS
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/ui/Container.astro';
+import ArticleList from '../../components/blog/ArticleList.astro';
+import Button from '../../components/ui/Button.astro';
+import Badge from '../../components/ui/Badge.astro';
+import { Image } from 'astro:assets';
+
+// 🔍 CARGAR ARTÍCULOS REALES DEL CMS
+let allArticles: any[] = [];
+try {
+  allArticles = await getCollection('articulos');
+  allArticles = allArticles
+    .filter((article: any) => article.data.status === 'published')
+    .sort((a: any, b: any) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+  
+  console.log(`📰 Cargados ${allArticles.length} artículos publicados`);
+} catch (error) {
+  console.log('⚠️ No se pudieron cargar los artículos:', error);
+  allArticles = [];
+}
+
+// 📊 CONFIGURACIÓN DE PAGINACIÓN
+const ARTICLES_PER_PAGE = 9;
+const firstPageArticles = allArticles.slice(0, ARTICLES_PER_PAGE);
+const totalPages = Math.ceil(allArticles.length / ARTICLES_PER_PAGE);
+
+// 🎯 ARTÍCULO DESTACADO (el más reciente)
+const featuredArticle = allArticles[0] || null;
+const otherArticles = allArticles.slice(1, ARTICLES_PER_PAGE);
+
+// 📈 ESTADÍSTICAS PARA MOSTRAR
+const stats = {
+  total: allArticles.length,
+  categories: [...new Set(allArticles.map(article => article.data.category))].length,
+  authors: [...new Set(allArticles.map(article => article.data.author))].length,
+  readingTime: Math.round(allArticles.reduce((sum, article) => sum + (article.data.readingTime || 5), 0) / allArticles.length)
+};
+
+// 🏷️ CATEGORÍAS PRINCIPALES
+const categories = [
+  { name: 'Entrenamiento', slug: 'entrenamiento', color: 'blue', icon: '🎯' },
+  { name: 'Alimentación', slug: 'alimentacion', color: 'green', icon: '🍽️' },
+  { name: 'Salud', slug: 'salud', color: 'red', icon: '🏥' },
+  { name: 'Comportamiento', slug: 'comportamiento', color: 'purple', icon: '🧠' },
+  { name: 'Cachorros', slug: 'cachorros', color: 'yellow', icon: '🐶' },
+  { name: 'Cuidado', slug: 'cuidado', color: 'teal', icon: '💚' }
+];
+
+// Funciones utilitarias
+const formatDate = (date: string | Date) => {
+  return new Date(date).toLocaleDateString('es-ES', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+};
+
+const getTimeAgo = (date: string | Date) => {
+  const now = new Date();
+  const articleDate = new Date(date);
+  const diffInHours = Math.floor((now.getTime() - articleDate.getTime()) / (1000 * 60 * 60));
+  
+  if (diffInHours < 1) return 'Hace unos minutos';
+  if (diffInHours < 24) return `Hace ${diffInHours} horas`;
+  if (diffInHours < 48) return 'Ayer';
+  return formatDate(date);
+};
+
+const getCategoryColor = (category: string) => {
+  const colors: Record<string, string> = {
+    'entrenamiento': 'bg-blue-100 text-blue-800 border-blue-200',
+    'alimentacion': 'bg-green-100 text-green-800 border-green-200',
+    'alimentación': 'bg-green-100 text-green-800 border-green-200',
+    'salud': 'bg-red-100 text-red-800 border-red-200',
+    'comportamiento': 'bg-purple-100 text-purple-800 border-purple-200',
+    'cachorros': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    'cuidado': 'bg-teal-100 text-teal-800 border-teal-200',
+    'nuevos-duenos': 'bg-pink-100 text-pink-800 border-pink-200',
+    'adopcion': 'bg-indigo-100 text-indigo-800 border-indigo-200'
+  };
+  return colors[category?.toLowerCase()] || 'bg-gray-100 text-gray-800 border-gray-200';
+};
+
+const title = "Artículos | Todo sobre el cuidado de mascotas";
+const description = "Descubre artículos, consejos y guías escritos por expertos veterinarios para mejorar la calidad de vida de tus perros y gatos.";
+---
+
+<BaseLayout title={title} description={description}>
+
+  {/* 🎯 HERO SECTION */}
+  <div class="bg-gradient-to-br from-[#AFC2D5] to-[#C8D6B9] py-16">
+    <Container>
+      <div class="text-center max-w-4xl mx-auto">
+        <h1 class="text-3xl md:text-5xl font-bold text-white mb-4">
+          Artículos sobre Mascotas
+        </h1>
+        <p class="text-lg text-white text-opacity-90 mb-8">
+          Consejos, guías y artículos escritos por expertos veterinarios para el bienestar de tus compañeros peludos
+        </p>
+        
+        {/* Estadísticas */}
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto mb-8">
+          <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
+            <div class="text-2xl font-bold text-white">{stats.total}</div>
+            <div class="text-sm text-white text-opacity-80">Artículos</div>
+          </div>
+          <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
+            <div class="text-2xl font-bold text-white">{stats.categories}</div>
+            <div class="text-sm text-white text-opacity-80">Categorías</div>
+          </div>
+          <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
+            <div class="text-2xl font-bold text-white">{stats.authors}</div>
+            <div class="text-sm text-white text-opacity-80">Expertos</div>
+          </div>
+          <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
+            <div class="text-2xl font-bold text-white">{stats.readingTime}</div>
+            <div class="text-sm text-white text-opacity-80">Min promedio</div>
+          </div>
+        </div>
+        
+        {/* Categorías principales */}
+        <div class="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
+          {categories.map(category => (
+            <a 
+              href={`/categorias/${category.slug}`}
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 text-white transition-all duration-200"
+            >
+              <span>{category.icon}</span>
+              {category.name}
+            </a>
+          ))}
+        </div>
+      </div>
+    </Container>
+  </div>
+
+  <Container class="py-12">
+    {allArticles.length > 0 ? (
+      <div class="space-y-12">
+        
+        {/* 🌟 ARTÍCULO DESTACADO */}
+        {featuredArticle && (
+          <section class="mb-12">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-2xl font-bold text-gray-900">Artículo Destacado</h2>
+              <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+                ⭐ Más reciente
+              </span>
+            </div>
+            
+            <a href={`/articulos/${featuredArticle.slug}`} class="block">
+              <article class="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300">
+                <div class="aspect-[16/10] lg:aspect-[4/3]">
+                  <Image 
+                    src={featuredArticle.data.image || '/images/articles/default.jpg'} 
+                    alt={featuredArticle.data.title}
+                    width={600}
+                    height={400}
+                    class="w-full h-full object-cover"
+                  />
+                </div>
+                
+                <div class="p-6 lg:p-8 flex flex-col justify-center">
+                  <div class="mb-4">
+                    <span class={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${getCategoryColor(featuredArticle.data.category)}`}>
+                      {featuredArticle.data.category}
+                    </span>
+                  </div>
+                  
+                  <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-tight">
+                    {featuredArticle.data.title}
+                  </h3>
+                  
+                  <p class="text-gray-600 text-lg mb-6 line-clamp-3">
+                    {featuredArticle.data.description}
+                  </p>
+                  
+                  <div class="flex items-center justify-between text-sm text-gray-500">
+                    <div class="flex items-center space-x-4">
+                      <span class="font-medium">{featuredArticle.data.author || 'Editor Balto'}</span>
+                      <span>•</span>
+                      <span>{getTimeAgo(featuredArticle.data.date)}</span>
+                    </div>
+                    <span class="font-medium">{featuredArticle.data.readingTime || 5} min</span>
+                  </div>
+                </div>
+              </article>
+            </a>
+          </section>
+        )}
+
+        {/* 📰 OTROS ARTÍCULOS */}
+        {otherArticles.length > 0 && (
+          <section>
+            <div class="flex items-center justify-between mb-8">
+              <h2 class="text-2xl font-bold text-gray-900">Más Artículos</h2>
+              <Button href="/autores" variant="outline" size="sm">
+                Ver todos los expertos
+              </Button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {otherArticles.map((article) => (
+                <a href={`/articulos/${article.slug}`} class="block">
+                  <article class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <div class="aspect-[16/10] relative overflow-hidden">
+                      <Image 
+                        src={article.data.image || '/images/articles/default.jpg'} 
+                        alt={article.data.title}
+                        width={400}
+                        height={250}
+                        class="w-full h-full object-cover"
+                      />
+                      <div class="absolute top-3 left-3">
+                        <span class={`px-2 py-1 rounded-full text-xs font-semibold ${getCategoryColor(article.data.category)}`}>
+                          {article.data.category}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div class="p-5">
+                      <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
+                        {article.data.title}
+                      </h3>
+                      
+                      <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                        {article.data.description}
+                      </p>
+                      
+                      <div class="flex items-center justify-between text-xs text-gray-500">
+                        <div class="flex items-center space-x-2">
+                          <span class="font-medium">{article.data.author || 'Editor Balto'}</span>
+                          <span>•</span>
+                          <span>{getTimeAgo(article.data.date)}</span>
+                        </div>
+                        <span>{article.data.readingTime || 5}m</span>
+                      </div>
+                    </div>
+                  </article>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* 🔗 PAGINACIÓN */}
+        {totalPages > 1 && (
+          <section class="mt-12">
+            <div class="flex justify-center">
+              <nav class="flex items-center space-x-2">
+                <span class="px-4 py-2 bg-[#AFC2D5] text-white rounded-md text-sm font-medium">
+                  1
+                </span>
+                {Array.from({ length: Math.min(totalPages - 1, 4) }, (_, i) => i + 2).map(pageNum => (
+                  <a 
+                    href={`/articulos/page/${pageNum}`}
+                    class="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    {pageNum}
+                  </a>
+                ))}
+                {totalPages > 5 && (
+                  <>
+                    <span class="px-2 text-gray-500">...</span>
+                    <a 
+                      href={`/articulos/page/${totalPages}`}
+                      class="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      {totalPages}
+                    </a>
+                  </>
+                )}
+              </nav>
+            </div>
+          </section>
+        )}
+
+      </div>
+    ) : (
+      /* 📝 ESTADO VACÍO */
+      <section class="text-center py-16 bg-gray-50 rounded-2xl">
+        <div class="w-24 h-24 bg-[#AFC2D5] rounded-full flex items-center justify-center mx-auto mb-6">
+          <span class="text-4xl">📝</span>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">
+          ¡Bienvenido a Balto!
+        </h2>
+        <p class="text-gray-600 mb-8 max-w-lg mx-auto">
+          Aún no hay artículos publicados. Comienza creando contenido increíble para los amantes de las mascotas.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button href="/admin/" variant="primary" size="lg">
+            Crear primer artículo
+          </Button>
+          <Button href="/" variant="outline" size="lg">
+            Volver al inicio
+          </Button>
+        </div>
+      </section>
+    )}
+  </Container>
+
+</BaseLayout>

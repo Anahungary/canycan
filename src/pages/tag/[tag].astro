@@ -97,7 +97,7 @@ export async function getStaticPaths() {
       image: article.data?.image || '/images/articles/default.jpg',
       date: article.data?.date ? article.data.date.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       author: {
-        name: article.data?.author || 'Editor PataDigital',
+        name: article.data?.author || 'Editor Balto',
         avatar: '/images/authors/default.jpg'
       },
       readingTime: article.data?.readingTime || 5,
@@ -142,7 +142,7 @@ export async function getStaticPaths() {
       image: article.data?.image || '/images/articles/default.jpg',
       date: article.data?.date ? article.data.date.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
       author: {
-        name: article.data?.author || 'Editor PataDigital',
+        name: article.data?.author || 'Editor Balto',
         avatar: '/images/authors/default.jpg'
       },
       readingTime: article.data?.readingTime || 5,

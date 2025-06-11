@@ -2,8 +2,8 @@
 title: "Los nombres más populares para mascotas en Colombia 2025: ¿Cómo elegir el nombre perfecto?"
 description: "Descubre los nombres más trending para perros y gatos en Colombia. Guía completa con listas actualizadas, tendencias por región y consejos para elegir el nombre ideal."
 date: 2025-05-29T16:00:00.000Z
-author: "catalina-rodriguez"
-authorBio: "Periodista especializada en tendencias de mascotas y comportamiento animal. Colaboradora de las principales revistas pet en Colombia con más de 8 años de experiencia."
+author: "Ana María Prieto"
+authorBio: "Mamá de Río, amante incondicional de los perros y administradora"
 tags: ["nombres-mascotas", "colombia", "tendencias-2025", "perros", "gatos"]
 category: "tendencias"
 featured: true

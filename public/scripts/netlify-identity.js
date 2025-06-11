@@ -1,5 +1,5 @@
 // public/scripts/netlify-identity.js
-// Configuración de Netlify Identity para PataDigital
+// Configuración de Netlify Identity para Balto
 
 (function() {
   'use strict';
@@ -148,7 +148,7 @@
   }
 
   // Exponer funciones útiles globalmente
-  window.PataDigitalAuth = {
+  window.BaltoAuth = {
     openAuth: () => {
       if (window.netlifyIdentity) {
         window.netlifyIdentity.open();

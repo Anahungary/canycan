@@ -50,7 +50,7 @@ const newsletterId = `newsletter-${Math.random().toString(36).substring(2, 15)}`
               required
               class="h-4 w-4 mt-1 rounded border-gray-300 text-[#AFC2D5] focus:ring-[#AFC2D5]" 
             />
-            <span class="ml-2 text-xs text-gray-500">
+            <span class="ml-2 text-xs text-gray-600">
               Acepto recibir correos y la política de privacidad
             </span>
           </label>
@@ -61,7 +61,7 @@ const newsletterId = `newsletter-${Math.random().toString(36).substring(2, 15)}`
         type="submit"
         class={`
           ${variant === 'inline' ? 'px-4 py-2' : 'w-full py-2 px-4'} 
-          bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white rounded-md text-sm font-medium 
+          bg-yellow-500 hover:bg-[#9DB3C6] text-red-900 rounded-md text-sm font-medium 
           transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed
         `}
       >

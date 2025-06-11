@@ -236,7 +236,7 @@ export function generateWhatsAppMetaTags(data, siteUrl) {
   return {
     // OpenGraph básico
     'og:type': type,
-    'og:site_name': 'PataDigital',
+    'og:site_name': 'Balto',
     'og:url': absoluteUrl,
     'og:title': title,
     'og:description': description,
@@ -246,16 +246,16 @@ export function generateWhatsAppMetaTags(data, siteUrl) {
     'og:image:width': WHATSAPP_IMAGE_CONFIG.OPTIMAL_WIDTH.toString(),
     'og:image:height': WHATSAPP_IMAGE_CONFIG.OPTIMAL_HEIGHT.toString(),
     'og:image:type': 'image/jpeg',
-    'og:image:alt': `${title} - PataDigital`,
+    'og:image:alt': `${title} - Balto`,
     'og:locale': 'es_ES',
     
     // Twitter Cards
     'twitter:card': 'summary_large_image',
-    'twitter:site': '@PataDigital',
+    'twitter:site': '@Balto',
     'twitter:title': title,
     'twitter:description': description,
     'twitter:image': optimizedImage,
-    'twitter:image:alt': `${title} - PataDigital`,
+    'twitter:image:alt': `${title} - Balto`,
     
     // Adicionales para mejor compatibilidad
     'article:publisher': siteUrl,

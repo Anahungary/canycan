@@ -2,12 +2,12 @@
 title: "Guía Completa para Dueños Primerizos de Cachorros: Todo lo que Necesitas Saber"
 description: "Guía definitiva para cuidar tu primer cachorro. Cronograma veterinario, alimentación, entrenamiento, costos reales y errores que debes evitar en las primeras 16 semanas críticas."
 date: 2025-06-04T10:00:00.000Z
-author: "dr-alejandro-martinez"
-authorBio: "Médico veterinario especializado en comportamiento animal con 15 años de experiencia. Director de la Clínica Veterinaria Integral y experto en socialización temprana de cachorros."
+author: "Equipo Editorial Balto"
+authorBio: "El equipo de Balto investiga y verifica información con fuentes confiables para brindarte contenido útil y real sobre el cuidado de mascotas."
 tags: ["cachorros", "dueños-primerizos", "entrenamiento", "salud-canina", "socialización"]
 category: "cuidado-salud"
 featured: true
-image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+image: /images/articulos/primera-mascora.jpg
 imageAlt: "Cachorro dorado siendo examinado por veterinario en consulta"
 readingTime: 18
 status: "published"
