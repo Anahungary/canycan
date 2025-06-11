@@ -8,6 +8,10 @@ import Badge from '../../components/ui/Badge.astro';
 import ArticleList from '../../components/blog/ArticleList.astro';
 import Card from '../../components/ui/Card.astro';
 import { Image } from 'astro:assets';
+import Newsletter from '../../components/common/Newsletter.astro';  // ← AGREGAR ESTA LÍNEA
+import { generateMarketingViews } from '../../utils/viewsMarketing.ts';
+
+
 
 // 🔧 FUNCIÓN PARA AVATARES REALES DE AUTORES
 function getAuthorAvatar(authorName: string): string {
@@ -74,8 +78,13 @@ const totalPages = Math.ceil(allArticles.length / ARTICLES_PER_PAGE);
 const firstPageArticles = allArticles.slice(0, ARTICLES_PER_PAGE);
 
 // 🎯 ARTÍCULO DESTACADO (el más reciente)
-const featuredArticle = firstPageArticles[0] || null;
-
+// 🎯 ARTÍCULO DESTACADO (el más visto usando sistema de marketing)
+const featuredArticle = firstPageArticles
+  .map(article => ({
+    ...article,
+    marketingViews: generateMarketingViews(article.slug, ['entrenamiento', 'alimentacion', 'salud', 'cachorros'].includes(article.data?.category?.toLowerCase()))
+  }))
+  .sort((a, b) => b.marketingViews - a.marketingViews)[0] || null;
 // ✅ ARTÍCULOS RESTANTES PARA LA GRILLA (8 artículos después del destacado)
 const otherArticles = firstPageArticles.slice(1); // Los 8 restantes
 
@@ -135,7 +144,7 @@ const getTimeAgo = (date: string | Date) => {
   }
 };
 
-const title = "Blog de Balto - Artículos sobre cuidado de mascotas";
+const title = "Balto - La revista digital de mascotas";
 const description = "Descubre artículos especializados sobre entrenamiento, alimentación, salud y comportamiento de perros y gatos. Consejos de expertos para mejorar la vida de tu mascota.";
 ---
 
@@ -144,10 +153,8 @@ const description = "Descubre artículos especializados sobre entrenamiento, ali
   <div class="bg-gradient-to-r from-green-500 to-green-600">
     <Container>
       <div class="py-16 md:py-20 text-center">
-        <Badge variant="secondary" size="md" class="mb-4 bg-white bg-opacity-20 text-white border-white">
-          🐾 Artículos Profesionales
-        </Badge>
-        <h1 class="text-3xl md:text-4xl font-bold text-white mb-4">Blog de Balto</h1>
+        
+        <h1 class="text-3xl md:text-6xl font-bold text-white mb-4">La revista digital en mascotas</h1>
         <p class="text-lg text-white text-opacity-90 max-w-2xl mx-auto mb-8">
           Artículos, consejos y guías escritos por expertos para mejorar la calidad de vida de tus mascotas
         </p>
@@ -155,7 +162,7 @@ const description = "Descubre artículos especializados sobre entrenamiento, ali
         <div class="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
           {categories.slice(0, 6).map(category => (
             <a 
-              href={`/blog/categoria/${category.slug}`}
+             href={`/${category.slug}`}
               class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 text-white transition-all duration-200"
             >
               <span class="mr-2">{category.icon}</span>
@@ -351,7 +358,7 @@ const description = "Descubre artículos especializados sobre entrenamiento, ali
             <div class="space-y-3">
               {categories.map(category => (
                 <a 
-                  href={`/blog/categoria/${category.slug}`}
+                  href={`/${category.slug}`}
                   class="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 group"
                 >
                   <div class="flex items-center gap-3">
@@ -381,7 +388,7 @@ const description = "Descubre artículos especializados sobre entrenamiento, ali
               <div class="flex flex-wrap gap-2">
                 {popularTags.map(tag => (
                   <a 
-                    href={`/blog/etiqueta/${tag.toLowerCase().replace(/\s+/g, '-')}`}
+                   href={`/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
                     class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 hover:from-orange-200 hover:to-red-200 transition-all duration-200"
                   >
                     {tag}
@@ -392,22 +399,8 @@ const description = "Descubre artículos especializados sobre entrenamiento, ali
           )}
           
           {/* 📱 NEWSLETTER */}
-          <Card class="p-8 bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200">
-            <div class="text-center">
-              <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <span class="text-white text-xl">📧</span>
-              </div>
-              <h3 class="text-lg font-bold text-gray-900 mb-2">
-                ¡No te pierdas nada!
-              </h3>
-              <p class="text-sm text-gray-600 mb-4">
-                Recibe semanalmente los mejores consejos para tu mascota
-              </p>
-              <Button variant="primary" size="sm" class="w-full">
-                Suscribirse
-              </Button>
-            </div>
-          </Card>
+          <Newsletter />
+
         </div>
       </div>
     </div>
