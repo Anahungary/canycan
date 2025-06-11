@@ -7,7 +7,7 @@ authorBio: "El equipo de Balto investiga y verifica información con fuentes con
 tags: ["bienestar-integral", "salud-canina", "nutricion-perros", "ejercicio-perros", "cuidados-preventivos"]
 category: "cuidado"
 featured: true
-image: "https://images.unsplash.com/photo-1551717743-49959800b1f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+image: "/images/articulos/beagle-salta.jpg"
 imageAlt: "Perro feliz corriendo en un campo verde representando bienestar completo"
 readingTime: 15
 status: "published"

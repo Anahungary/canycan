@@ -7,7 +7,7 @@ authorBio: Papá de Río, tío y amigo de muchos peluditos, se esmera en amaestr
 tags: ["ansiedad-separacion", "comportamiento", "perros"]
 category: "comportamiento"
 featured: true
-image: "https://images.unsplash.com/photo-1552053831-71594a27632d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+image: "/images/articulos/labrador-rosa.webp"
 imageAlt: "Comparación lado a lado de Golden Retriever y Labrador Retriever"
 readingTime: 12
 status: "published"
@@ -45,7 +45,7 @@ Desarrollado en las **Tierras Altas de Escocia** en el siglo XIX, el Golden Retr
 
 Los Labradores tienen sus raíces en **Terranova, Canadá**, donde trabajaban junto a pescadores ayudando a recuperar redes y peces que escapaban. Esta herencia acuática es aún más fuerte que la del Golden, lo que explica su **amor casi obsesivo por el agua**.
 
-![Labrador Retriever nadando en un lago](https://images.unsplash.com/photo-1518717758536-85ae29035b6d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80)
+![Labrador Retriever nadando en un lago](/images/articulos/labrador-negro.webp)
 
 *Los Labradores mantienen su instinto acuático heredado de sus antepasados pescadores*
 

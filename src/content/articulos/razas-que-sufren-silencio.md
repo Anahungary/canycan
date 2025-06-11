@@ -7,7 +7,7 @@ authorBio: "Papá de Río, administrador de Balto que se esmera en amaestrar a s
 tags: ["bienestar-animal", "genetica-canina", "cria-responsable", "salud-animal"]
 category: "salud-animal"
 featured: true
-image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+image: /images/articulos/nuevo-nombre.jpg 
 imageAlt: "Perro braquicefálico con problemas respiratorios siendo examinado por veterinario"
 readingTime: 15
 status: "published"

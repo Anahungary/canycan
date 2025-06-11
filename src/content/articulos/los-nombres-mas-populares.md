@@ -7,7 +7,7 @@ authorBio: "Mamá de Río, amante incondicional de los perros y administradora"
 tags: ["nombres-mascotas", "colombia", "tendencias-2025", "perros", "gatos"]
 category: "tendencias"
 featured: true
-image: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+image: /images/articulos/nombres-perros.webp
 imageAlt: "Collage de mascotas colombianas con diferentes nombres populares"
 readingTime: 12
 status: "published"

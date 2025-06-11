@@ -1,5 +1,5 @@
 ---
-// src/pages/articulos/index.astro - PÁGINA PRINCIPAL DE ARTÍCULOS
+// src/pages/articulos/index.astro - PÁGINA PRINCIPAL DE ARTÍCULOS REVISADA
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/ui/Container.astro';
@@ -63,81 +63,83 @@ const getTimeAgo = (date: string | Date) => {
   const articleDate = new Date(date);
   const diffInHours = Math.floor((now.getTime() - articleDate.getTime()) / (1000 * 60 * 60));
   
-  if (diffInHours < 1) return 'Hace unos minutos';
-  if (diffInHours < 24) return `Hace ${diffInHours} horas`;
-  if (diffInHours < 48) return 'Ayer';
-  return formatDate(date);
+  if (diffInHours < 24) {
+    return `hace ${diffInHours}h`;
+  } else if (diffInHours < 24 * 7) {
+    return `hace ${Math.floor(diffInHours / 24)}d`;
+  } else {
+    return formatDate(date);
+  }
 };
 
+// 🎨 FUNCIÓN PARA OBTENER COLORES DE CATEGORÍAS - PALETA VIBRANTE
 const getCategoryColor = (category: string) => {
-  const colors: Record<string, string> = {
-    'entrenamiento': 'bg-blue-100 text-blue-800 border-blue-200',
-    'alimentacion': 'bg-green-100 text-green-800 border-green-200',
-    'alimentación': 'bg-green-100 text-green-800 border-green-200',
-    'salud': 'bg-red-100 text-red-800 border-red-200',
-    'comportamiento': 'bg-purple-100 text-purple-800 border-purple-200',
-    'cachorros': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    'cuidado': 'bg-teal-100 text-teal-800 border-teal-200',
-    'nuevos-duenos': 'bg-pink-100 text-pink-800 border-pink-200',
-    'adopcion': 'bg-indigo-100 text-indigo-800 border-indigo-200'
+  const colorMap: Record<string, string> = {
+    'Entrenamiento': 'bg-green-100 text-green-800 border-green-300 hover:bg-green-200',
+    'Alimentación': 'bg-yellow-100 text-yellow-800 border-yellow-300 hover:bg-yellow-200',
+    'Salud': 'bg-red-100 text-red-800 border-red-300 hover:bg-red-200',
+    'Comportamiento': 'bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200',
+    'Cachorros': 'bg-orange-100 text-orange-800 border-orange-300 hover:bg-orange-200',
+    'Cuidado': 'bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-200',
+    'default': 'bg-gray-100 text-gray-800 border-gray-300 hover:bg-gray-200'
   };
-  return colors[category?.toLowerCase()] || 'bg-gray-100 text-gray-800 border-gray-200';
+  return colorMap[category] || colorMap.default;
 };
-
-const title = "Artículos | Todo sobre el cuidado de mascotas";
-const description = "Descubre artículos, consejos y guías escritos por expertos veterinarios para mejorar la calidad de vida de tus perros y gatos.";
 ---
 
-<BaseLayout title={title} description={description}>
-
-  {/* 🎯 HERO SECTION */}
-  <div class="bg-gradient-to-br from-[#AFC2D5] to-[#C8D6B9] py-16">
-    <Container>
-      <div class="text-center max-w-4xl mx-auto">
-        <h1 class="text-3xl md:text-5xl font-bold text-white mb-4">
-          Artículos sobre Mascotas
-        </h1>
-        <p class="text-lg text-white text-opacity-90 mb-8">
-          Consejos, guías y artículos escritos por expertos veterinarios para el bienestar de tus compañeros peludos
-        </p>
-        
-        {/* Estadísticas */}
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto mb-8">
-          <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
-            <div class="text-2xl font-bold text-white">{stats.total}</div>
-            <div class="text-sm text-white text-opacity-80">Artículos</div>
-          </div>
-          <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
-            <div class="text-2xl font-bold text-white">{stats.categories}</div>
-            <div class="text-sm text-white text-opacity-80">Categorías</div>
-          </div>
-          <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
-            <div class="text-2xl font-bold text-white">{stats.authors}</div>
-            <div class="text-sm text-white text-opacity-80">Expertos</div>
-          </div>
-          <div class="bg-white bg-opacity-20 rounded-lg p-4 text-center">
-            <div class="text-2xl font-bold text-white">{stats.readingTime}</div>
-            <div class="text-sm text-white text-opacity-80">Min promedio</div>
-          </div>
+<BaseLayout 
+  title="Artículos de Cuidado de Mascotas | Balto"
+  description="Descubre consejos expertos sobre entrenamiento, alimentación, salud y cuidado de perros y gatos. Artículos profesionales para amantes de las mascotas."
+>
+  <Container class="py-8">
+    
+    {/* 📊 HEADER CON ESTADÍSTICAS */}
+    <div class="text-center mb-12">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        Centro de Conocimiento de Balto
+      </h1>
+      <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+        Artículos profesionales sobre cuidado, entrenamiento y bienestar de tus mascotas, 
+        escritos por expertos veterinarios y especialistas en comportamiento animal.
+      </p>
+      
+      {/* Estadísticas con colores vibrantes */}
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+        <div class="bg-white rounded-lg p-4 border-2 border-green-500 shadow-md hover:shadow-lg transition-shadow">
+          <div class="text-2xl font-bold text-green-600">{stats.total}</div>
+          <div class="text-sm text-gray-600">Artículos</div>
         </div>
-        
-        {/* Categorías principales */}
-        <div class="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
-          {categories.map(category => (
-            <a 
-              href={`/categorias/${category.slug}`}
-              class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 text-white transition-all duration-200"
-            >
-              <span>{category.icon}</span>
-              {category.name}
-            </a>
-          ))}
+        <div class="bg-white rounded-lg p-4 border-2 border-yellow-500 shadow-md hover:shadow-lg transition-shadow">
+          <div class="text-2xl font-bold text-yellow-600">{stats.categories}</div>
+          <div class="text-sm text-gray-600">Categorías</div>
+        </div>
+        <div class="bg-white rounded-lg p-4 border-2 border-green-600 shadow-md hover:shadow-lg transition-shadow">
+          <div class="text-2xl font-bold text-green-700">{stats.authors}</div>
+          <div class="text-sm text-gray-600">Autores</div>
+        </div>
+        <div class="bg-white rounded-lg p-4 border-2 border-yellow-600 shadow-md hover:shadow-lg transition-shadow">
+          <div class="text-2xl font-bold text-yellow-700">{stats.readingTime}min</div>
+          <div class="text-sm text-gray-600">Promedio</div>
         </div>
       </div>
-    </Container>
-  </div>
+    </div>
 
-  <Container class="py-12">
+    {/* 🏷️ CATEGORÍAS RÁPIDAS */}
+    <section class="mb-12">
+      <h2 class="text-xl font-bold text-gray-900 mb-6 text-center">Explora por Categorías</h2>
+      <div class="flex flex-wrap justify-center gap-3">
+        {categories.map((category) => (
+          <a 
+            href={`/etiquetas/${category.slug}`}
+            class={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold border-2 transition-all hover:shadow-lg hover:scale-105 ${getCategoryColor(category.name)}`}
+          >
+            <span>{category.icon}</span>
+            <span>{category.name}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
     {allArticles.length > 0 ? (
       <div class="space-y-12">
         
@@ -146,45 +148,46 @@ const description = "Descubre artículos, consejos y guías escritos por experto
           <section class="mb-12">
             <div class="flex items-center justify-between mb-6">
               <h2 class="text-2xl font-bold text-gray-900">Artículo Destacado</h2>
-              <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+              <Badge variant="secondary" class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold shadow-md">
                 ⭐ Más reciente
-              </span>
+              </Badge>
             </div>
             
-            <a href={`/articulos/${featuredArticle.slug}`} class="block">
-              <article class="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-                <div class="aspect-[16/10] lg:aspect-[4/3]">
+            <a href={`/articulos/${featuredArticle.slug}`} class="block group">
+              <article class="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white rounded-2xl overflow-hidden shadow-xl border-2 border-green-500 hover:shadow-2xl hover:border-green-600 transition-all duration-300">
+                <div class="aspect-[16/10] lg:aspect-[4/3] overflow-hidden">
                   <Image 
                     src={featuredArticle.data.image || '/images/articles/default.jpg'} 
                     alt={featuredArticle.data.title}
                     width={600}
                     height={400}
-                    class="w-full h-full object-cover"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 
                 <div class="p-6 lg:p-8 flex flex-col justify-center">
                   <div class="mb-4">
-                    <span class={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${getCategoryColor(featuredArticle.data.category)}`}>
+                    <span class={`inline-block px-4 py-2 rounded-full text-sm font-bold border-2 shadow-md ${getCategoryColor(featuredArticle.data.category)}`}>
                       {featuredArticle.data.category}
                     </span>
                   </div>
                   
-                  <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-tight">
+                  <h3 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-tight group-hover:text-green-600 transition-colors">
                     {featuredArticle.data.title}
                   </h3>
                   
-                  <p class="text-gray-600 text-lg mb-6 line-clamp-3">
+                  <p class="text-gray-600 mb-6 text-lg leading-relaxed">
                     {featuredArticle.data.description}
                   </p>
                   
                   <div class="flex items-center justify-between text-sm text-gray-500">
-                    <div class="flex items-center space-x-4">
-                      <span class="font-medium">{featuredArticle.data.author || 'Editor Balto'}</span>
-                      <span>•</span>
-                      <span>{getTimeAgo(featuredArticle.data.date)}</span>
+                    <div class="flex items-center gap-4">
+                      <span>👤 {featuredArticle.data.author}</span>
+                      <span>📅 {formatDate(featuredArticle.data.date)}</span>
                     </div>
-                    <span class="font-medium">{featuredArticle.data.readingTime || 5} min</span>
+                    <span class="bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-full font-bold shadow-md">
+                      🕒 {featuredArticle.data.readingTime || 5} min
+                    </span>
                   </div>
                 </div>
               </article>
@@ -192,51 +195,48 @@ const description = "Descubre artículos, consejos y guías escritos por experto
           </section>
         )}
 
-        {/* 📰 OTROS ARTÍCULOS */}
+        {/* 📰 GRID DE ARTÍCULOS */}
         {otherArticles.length > 0 && (
           <section>
-            <div class="flex items-center justify-between mb-8">
-              <h2 class="text-2xl font-bold text-gray-900">Más Artículos</h2>
-              <Button href="/autores" variant="outline" size="sm">
-                Ver todos los expertos
-              </Button>
-            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-8">Últimos Artículos</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {otherArticles.map((article) => (
-                <a href={`/articulos/${article.slug}`} class="block">
-                  <article class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-                    <div class="aspect-[16/10] relative overflow-hidden">
+                <a href={`/articulos/${article.slug}`} class="block group">
+                  <article class="bg-white rounded-xl overflow-hidden shadow-lg border-2 border-gray-200 hover:shadow-xl hover:border-green-500 transition-all duration-300 hover:scale-[1.02]">
+                    <div class="aspect-[16/10] overflow-hidden">
                       <Image 
                         src={article.data.image || '/images/articles/default.jpg'} 
                         alt={article.data.title}
                         width={400}
                         height={250}
-                        class="w-full h-full object-cover"
+                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div class="absolute top-3 left-3">
-                        <span class={`px-2 py-1 rounded-full text-xs font-semibold ${getCategoryColor(article.data.category)}`}>
-                          {article.data.category}
-                        </span>
-                      </div>
                     </div>
                     
-                    <div class="p-5">
-                      <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
+                    <div class="p-6">
+                      <div class="flex items-center justify-between mb-3">
+                        <span class={`px-3 py-1 rounded-full text-xs font-bold border-2 shadow-sm ${getCategoryColor(article.data.category)}`}>
+                          {article.data.category}
+                        </span>
+                        <span class="text-xs text-gray-400 font-medium">
+                          {getTimeAgo(article.data.date)}
+                        </span>
+                      </div>
+                      
+                      <h3 class="text-lg font-bold text-gray-900 mb-3 leading-tight group-hover:text-green-600 transition-colors line-clamp-2">
                         {article.data.title}
                       </h3>
                       
-                      <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                      <p class="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
                         {article.data.description}
                       </p>
                       
                       <div class="flex items-center justify-between text-xs text-gray-500">
-                        <div class="flex items-center space-x-2">
-                          <span class="font-medium">{article.data.author || 'Editor Balto'}</span>
-                          <span>•</span>
-                          <span>{getTimeAgo(article.data.date)}</span>
-                        </div>
-                        <span>{article.data.readingTime || 5}m</span>
+                        <span class="font-medium">👤 {article.data.author}</span>
+                        <span class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white px-3 py-1 rounded-full font-bold shadow-md">
+                          🕒 {article.data.readingTime || 5}min
+                        </span>
                       </div>
                     </div>
                   </article>
@@ -246,57 +246,87 @@ const description = "Descubre artículos, consejos y guías escritos por experto
           </section>
         )}
 
-        {/* 🔗 PAGINACIÓN */}
+        {/* 🔗 PAGINACIÓN MEJORADA CON COLORES VIBRANTES */}
         {totalPages > 1 && (
-          <section class="mt-12">
+          <section class="mt-16">
             <div class="flex justify-center">
-              <nav class="flex items-center space-x-2">
-                <span class="px-4 py-2 bg-[#AFC2D5] text-white rounded-md text-sm font-medium">
+              <nav class="flex items-center space-x-2" aria-label="Paginación">
+                
+                {/* Página actual (siempre página 1 en index) */}
+                <span class="px-5 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg text-sm font-bold shadow-lg">
                   1
                 </span>
+                
+                {/* Páginas siguientes */}
                 {Array.from({ length: Math.min(totalPages - 1, 4) }, (_, i) => i + 2).map(pageNum => (
                   <a 
                     href={`/articulos/page/${pageNum}`}
-                    class="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    class="px-5 py-3 border-2 border-green-500 text-green-600 rounded-lg text-sm font-bold hover:bg-green-500 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+                    aria-label={`Ir a página ${pageNum}`}
                   >
                     {pageNum}
                   </a>
                 ))}
+                
+                {/* Puntos suspensivos y última página */}
                 {totalPages > 5 && (
                   <>
-                    <span class="px-2 text-gray-500">...</span>
+                    <span class="px-2 text-gray-400 font-bold">...</span>
                     <a 
                       href={`/articulos/page/${totalPages}`}
-                      class="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+                      class="px-5 py-3 border-2 border-green-500 text-green-600 rounded-lg text-sm font-bold hover:bg-green-500 hover:text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
+                      aria-label={`Ir a última página ${totalPages}`}
                     >
                       {totalPages}
                     </a>
                   </>
                 )}
+                
+                {/* Botón Siguiente */}
+                {totalPages > 1 && (
+                  <a 
+                    href="/articulos/page/2"
+                    class="ml-3 px-6 py-3 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-lg text-sm font-bold hover:from-yellow-600 hover:to-yellow-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2 hover:scale-105"
+                    aria-label="Página siguiente"
+                  >
+                    <span>Siguiente</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                )}
               </nav>
+            </div>
+            
+            {/* Información adicional */}
+            <div class="text-center mt-6">
+              <p class="text-sm text-gray-500 font-medium">
+                Mostrando {Math.min(ARTICLES_PER_PAGE, allArticles.length)} de {allArticles.length} artículos
+              </p>
             </div>
           </section>
         )}
 
       </div>
     ) : (
-      /* 📝 ESTADO VACÍO */
-      <section class="text-center py-16 bg-gray-50 rounded-2xl">
-        <div class="w-24 h-24 bg-[#AFC2D5] rounded-full flex items-center justify-center mx-auto mb-6">
-          <span class="text-4xl">📝</span>
+      /* 📝 ESTADO VACÍO MEJORADO CON COLORES VIBRANTES */
+      <section class="text-center py-20 bg-gradient-to-br from-green-50 to-yellow-50 rounded-2xl border-2 border-green-500 shadow-lg">
+        <div class="w-32 h-32 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+          <span class="text-6xl">📝</span>
         </div>
-        <h2 class="text-2xl font-bold text-gray-900 mb-4">
-          ¡Bienvenido a Balto!
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">
+          ¡Bienvenido al Centro de Conocimiento de Balto!
         </h2>
-        <p class="text-gray-600 mb-8 max-w-lg mx-auto">
-          Aún no hay artículos publicados. Comienza creando contenido increíble para los amantes de las mascotas.
+        <p class="text-gray-600 mb-8 max-w-lg mx-auto text-lg">
+          Pronto tendremos artículos increíbles sobre cuidado de mascotas. 
+          Mientras tanto, explora otras secciones de Balto.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button href="/admin/" variant="primary" size="lg">
-            Crear primer artículo
+          <Button href="/comparador-razas" variant="primary" size="lg" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold shadow-lg hover:shadow-xl transition-all">
+            🔍 Comparar Razas
           </Button>
-          <Button href="/" variant="outline" size="lg">
-            Volver al inicio
+          <Button href="/" variant="outline" size="lg" class="border-2 border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white font-bold shadow-md hover:shadow-lg transition-all">
+            🏠 Volver al inicio
           </Button>
         </div>
       </section>
@@ -304,3 +334,32 @@ const description = "Descubre artículos, consejos y guías escritos por experto
   </Container>
 
 </BaseLayout>
+
+<style>
+  /* Clase para truncar texto */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Hover effects mejorados */
+  article:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* Animaciones suaves */
+  * {
+    transition-property: transform, box-shadow, border-color, background-color;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in-out;
+  }
+</style>
