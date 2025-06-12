@@ -70,7 +70,7 @@ const getCategoryColor = (category: string) => {
 
   {/* 🎯 HERO SECTION CON ARTÍCULO DESTACADO - DISEÑO DE /ARTICULOS */}
   {heroArticle && (
-    <section class="bg-gradient-to-br from-green-500 to-green-600 py-12">
+    <section class="bg-gradient-to-br from-green-700 to-green-500 py-12 md:px-24 px-0">
       <Container size="xl">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
@@ -200,7 +200,7 @@ const getCategoryColor = (category: string) => {
 
   {/* 📰 ARTÍCULOS RECIENTES */}
   {allArticles.length > 0 && (
-    <section class="py-16 bg-white">
+    <section class="py-16 px-0 md:px-24 bg-white">
       <Container size="xl">
         <div class="flex items-center justify-between mb-8">
           <h2 class="text-3xl font-bold text-gray-900">Últimas noticias</h2>
@@ -210,7 +210,7 @@ const getCategoryColor = (category: string) => {
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {allArticles.slice(heroArticle ? 1 : 0, 7).map((article) => (
+          {allArticles.slice(heroArticle ? 1 : 0, 10).map((article) => (
             <a href={`/articulos/${article.slug}`} class="block">
               <article class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-200">
                 <div class="aspect-[16/10] relative overflow-hidden">
