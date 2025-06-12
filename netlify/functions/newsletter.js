@@ -1,22 +1,46 @@
-
-cat > netlify/functions/newsletter.js << 'EOF'
 exports.handler = async (event, context) => {
-  console.log('📧 Netlify Function Newsletter llamada');
+  console.log('📧 Newsletter llamada - Method:', event.httpMethod);
+  console.log('📧 Headers:', JSON.stringify(event.headers, null, 2));
   
+  // Manejar CORS preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+      },
+      body: ''
+    };
+  }
+  
+  // Solo permitir POST para el newsletter real
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      headers: { 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ message: 'Method not allowed' })
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        message: 'Method not allowed. Use POST.',
+        received: event.httpMethod 
+      })
     };
   }
 
   try {
-    const { email, name = 'Suscriptor', source = 'website' } = JSON.parse(event.body);
+    console.log('📧 Body received:', event.body);
+    const { email, name = 'Suscriptor', source = 'website' } = JSON.parse(event.body || '{}');
     
     if (!email || !email.includes('@')) {
       return {
         statusCode: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify({
           success: false,
           message: 'Email inválido'
@@ -28,18 +52,27 @@ exports.handler = async (event, context) => {
     const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
     const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
     
+    console.log('📧 Env check:', {
+      hasKey: !!AIRTABLE_API_KEY,
+      hasBase: !!AIRTABLE_BASE_ID
+    });
+    
     if (!AIRTABLE_API_KEY || !AIRTABLE_BASE_ID) {
-      console.error('Variables de entorno faltantes');
+      console.error('❌ Variables de entorno faltantes');
       return {
         statusCode: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify({
           success: false,
-          message: 'Configuración del servidor incompleta'
+          message: 'Variables de entorno no configuradas en servidor'
         })
       };
     }
 
-    // Tu lógica de Airtable aquí (copia de tu código original)
+    // Tu configuración de Airtable
     const TABLE_ID = 'tblZWCfULF2qTJ00Y';
     const EMAIL_FIELD_ID = 'fld58ulIqtGzDaluO';
     const NOMBRE_FIELD_ID = 'fldx1AOWIuq68Y36A';
@@ -58,6 +91,8 @@ exports.handler = async (event, context) => {
         [STATUS_FIELD_ID]: 'Active'
       }
     };
+    
+    console.log('📧 Enviando a Airtable...');
          
     const airtableResponse = await fetch(airtableUrl, {
       method: 'POST',
@@ -70,10 +105,14 @@ exports.handler = async (event, context) => {
 
     if (!airtableResponse.ok) {
       const errorText = await airtableResponse.text();
-      console.error('Error Airtable:', errorText);
+      console.error('❌ Error Airtable:', airtableResponse.status, errorText);
       
       return {
         statusCode: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify({
           success: false,
           message: 'Error al procesar la suscripción'
@@ -82,7 +121,7 @@ exports.handler = async (event, context) => {
     }
 
     const result = await airtableResponse.json();
-    console.log('✅ Suscripción exitosa:', email);
+    console.log('✅ Airtable success:', result.id);
 
     return {
       statusCode: 200,
@@ -93,17 +132,22 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({
         success: true,
         message: '¡Suscripción exitosa! Revisa tu email para confirmar.',
-        data: result
+        data: { id: result.id }
       })
     };
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('❌ Error general:', error);
     return {
       statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({
         success: false,
-        message: 'Error interno del servidor'
+        message: 'Error interno del servidor',
+        error: error.message
       })
     };
   }
