@@ -1,5 +1,5 @@
 ---
-// src/components/common/Newsletter.astro - Con 3 variants: default, homepage, footer
+// src/components/common/Newsletter.astro - VERSIÓN CORREGIDA
 
 import AddSentNewsletter from '../marketing/AddSentNewsletter.jsx';
 
@@ -9,8 +9,6 @@ interface Props {
   description?: string;
   variant?: 'default' | 'homepage' | 'footer';
 }
-
-
 
 const { 
   source = 'general',
@@ -64,6 +62,14 @@ const config = variantConfig[variant];
       <form id={newsletterId} class="newsletter-form space-y-4" data-source={source}>
         <div>
           <input
+            type="text"
+            name="name"
+            placeholder="Tu nombre"
+            class="w-full px-5 py-4 text-gray-900 bg-white/95 backdrop-blur-sm border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-white focus:bg-white transition-all duration-300 placeholder-gray-500"
+          />
+        </div>
+        <div>
+          <input
             type="email"
             name="email"
             placeholder="tu@email.com"
@@ -99,7 +105,7 @@ const config = variantConfig[variant];
             ✅ ¡Suscripción exitosa! Revisa tu email para confirmar.
           </div>
           <div class="error-message hidden p-3 bg-red-100 border border-red-300 text-red-800 rounded-md text-sm">
-            ❌ Error al suscribirse. Inténtalo de nuevo.
+            ❌ <span class="error-text">Error al suscribirse. Inténtalo de nuevo.</span>
           </div>
         </div>
       </form>
@@ -116,23 +122,33 @@ const config = variantConfig[variant];
     </div>
     
     <form id={newsletterId} class="newsletter-form" data-source={source}>
-      <div class="flex flex-col sm:flex-row gap-4 mb-4">
-        <div class="flex-1">
+      <div class="flex flex-col gap-4 mb-4">
+        <div>
           <input
-            type="email"
-            name="email"
-            placeholder="tu@email.com"
+            type="text"
+            name="name"
+            placeholder="Tu nombre (opcional)"
             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-200"
-            required
           />
         </div>
-        <button
-          type="submit"
-          class="px-8 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
-        >
-          <span class="button-text">Suscribirme</span>
-          <span class="loading-text hidden">Enviando...</span>
-        </button>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <div class="flex-1">
+            <input
+              type="email"
+              name="email"
+              placeholder="tu@email.com"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-200"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            class="px-8 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+          >
+            <span class="button-text">Suscribirme</span>
+            <span class="loading-text hidden">Enviando...</span>
+          </button>
+        </div>
       </div>
       
       <div class="flex items-start justify-center">
@@ -154,13 +170,12 @@ const config = variantConfig[variant];
           ✅ ¡Suscripción exitosa! Revisa tu email para confirmar.
         </div>
         <div class="error-message hidden p-3 bg-red-100 border border-red-300 text-red-800 rounded-lg text-sm">
-          ❌ Error al suscribirse. Inténtalo de nuevo.
+          ❌ <span class="error-text">Error al suscribirse. Inténtalo de nuevo.</span>
         </div>
       </div>
     </form>
   </div>
 )}
-
 
 <!-- VARIANT: FOOTER (Diseño minimalista) -->
 {variant === 'footer' && (
@@ -207,7 +222,7 @@ const config = variantConfig[variant];
           ✅ ¡Suscripción exitosa!
         </div>
         <div class="error-message hidden p-2 bg-red-100 border border-red-300 text-red-800 rounded text-xs">
-          ❌ Error al suscribirse.
+          ❌ <span class="error-text">Error al suscribirse.</span>
         </div>
       </div>
     </form>
@@ -231,9 +246,10 @@ const config = variantConfig[variant];
         const messageContainer = form.querySelector('.message-container') as HTMLElement;
         const successMessage = form.querySelector('.success-message') as HTMLElement;
         const errorMessage = form.querySelector('.error-message') as HTMLElement;
+        const errorText = form.querySelector('.error-text') as HTMLElement;
         
         // Validar que los elementos existen
-        if (!button || !buttonText || !loadingText || !messageContainer || !successMessage || !errorMessage) {
+        if (!button || !buttonText || !loadingText || !messageContainer || !successMessage || !errorMessage || !errorText) {
           console.error('Elementos del newsletter no encontrados');
           return;
         }
@@ -246,21 +262,45 @@ const config = variantConfig[variant];
         try {
           const formData = new FormData(form);
           const formElement = form as HTMLFormElement;
-          const data = {
-            email: formData.get('email'),
-            source: formElement.dataset.source || 'general',
-            acceptTerms: formData.get('accept-terms') === 'on'
-          };
+          const email = formData.get('email') as string;
+          const name = formData.get('name') as string;
+          const acceptTerms = formData.get('accept-terms') === 'on';
+          const source = formElement.dataset.source || 'general';
           
-          // Aquí puedes conectar con tu API (Airtable, etc.)
-          // const response = await fetch('/api/newsletter', {
-          //   method: 'POST',
-          //   headers: { 'Content-Type': 'application/json' },
-          //   body: JSON.stringify(data)
-          // });
+          // Validar email
+          if (!email || !email.includes('@')) {
+            throw new Error('Email inválido');
+          }
           
-          // Simulación de éxito para demo
-          await new Promise(resolve => setTimeout(resolve, 1500));
+          if (!acceptTerms) {
+            throw new Error('Debes aceptar los términos y condiciones');
+          }
+          
+          console.log('📧 Enviando suscripción:', { email, name, source });
+          
+          // 🔧 USAR EL ENDPOINT CORRECTO PARA NEWSLETTER
+          const response = await fetch('/api/newsletter', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email,
+              name: name || 'Suscriptor Newsletter',
+              source: source
+            })
+          });
+          
+          console.log('📧 Response status:', response.status);
+          
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error('❌ Error de API:', errorData);
+            throw new Error(errorData.message || `Error del servidor: ${response.status}`);
+          }
+          
+          const result = await response.json();
+          console.log('✅ Éxito:', result);
           
           // Mostrar mensaje de éxito
           messageContainer.classList.remove('hidden');
@@ -271,9 +311,12 @@ const config = variantConfig[variant];
           form.reset();
           
         } catch (error) {
-          console.error('Error al suscribirse:', error);
+          console.error('❌ Error al suscribirse:', error);
           
-          // Mostrar mensaje de error
+          // Mostrar mensaje de error específico
+          const errorMessageText = error instanceof Error ? error.message : 'Error al procesar la suscripción';
+          errorText.textContent = errorMessageText;
+          
           messageContainer.classList.remove('hidden');
           errorMessage.classList.remove('hidden');
           successMessage.classList.add('hidden');

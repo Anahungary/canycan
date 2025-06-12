@@ -7,6 +7,7 @@ import Button from '../../components/ui/Button.astro';
 import Badge from '../../components/ui/Badge.astro';
 import Card from '../../components/ui/Card.astro';
 import Breadcrumb from '../../components/common/Breadcrumb.astro';
+import Newsletter from '../../components/common/Newsletter.astro';
 
 // 🔧 IMPORTAR UTILIDADES CORREGIDAS
 import {
@@ -50,10 +51,8 @@ interface TagInfo {
  trending?: boolean;
 }
 
-
-
 export async function getStaticPaths() {
-  // 🔧 FUNCIÓN PARA AVATARES REALES DE AUTORES
+ // 🔧 FUNCIÓN PARA AVATARES REALES DE AUTORES
 function getAuthorAvatar(authorName: string): string {
  const authorAvatars: Record<string, string> = {
    'Ana María Prieto': '/images/ana-p2.webp',
@@ -64,6 +63,7 @@ function getAuthorAvatar(authorName: string): string {
  
  return authorAvatars[authorName] || '/images/baltologo.svg';
 }
+
  let allArticles: any[] = [];
  let allTags: any[] = [];
  
@@ -133,7 +133,8 @@ function getAuthorAvatar(authorName: string): string {
      props: { 
        tag: tagInfo,
        articles: processedArticles,
-       tagStats: tagStats
+       tagStats: tagStats,
+       allArticlesForPopularTags: allArticles
      }
    });
  }
@@ -183,7 +184,8 @@ function getAuthorAvatar(authorName: string): string {
      props: { 
        tag: tagInfo,
        articles: processedArticles,
-       tagStats: tagStats
+       tagStats: tagStats,
+       allArticlesForPopularTags: allArticles
      }
    });
  }
@@ -210,7 +212,8 @@ function getAuthorAvatar(authorName: string): string {
          trending: false
        },
        articles: [] as Article[],
-       tagStats: new Map()
+       tagStats: new Map(),
+       allArticlesForPopularTags: []
      }
    }));
  }
@@ -220,7 +223,7 @@ function getAuthorAvatar(authorName: string): string {
 }
 
 // 🔧 OBTENER PROPS CON VALIDACIÓN
-const { tag, articles = [], tagStats } = Astro.props;
+const { tag, articles = [], tagStats, allArticlesForPopularTags = [] } = Astro.props;
 
 // Validar que tag existe
 if (!tag) {
@@ -246,12 +249,46 @@ try {
      featured: t.data.featured || false,
      trending: t.data.trending || false
    }));
- 
+
  relatedTags = getRelatedTags(tag.slug, validTagsFromCMS);
 } catch (error) {
  console.log('⚠️ Error cargando tags relacionados:', error);
  relatedTags = [];
 }
+
+// 🔧 FUNCIÓN PARA OBTENER TAGS POPULARES REALES DE ARTÍCULOS (IDÉNTICA A ARTICULOS/INDEX.ASTRO)
+function getPopularTagsFromArticles(articles: any[], limit: number = 8) {
+  const allTags: string[] = [];
+  
+  articles.forEach(article => {
+    if (article.data?.category) {
+      allTags.push(article.data.category);
+    }
+    if (article.data?.tags && Array.isArray(article.data.tags)) {
+      allTags.push(...article.data.tags);
+    }
+  });
+  
+  // Contar frecuencia de cada tag
+  const tagCounts = allTags.reduce((acc, tag) => {
+    const normalizedTag = tag.toLowerCase().trim();
+    acc[normalizedTag] = (acc[normalizedTag] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  
+  // Ordenar por frecuencia y tomar los más populares
+  return Object.entries(tagCounts)
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, limit)
+    .map(([tag, count]) => ({
+      name: tag.charAt(0).toUpperCase() + tag.slice(1),
+      slug: tag.toLowerCase().replace(/\s+/g, '-'),
+      count: count
+    }));
+}
+
+// 🔧 CALCULAR TAGS POPULARES USANDO TODOS LOS ARTÍCULOS
+const popularTags = getPopularTagsFromArticles(allArticlesForPopularTags, 8);
 
 // 🔥 TAGS TRENDING CON VALIDACIÓN
 const trendingTags = getSafeTrendingTags(tagStats, 8);
@@ -360,247 +397,120 @@ const getTagCount = (tagSlug: string): number => {
      </div>
    </Container>
  </div>
-  
-  <Container class="py-16">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
-      {/* Contenido principal */}
-      <div class="lg:col-span-8">
-        {articles.length > 0 ? (
-          <div>
-            <div class="mb-8 bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-              <p class="text-gray-900 text-lg">
-                Se encontraron <span class={`font-bold px-2 py-1 rounded ${tagColorClasses}`}>{articles.length}</span> artículos con la etiqueta "{tag.name}"
-              </p>
-            </div>
-            
-            <ArticleList 
-              articles={articles} 
-              layout="grid" 
+ 
+ <Container class="py-16">
+   <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+     {/* Contenido principal */}
+     <div class="lg:col-span-8">
+       {articles.length > 0 ? (
+         <div>
+           <div class="mb-8 bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+             <p class="text-gray-900 text-lg">
+               Se encontraron <span class={`font-bold px-2 py-1 rounded ${tagColorClasses}`}>{articles.length}</span> artículos con la etiqueta "{tag.name}"
+             </p>
+           </div>
+           
+           <ArticleList
+              articles={articles}
+              layout="grid"
               columns={2}
-            />
-          </div>
-        ) : (
-          <div class="bg-white rounded-xl p-12 text-center border border-gray-200 shadow-sm">
-            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <span class="text-3xl">📝</span>
-            </div>
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">No hay artículos aún</h2>
-            <p class="text-gray-600 mb-8 text-lg">
-              Aún no hay artículos publicados con la etiqueta "{tag.name}".
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button href="/blog" variant="primary" size="lg" class="bg-green-500 hover:bg-green-600 text-white border-none">
-                Explorar todos los artículos
-              </Button>
-              <Button href="/admin/" variant="outline" size="lg" class="border-green-500 text-green-600 hover:bg-green-500 hover:text-white">
-                Crear nuevo artículo
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-      
-      {/* Sidebar */}
-      <div class="lg:col-span-4">
-        <div class="sticky top-[140px] space-y-8">
-          {/* Tags relacionados */}
-          {relatedTags.length > 0 && (
-            <Card variant="default" padding="md" class="bg-white shadow-lg border border-gray-200">
-              <h3 class="text-xl font-bold mb-6 text-gray-900 flex items-center">
-                <span class={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${tagColorClasses}`}>
-                  🔗
-                </span>
-                Tags relacionados
-              </h3>
-              <div class="flex flex-wrap gap-3">
-                {relatedTags.map((relatedTag: TagData) => (
-                  <a 
-                    href={`/tag/${relatedTag.slug}`}
-                    class={`px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 transition-all duration-300 hover:scale-105 ${
-                      relatedTag.slug === tag.slug 
-                        ? tagColorClasses + ' shadow-md' 
-                        : `bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-200 hover:border-gray-300`
-                    }`}
-                  >
-                    {relatedTag.name}
-                    {relatedTag.articlesCount > 0 && (
-                      <span class="text-xs opacity-75 bg-white bg-opacity-50 px-2 py-1 rounded-full">
-                        {relatedTag.articlesCount}
-                      </span>
-                    )}
-                  </a>
-                ))}
-              </div>
-            </Card>
-          )}
-          
-          {/* Tags trending */}
-          {trendingTags.length > 0 && (
-            <Card variant="default" padding="md" class="bg-white shadow-lg border border-gray-200">
-              <h3 class="text-xl font-bold mb-6 text-gray-900 flex items-center">
-                <span class="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center mr-3">
-                  🔥
-                </span>
-                Tags populares
-              </h3>
-              <div class="flex flex-wrap gap-3">
-                {trendingTags.map((trendingTag: string, index: number) => {
-                  const isCurrentTag = trendingTag === tag.slug;
-                  const tagCount = getTagCount(trendingTag);
-                  const tagDisplayName = trendingTag
-                    .split('-')
-                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(' ');
-                  
-                  return (
-                    <a 
-                      href={`/tag/${trendingTag}`}
-                      class={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 ${
-                        isCurrentTag
-                          ? tagColorClasses + ' shadow-md' 
-                          : index === 0
-                          ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg hover:shadow-xl' 
-                          : 'bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      {tagDisplayName}
-                      <span class="ml-2 text-xs opacity-75 bg-white bg-opacity-30 px-2 py-1 rounded-full">
-                        {tagCount}
-                      </span>
-                    </a>
-                  );
-                })}
-              </div>
-            </Card>
-          )}
-          
-          {/* Artículos destacados del tag */}
-          {articles.length > 0 && (
-            <Card variant="default" padding="md" class="bg-white shadow-lg border border-gray-200">
-              <h3 class="text-xl font-bold mb-6 text-gray-900 flex items-center">
-                <span class={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${tagColorClasses}`}>
-                  ⭐
-                </span>
-                Artículos destacados
-              </h3>
-              <div class="space-y-4">
-                {articles.slice(0, 3).map((article: Article) => (
-                  <a href={`/articulos/${article.id}`} class="flex group p-3 rounded-lg hover:bg-gray-50 transition-colors duration-300 border border-transparent hover:border-gray-200">
-                    <div class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-gray-200">
-                      <img 
-                        src={article.image} 
-                        alt={article.title}
-                        class="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div class="ml-4">
-                      <h4 class="text-sm font-bold group-hover:text-green-600 transition-colors duration-300 line-clamp-2 mb-2">
-                        {article.title}
-                      </h4>
-                      <div class="flex items-center gap-2 text-xs text-gray-500">
-                        <span class={`px-2 py-1 rounded-full font-medium ${tagColorClasses}`}>
-                          {article.readingTime}m
-                        </span>
-                        <span>•</span>
-                        <span>{article.author.name}</span>
-                      </div>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </Card>
-          )}
-          
-          {/* Newsletter */}
-          <Card variant="highlight" padding="md" class="bg-gradient-to-br from-green-500 to-green-600 text-white shadow-xl">
-            <div class="relative">
-              <h3 class="text-xl font-bold mb-4 flex items-center">
-                <span class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mr-3">
-                  💌
-                </span>
-                ¡Suscríbete!
-              </h3>
-              <p class="text-white/90 mb-6 leading-relaxed">
-                Recibe los mejores artículos sobre {tag.name.toLowerCase()} y más directamente en tu correo.
-              </p>
-              
-              <form class="space-y-4">
-                <div>
-                  <label for="email-sidebar" class="sr-only">Correo electrónico</label>
-                  <input
-                    type="email"
-                    id="email-sidebar"
-                    name="email"
-                    required
-                    placeholder="tu@email.com"
-                    class="w-full px-4 py-3 text-gray-900 bg-white/95 backdrop-blur-sm border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-white focus:bg-white transition-all duration-300 placeholder-gray-500"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  class="w-full bg-white text-gray-900 hover:bg-gray-100 py-3 px-6 rounded-xl text-sm font-bold transition-all duration-300 hover:scale-105 shadow-lg"
-                >
-                  🚀 Suscribirme gratis
-                </button>
-                <p class="text-xs text-white/70 text-center">
-                  Sin spam. Cancela cuando quieras.
-                </p>
-              </form>
-            </div>
-          </Card>
-        </div>
-      </div>
-    </div>
-  </Container>
+           />
+         </div>
+       ) : (
+         <div class="bg-white rounded-xl p-12 text-center border border-gray-200 shadow-sm">
+           <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+             <span class="text-3xl">📝</span>
+           </div>
+           <h2 class="text-2xl font-bold text-gray-900 mb-4">No hay artículos aún</h2>
+           <p class="text-gray-600 mb-8 text-lg">
+             Aún no hay artículos publicados con la etiqueta "{tag.name}".
+           </p>
+           <div class="flex flex-col sm:flex-row gap-4 justify-center">
+             <Button href="/blog" variant="primary" size="lg">
+               Explorar todos los artículos
+             </Button>
+             <Button href="/admin/" variant="outline" size="lg">
+               Crear nuevo artículo
+             </Button>
+           </div>
+         </div>
+       )}
+     </div>
+     
+     {/* Sidebar */}
+     <div class="lg:col-span-4">
+       <div class="sticky top-[140px] space-y-8">
+         {/* 🔥 TEMAS POPULARES - IDÉNTICO A ARTICULOS/INDEX.ASTRO */}
+         {popularTags.length > 0 && (
+           <Card class="p-8">
+             <div class="flex items-center gap-3 mb-6">
+               <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                 <span class="text-white text-sm">🔥</span>
+               </div>
+               <h3 class="text-xl font-bold text-gray-900">Temas Populares</h3>
+             </div>
+             
+             <div class="flex flex-wrap gap-2">
+               {popularTags.map((popularTag: any) => (
+                 <a 
+                   href={`/tag/${popularTag.slug}`}
+                   class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 hover:from-orange-200 hover:to-red-200 transition-all duration-200"
+                 >
+                   {popularTag.name}
+                 </a>
+               ))}
+             </div>
+           </Card>
+         )}
+         
+         {/* Newsletter */}
+         <Newsletter />
+       </div>
+     </div>
+   </div>
+ </Container>
 </BaseLayout>
 
 <style>
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
+ .line-clamp-2 {
+   display: -webkit-box;
+   -webkit-line-clamp: 2;
+   -webkit-box-orient: vertical;
+   overflow: hidden;
+ }
 
-  .transition-all {
-    transition: all 0.3s ease;
-  }
+ .transition-all {
+   transition: all 0.3s ease;
+ }
 
-  .hover\:scale-105:hover {
-    transform: scale(1.05);
-  }
+ .hover\:scale-105:hover {
+   transform: scale(1.05);
+ }
 
-  @media (max-width: 768px) {
-    .sticky {
-      position: relative;
-      top: auto;
-    }
-  }
+ @media (max-width: 768px) {
+   .sticky {
+     position: relative;
+     top: auto;
+   }
+ }
 
-  input:focus,
-  button:focus,
-  a:focus {
-    outline: 2px solid #22c55e;
-    outline-offset: 2px;
-  }
+ html {
+   scroll-behavior: smooth;
+ }
 
-  html {
-    scroll-behavior: smooth;
-  }
+ /* Glassmorphism effects */
+ .backdrop-blur-sm {
+   backdrop-filter: blur(4px);
+ }
 
-  /* Glassmorphism effects */
-  .backdrop-blur-sm {
-    backdrop-filter: blur(4px);
-  }
+ /* Gradientes dinámicos */
+ .bg-gradient-to-br {
+   background-size: 200% 200%;
+   animation: gradient-shift 8s ease infinite;
+ }
 
-  /* Gradientes dinámicos */
-  .bg-gradient-to-br {
-    background-size: 200% 200%;
-    animation: gradient-shift 8s ease infinite;
-  }
-
-  @keyframes gradient-shift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-  }
+ @keyframes gradient-shift {
+   0%, 100% { background-position: 0% 50%; }
+   50% { background-position: 100% 50%; }
+ }
 </style>
