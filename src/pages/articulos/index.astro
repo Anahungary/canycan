@@ -77,7 +77,6 @@ const totalPages = Math.ceil(allArticles.length / ARTICLES_PER_PAGE);
 // ✅ LÓGICA CORREGIDA: La página 1 (index) muestra los primeros 9 artículos COMPLETOS
 const firstPageArticles = allArticles.slice(0, ARTICLES_PER_PAGE);
 
-// 🎯 ARTÍCULO DESTACADO (el más reciente)
 // 🎯 ARTÍCULO DESTACADO (el más visto usando sistema de marketing)
 const featuredArticle = firstPageArticles
   .map(article => ({
@@ -214,7 +213,7 @@ const description = "Descubre artículos especializados sobre entrenamiento, ali
                   </div>
                   
                   <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
-                    <a href={`/blog/${featuredArticle.slug}`} class="hover:text-green-600 transition-colors">
+                    <a href={`/articulos/${featuredArticle.slug}`} class="hover:text-green-600 transition-colors">
                       {featuredArticle.data?.title}
                     </a>
                   </h3>

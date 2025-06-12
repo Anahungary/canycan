@@ -5,6 +5,8 @@ import ShareButtons from '../components/blog/ShareButtons.astro';
 import Container from '../components/ui/Container.astro';
 import { Image } from 'astro:assets';
 import '../styles/article.css';
+import Newsletter from '../components/common/Newsletter.astro';  // ← AGREGAR ESTA LÍNEA
+
 
 interface Author {
   name: string;
@@ -451,71 +453,12 @@ if (breadcrumb.length === 0) {
           )}
 
           <!-- Newsletter integrado premium -->
-          <div class="bg-gradient-to-br from-green-500 via-green-600 to-emerald-600 rounded-2xl shadow-2xl p-8 text-white relative overflow-hidden">
             <!-- Decoraciones de fondo -->
-            <div class="absolute inset-0 opacity-20">
-              <div class="absolute -top-4 -right-4 w-20 h-20 bg-white rounded-full blur-xl"></div>
-              <div class="absolute -bottom-4 -left-4 w-24 h-24 bg-yellow-300 rounded-full blur-lg"></div>
-            </div>
-            
-            <div class="relative z-10">
-              <div class="flex items-center gap-3 mb-4">
-                <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                  <span class="text-2xl">💡</span>
-                </div>
-                <h3 class="text-xl font-bold">¡No te pierdas nada!</h3>
-              </div>
-              
-              <p class="text-white/90 mb-6 leading-relaxed">
-                Suscríbete y recibe los mejores consejos para el cuidado de mascotas en tu email.
-              </p>
+      
               
               <!-- Newsletter form integrado -->
-              <form id="newsletter-sidebar" class="newsletter-form space-y-4">
-                <div class="space-y-3">
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    placeholder="tu@email.com"
-                    class="w-full px-4 py-3 text-sm text-gray-900 bg-white/95 backdrop-blur-sm border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-white focus:bg-white transition-all duration-300 placeholder-gray-500"
-                  />
-                  <button
-                    type="submit"
-                    class="w-full px-6 py-3 bg-white text-green-600 hover:text-green-700 rounded-xl text-sm font-bold transition-all duration-300 hover:bg-gray-50 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <span class="button-text">Suscribirme</span>
-                    <span class="loading-text hidden">Enviando...</span>
-                  </button>
-                </div>
-                
-                <div class="flex items-start">
-                  <label class="flex items-start text-xs text-white/80">
-                    <input 
-                      type="checkbox" 
-                      name="accept-terms" 
-                      required
-                      class="h-3 w-3 mt-0.5 mr-2 rounded border-white/30 text-green-600 focus:ring-white bg-white/20" 
-                    />
-                    Acepto recibir correos y la política de privacidad
-                  </label>
-                </div>
-                
-                <p class="text-xs text-white/70 text-center">
-                  Sin spam. Cancela cuando quieras.
-                </p>
-                
-                <!-- Mensaje de respuesta -->
-                <div class="message-container mt-3 hidden">
-                  <div class="success-message hidden p-3 bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-xl text-sm">
-                    ✅ ¡Suscripción exitosa! Bienvenido a nuestra comunidad.
-                  </div>
-                  <div class="error-message hidden p-3 bg-red-500/80 backdrop-blur-sm border border-red-300/30 text-white rounded-xl text-sm">
-                    ❌ <span class="error-text">Error al procesar la suscripción</span>
-                  </div>
-                </div>
-              </form>
-            </div>
+               <Newsletter />
+              
           </div>
         </div>
       </div>

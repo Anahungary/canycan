@@ -1,7 +1,6 @@
 ---
 // src/components/common/Newsletter.astro - VERSIÓN CORREGIDA
 
-import AddSentNewsletter from '../marketing/AddSentNewsletter.jsx';
 
 interface Props {
   source?: string;
@@ -229,104 +228,113 @@ const config = variantConfig[variant];
   </div>
 )}
 
-<script>
-  // Funcionalidad del newsletter
-  document.addEventListener('DOMContentLoaded', function() {
-    const forms = document.querySelectorAll('.newsletter-form');
-    
-    forms.forEach(form => {
-      if (!(form instanceof HTMLFormElement)) return;
-      
-      form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const button = form.querySelector('button[type="submit"]') as HTMLButtonElement;
-        const buttonText = button?.querySelector('.button-text') as HTMLElement;
-        const loadingText = button?.querySelector('.loading-text') as HTMLElement;
-        const messageContainer = form.querySelector('.message-container') as HTMLElement;
-        const successMessage = form.querySelector('.success-message') as HTMLElement;
-        const errorMessage = form.querySelector('.error-message') as HTMLElement;
-        const errorText = form.querySelector('.error-text') as HTMLElement;
-        
-        // Validar que los elementos existen
-        if (!button || !buttonText || !loadingText || !messageContainer || !successMessage || !errorMessage || !errorText) {
-          console.error('Elementos del newsletter no encontrados');
-          return;
+<script define:vars={{ newsletterId, source }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById(newsletterId);
+    if (!form) return;
+
+    const submitButton = form.querySelector('button[type="submit"]');
+    const buttonText = form.querySelector('.button-text');
+    const loadingText = form.querySelector('.loading-text');
+    const messageContainer = form.querySelector('.message-container');
+    const successMessage = form.querySelector('.success-message');
+    const errorMessage = form.querySelector('.error-message');
+    const errorText = form.querySelector('.error-text');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Obtener datos del formulario
+      const formData = new FormData(form);
+      const email = formData.get('email');
+
+      if (!email) {
+        showError('Por favor, ingresa tu email');
+        return;
+      }
+
+      // Mostrar estado de carga
+      setLoading(true);
+      hideMessages();
+
+      try {
+        // Enviar a nuestra API que conecta con Airtable
+        const response = await fetch('/api/newsletter', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            source: source || 'general'
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showSuccess(result.message);
+          form.reset(); // Limpiar formulario
+          
+          // Opcional: Google Analytics event
+          if (typeof gtag !== 'undefined') {
+            gtag('event', 'newsletter_signup', {
+              'custom_parameter': source
+            });
+          }
+        } else {
+          showError(result.message || 'Error al procesar la suscripción');
         }
-        
-        // Mostrar loading
-        buttonText.classList.add('hidden');
-        loadingText.classList.remove('hidden');
-        button.disabled = true;
-        
-        try {
-          const formData = new FormData(form);
-          const formElement = form as HTMLFormElement;
-          const email = formData.get('email') as string;
-          const name = formData.get('name') as string;
-          const acceptTerms = formData.get('accept-terms') === 'on';
-          const source = formElement.dataset.source || 'general';
-          
-          // Validar email
-          if (!email || !email.includes('@')) {
-            throw new Error('Email inválido');
-          }
-          
-          if (!acceptTerms) {
-            throw new Error('Debes aceptar los términos y condiciones');
-          }
-          
-          console.log('📧 Enviando suscripción:', { email, name, source });
-          
-          // 🔧 USAR EL ENDPOINT CORRECTO PARA NEWSLETTER
-          const response = await fetch('/api/newsletter', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: email,
-              name: name || 'Suscriptor Newsletter',
-              source: source
-            })
-          });
-          
-          console.log('📧 Response status:', response.status);
-          
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            console.error('❌ Error de API:', errorData);
-            throw new Error(errorData.message || `Error del servidor: ${response.status}`);
-          }
-          
-          const result = await response.json();
-          console.log('✅ Éxito:', result);
-          
-          // Mostrar mensaje de éxito
-          messageContainer.classList.remove('hidden');
-          successMessage.classList.remove('hidden');
-          errorMessage.classList.add('hidden');
-          
-          // Limpiar formulario
-          form.reset();
-          
-        } catch (error) {
-          console.error('❌ Error al suscribirse:', error);
-          
-          // Mostrar mensaje de error específico
-          const errorMessageText = error instanceof Error ? error.message : 'Error al procesar la suscripción';
-          errorText.textContent = errorMessageText;
-          
-          messageContainer.classList.remove('hidden');
-          errorMessage.classList.remove('hidden');
-          successMessage.classList.add('hidden');
-        } finally {
-          // Restaurar botón
+
+      } catch (error) {
+        console.error('Error newsletter:', error);
+        showError('Error de conexión. Inténtalo de nuevo.');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    function setLoading(isLoading) {
+      if (submitButton) {
+        submitButton.disabled = isLoading;
+      }
+      if (buttonText && loadingText) {
+        if (isLoading) {
+          buttonText.classList.add('hidden');
+          loadingText.classList.remove('hidden');
+        } else {
           buttonText.classList.remove('hidden');
           loadingText.classList.add('hidden');
-          button.disabled = false;
         }
-      });
-    });
+      }
+    }
+
+    function showSuccess(message) {
+      if (messageContainer && successMessage) {
+        messageContainer.classList.remove('hidden');
+        successMessage.classList.remove('hidden');
+        successMessage.textContent = message;
+      }
+    }
+
+    function showError(message) {
+      if (messageContainer && errorMessage && errorText) {
+        messageContainer.classList.remove('hidden');
+        errorMessage.classList.remove('hidden');
+        errorText.textContent = message;
+      }
+    }
+
+    function hideMessages() {
+      if (messageContainer) {
+        messageContainer.classList.add('hidden');
+      }
+      if (successMessage) {
+        successMessage.classList.add('hidden');
+      }
+      if (errorMessage) {
+        errorMessage.classList.add('hidden');
+      }
+    }
   });
 </script>
