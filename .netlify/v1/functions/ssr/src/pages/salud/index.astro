@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import CategoryLayout from '../../layouts/CategoryLayout.astro';
+
+const todosLosArticulos = await getCollection('articulos');
+const todasLasCategorias = await getCollection('categorias');
+
+const articles = todosLosArticulos
+  .filter(articulo => {
+    const categoria = articulo.data.category;
+    const etiquetas = articulo.data.tags || [];
+    
+    return categoria === 'salud' || 
+           etiquetas.includes('salud') ||
+           etiquetas.includes('health') ||
+           etiquetas.includes('veterinario') ||
+           etiquetas.includes('medicina') ||
+           etiquetas.includes('enfermedad');
+  })
+  .map(articulo => ({
+    id: articulo.slug,
+    title: articulo.data.title,
+    excerpt: articulo.data.description || articulo.data.excerpt,
+    image: articulo.data.image || '/images/articles/default.jpg',
+    date: articulo.data.date.toISOString().split('T')[0],
+    author: {
+      name: articulo.data.author || 'Editor Balto',
+      avatar: '/images/authors/default.jpg'
+    },
+    readingTime: articulo.data.readingTime || 5,
+    categories: [articulo.data.category, ...(articulo.data.tags || [])].filter(Boolean)
+  }));
+
+const categoriaSalud = todasLasCategorias.find(cat => cat.slug === 'salud');
+const featuredArticle = articles.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+const title = categoriaSalud?.data.name || "🏥 Salud";
+const description = categoriaSalud?.data.description || "Mantén a tu mascota saludable con información veterinaria confiable y actualizada";
+---
+
+<CategoryLayout
+  title={title}
+  description={description}
+  category="salud"
+  articles={articles}
+  featuredArticle={featuredArticle}
+/>

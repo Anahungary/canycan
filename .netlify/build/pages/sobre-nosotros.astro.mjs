@@ -1,0 +1,115 @@
+/* empty css                                 */
+import { c as createComponent, r as renderComponent, a as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BYXCEbbA.mjs';
+import 'kleur/colors';
+import { $ as $$BaseLayout, a as $$Container } from '../chunks/Container_BIbJk0Bg.mjs';
+export { renderers } from '../renderers.mjs';
+
+const $$SobreNosotros = createComponent(($$result, $$props, $$slots) => {
+  return renderTemplate`${renderComponent($$result, "BaseLayout", $$BaseLayout, { "title": "Sobre Nosotros - Balto", "description": "Conoce al equipo detr\xE1s de Balto, la revista digital para amantes de mascotas en Colombia" }, { "default": ($$result2) => renderTemplate` ${renderComponent($$result2, "Container", $$Container, { "class": "py-12" }, { "default": ($$result3) => renderTemplate` ${maybeRenderHead()}<div class="max-w-4xl mx-auto"> <!-- Hero Section --> <div class="text-center mb-12"> <h1 class="text-4xl font-bold mb-6 text-gray-900">Sobre Nosotros</h1> <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+Somos Ana María y yo Manuel, papás de Río, compartiendo nuestra experiencia real 
+          como cuidadores de mascotas con otros papás y mamás perrunos en Colombia y Latinoamérica.
+</p> </div> <!-- Misión --> <section class="mb-12 bg-green-50 rounded-xl p-8"> <div class="grid md:grid-cols-2 gap-8 items-center"> <div> <h2 class="text-3xl font-bold mb-4 text-gray-900">Nuestra Misión</h2> <p class="text-gray-600 mb-4 leading-relaxed">
+En Balto, creemos que cada mascota merece el mejor cuidado posible. Lo que buscamos 
+              es compartir información confiable, práctica y actualizada para ayudar a otros 
+              papás de mascotas a tomar las mejores decisiones para sus compañeros peludos.
+</p> <p class="text-gray-600 leading-relaxed">
+Desde consejos de alimentación hasta guías de entrenamiento, pasando por información 
+              detallada sobre razas, queremos ser esa fuente confiable de información sobre mascotas 
+              que a nosotros nos hubiera gustado tener cuando empezamos con Río.
+</p> </div> <div class="text-center"> <div class="bg-white rounded-lg p-6 shadow-lg"> <div class="text-6xl mb-4">🐕🐱</div> <h3 class="text-xl font-bold text-gray-900 mb-2">Información Confiable</h3> <p class="text-gray-600">Basada en evidencia veterinaria y experiencia práctica</p> </div> </div> </div> </section> <!-- Historia Real --> <section class="mb-12"> <h2 class="text-3xl font-bold mb-6 text-gray-900">Nuestra Historia</h2> <div class="prose prose-lg max-w-none text-gray-600"> <p class="mb-4">
+Balto nació en 2023 por <strong>Río</strong>, nuestro compañero peludo que nos cambió la vida. 
+            Como papás de Río, Ana María y Manuel descubrimos que tener un perro va mucho más allá 
+            de solo "tener una mascota".
+</p> <p class="mb-4">
+Río nos hizo replantear completamente la manera de disfrutar un perro y nos mostró 
+            la verdadera responsabilidad que conlleva. Nos dimos cuenta de todo el conocimiento 
+            que realmente necesitas tener: cómo educarlo correctamente, cómo alimentarlo bien, 
+            y cómo convivir con él de manera que ambos sean felices.
+</p> <p class="mb-4">
+Cada día con Río ha sido una lección. Desde cómo entrenarlo (¡y cómo él nos entrenó a nosotros!) 
+            hasta entender sus necesidades reales, no las que creíamos que tenía. Nos dimos cuenta 
+            de que mucha información disponible era genérica o no aplicaba a nuestra realidad 
+            como papás primerizos en Colombia.
+</p> <p>
+Por eso creamos Balto: para compartir todo lo que hemos aprendido en este hermoso 
+            camino con otros papás y mamás perrunos. Cada artículo viene de nuestra experiencia 
+            real con Río y de lo que realmente funciona en el día a día. Porque ser papá o mamá 
+            de una mascota es una responsabilidad hermosa, pero necesitas las herramientas correctas 
+            para hacerlo bien.
+</p> </div> <!-- Caja especial sobre Río --> <div class="mt-8 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6 border-l-4 border-blue-500"> <div class="flex items-start space-x-4"> <div class="text-4xl">🐕</div> <div> <h3 class="text-xl font-bold text-gray-900 mb-2">Gracias, Río</h3> <p class="text-gray-700">
+Nuestro compañero peludo nos enseñó que el amor no es suficiente: también necesitas 
+                conocimiento, paciencia y mucha dedicación. Río sigue siendo nuestro mayor maestro 
+                y la inspiración detrás de cada artículo que escribimos.
+</p> </div> </div> </div> </section> <!-- Valores --> <section class="mb-12"> <h2 class="text-3xl font-bold mb-8 text-gray-900 text-center">Nuestros Valores</h2> <div class="grid md:grid-cols-3 gap-6"> <div class="text-center bg-blue-50 rounded-xl p-6"> <div class="text-4xl mb-4">🏥</div> <h3 class="text-xl font-bold mb-3 text-gray-900">Información Confiable</h3> <p class="text-gray-600">
+Todo nuestro contenido está basado en evidencia veterinaria y es revisado 
+              por profesionales del área.
+</p> </div> <div class="text-center bg-yellow-50 rounded-xl p-6"> <div class="text-4xl mb-4">❤️</div> <h3 class="text-xl font-bold mb-3 text-gray-900">Amor por las Mascotas</h3> <p class="text-gray-600">
+Cada artículo está escrito con genuino amor y respeto por el bienestar 
+              de perros y gatos.
+</p> </div> <div class="text-center bg-green-50 rounded-xl p-6"> <div class="text-4xl mb-4">🎓</div> <h3 class="text-xl font-bold mb-3 text-gray-900">Educación Accesible</h3> <p class="text-gray-600">
+Creemos que la información de calidad debe ser accesible para todos los 
+              amantes de mascotas.
+</p> </div> </div> </section> <!-- Equipo Real --> <section class="mb-12"> <h2 class="text-3xl font-bold mb-8 text-gray-900 text-center">Nuestro Equipo</h2> <div class="grid md:grid-cols-2 gap-8 mb-8"> <div class="bg-white rounded-xl shadow-lg p-6 text-center"> <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
+AP
+</div> <h3 class="text-xl font-bold mb-2 text-gray-900">Ana María Prieto</h3> <p class="text-blue-600 font-semibold mb-3">Mamá de Río • Administradora</p> <p class="text-gray-600 text-sm leading-relaxed mb-4">
+Como mamá de Río, he vivido cada etapa del amor incondicional que solo un perro puede dar. 
+              Esta experiencia me inspiró a compartir todo lo que he aprendido en este hermoso camino 
+              con otros papás y mamás perrunos.
+</p> <div class="text-xs text-blue-500 font-medium">
+💙 "Río me enseñó más sobre paciencia y amor que cualquier libro"
+</div> </div> <div class="bg-white rounded-xl shadow-lg p-6 text-center"> <div class="w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
+MB
+</div> <h3 class="text-xl font-bold mb-2 text-gray-900">Manuel Alejandro Bedoya</h3> <p class="text-green-600 font-semibold mb-3">Papá de Río • Administrador</p> <p class="text-gray-600 text-sm leading-relaxed mb-4">
+He sido papá, tío y amigo de muchos peluditos a lo largo de mi vida. Me gusta entrenar 
+              y me esmero en amaestrar a Río, aprendiendo junto a él cada día. Cada perro me ha 
+              enseñado algo diferente.
+</p> <div class="text-xs text-green-500 font-medium">
+😄 "Creo que los perros entrenan más a los humanos que nosotros a ellos"
+</div> </div> </div> <!-- Sección de Río --> <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-6 mb-6 text-center"> <div class="text-6xl mb-4">🐕</div> <h3 class="text-2xl font-bold mb-3 text-gray-900">Río - Nuestro Inspirador</h3> <p class="text-gray-700 max-w-2xl mx-auto">
+El verdadero fundador de Balto. Río nos enseñó que ser papás de una mascota es una 
+            responsabilidad hermosa que requiere conocimiento, paciencia y muchísimo amor. 
+            Cada artículo que escribimos está inspirado en lo que hemos aprendido junto a él.
+</p> </div> <div class="text-center bg-gray-50 rounded-xl p-6"> <h3 class="text-xl font-bold mb-3 text-gray-900">Colaboradores Expertos</h3> <p class="text-gray-600 max-w-2xl mx-auto">
+Buscamos y nos informamos con veterinarios, entrenadores y especialistas en comportamiento 
+            animal para asegurar que nuestro contenido sea preciso y útil. Pero siempre desde 
+            la perspectiva real de papás y mamás de mascotas.
+</p> </div> </section> <!-- Qué nos hace diferentes - Versión real --> <section class="mb-12"> <h2 class="text-3xl font-bold mb-6 text-gray-900">¿Qué nos hace diferentes?</h2> <div class="grid md:grid-cols-2 gap-8"> <div> <h3 class="text-xl font-bold mb-3 text-gray-800">🏠 Experiencia Real de Papás</h3> <p class="text-gray-600 mb-4">
+No somos expertos teóricos. Somos Ana María y Manuel, papás reales de Río, compartiendo 
+              lo que realmente funciona en el día a día. Cada consejo viene de nuestra experiencia 
+              vivida, no de libros.
+</p> <h3 class="text-xl font-bold mb-3 text-gray-800">🇨🇴 Enfoque Local y Práctico</h3> <p class="text-gray-600 mb-4">
+Adaptamos nuestros consejos al contexto colombiano: clima, productos disponibles, 
+              servicios veterinarios locales y regulaciones específicas del país. Sabemos dónde 
+              conseguir las cosas que recomendamos.
+</p> </div> <div> <h3 class="text-xl font-bold mb-3 text-gray-800">💡 Aprendizaje Continuo</h3> <p class="text-gray-600 mb-4">
+Seguimos aprendiendo con Río cada día. No pretendemos saberlo todo, pero compartimos 
+              honestamente lo que hemos descubierto: los errores, los aciertos y todo lo que está 
+              en el medio.
+</p> <h3 class="text-xl font-bold mb-3 text-gray-800">💚 Comunidad de Papás Perrunos</h3> <p class="text-gray-600 mb-4">
+Creamos una comunidad real donde los papás y mamás de mascotas pueden compartir 
+              experiencias auténticas, hacer preguntas sin vergüenza y aprender unos de otros 
+              desde el amor genuino por nuestros peluditos.
+</p> </div> </div> <!-- Caja especial sobre la filosofía --> <div class="mt-8 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6"> <h3 class="text-lg font-bold mb-3 text-gray-900">🎯 Nuestra Filosofía</h3> <p class="text-gray-700"> <strong>El amor no es suficiente.</strong> Río nos enseñó que para ser buenos papás de mascotas 
+            también necesitas conocimiento, paciencia, dedicación y la humildad para seguir aprendiendo. 
+            Eso es lo que compartimos en Balto: información real, desde el corazón, probada en casa.
+</p> </div> </section> <!-- Contacto CTA --> <section class="text-center bg-gradient-to-r from-green-600 to-green-500 rounded-xl p-8 text-white"> <h2 class="text-2xl font-bold mb-4">¿Tienes alguna pregunta o sugerencia?</h2> <p class="mb-6 text-green-100">
+Nos encanta escuchar a nuestra comunidad de papás y mamás perrunos. Tu experiencia 
+          y feedback nos ayuda a mejorar y crear el contenido que realmente necesitas.
+</p> <a href="/contacto" class="inline-block bg-white text-green-700 font-bold py-3 px-8 rounded-lg hover:bg-green-50 transition-colors">
+Contáctanos
+</a> </section> </div> ` })} ` })}`;
+}, "/Users/manuel/Downloads/magazine/canycatmagazin/src/pages/sobre-nosotros.astro", void 0);
+
+const $$file = "/Users/manuel/Downloads/magazine/canycatmagazin/src/pages/sobre-nosotros.astro";
+const $$url = "/sobre-nosotros";
+
+const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: $$SobreNosotros,
+  file: $$file,
+  url: $$url
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const page = () => _page;
+
+export { page };

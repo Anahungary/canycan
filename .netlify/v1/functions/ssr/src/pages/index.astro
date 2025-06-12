@@ -1,0 +1,378 @@
+---
+// src/pages/index.astro - VERSIÓN SIMPLE: SOLO VERDE Y AMARILLO
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import Button from '../components/ui/Button.astro';
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Newsletter from '../components/common/Newsletter.astro';
+
+
+// 🔍 CARGAR SOLO ARTÍCULOS REALES DEL CMS
+let allArticles: any[] = [];
+try {
+  allArticles = await getCollection('articulos');
+  allArticles = allArticles
+    .filter((article: any) => article.data.status === 'published')
+    .sort((a: any, b: any) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+} catch (error) {
+  console.log('No se pudieron cargar los artículos:', error);
+  allArticles = [];
+}
+
+// 📰 USAR PRIMER ARTÍCULO REAL COMO HERO (SI EXISTE)
+const heroArticle = allArticles[0] || null;
+
+// 📈 TRENDING: SIGUIENTES ARTÍCULOS REALES
+const trendingArticles = allArticles.slice(1, 5);
+
+// Funciones utilitarias
+const formatDate = (date: string | Date) => {
+  return new Date(date).toLocaleDateString('es-ES', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+};
+
+const getTimeAgo = (date: string | Date) => {
+  const now = new Date();
+  const articleDate = new Date(date);
+  const diffInHours = Math.floor((now.getTime() - articleDate.getTime()) / (1000 * 60 * 60));
+  
+  if (diffInHours < 1) return 'Hace unos minutos';
+  if (diffInHours < 24) return `Hace ${diffInHours} horas`;
+  if (diffInHours < 48) return 'Ayer';
+  return formatDate(date);
+};
+
+// 🎨 SOLO VERDE Y AMARILLO PARA DESTACAR
+const getCategoryColor = (category: string) => {
+  const colors: Record<string, string> = {
+    'razas': 'bg-green-100 text-green-800 border-green-200',
+    'comportamiento': 'bg-gray-100 text-gray-800 border-gray-200',
+    'alimentación': 'bg-green-100 text-green-800 border-green-200',
+    'entrenamiento': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    'salud': 'bg-gray-100 text-gray-800 border-gray-200',
+    'cuidado': 'bg-gray-100 text-gray-800 border-gray-200',
+    'adopcion': 'bg-green-100 text-green-800 border-green-200',
+    'nuevos-duenos': 'bg-yellow-100 text-yellow-800 border-yellow-200'
+  };
+  return colors[category?.toLowerCase()] || 'bg-gray-100 text-gray-800 border-gray-200';
+};
+---
+
+<BaseLayout
+  title="Balto - La revista digital líder en mascotas"
+  description="Noticias, análisis y guías sobre perros y gatos. Encuentra tu raza ideal, aprende técnicas de entrenamiento y mantente al día con las últimas tendencias."
+  bodyClass="homepage-modern"
+>
+
+  {/* 🎯 HERO SECTION CON ARTÍCULO DESTACADO - DISEÑO DE /ARTICULOS */}
+  {heroArticle && (
+    <section class="bg-gradient-to-br from-green-700 to-green-500 py-12 md:px-24 px-0">
+      <Container size="xl">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* ARTÍCULO DESTACADO PRINCIPAL - USANDO DISEÑO DE /ARTICULOS */}
+          <div class="lg:col-span-8">
+            <div class="mb-6">
+              
+              
+              <a href={`/articulos/${heroArticle.slug}`} class="block">
+                <article class="bg-white rounded-2xl overflow-hidden shadow-xl border-2 border-green-200 hover:shadow-2xl hover:border-green-300 transition-all duration-300">
+                  
+                  {/* IMAGEN GRANDE ARRIBA */}
+                  <div class="relative h-64 sm:h-80 md:h-96 overflow-hidden">
+                    <Image 
+                      src={heroArticle.data?.image || '/images/articles/default.jpg'} 
+                      alt={heroArticle.data?.title || 'Artículo destacado sobre cuidado de mascotas'}
+                      width={800}
+                      height={400}
+                      class="w-full h-full object-cover"
+                    />
+                    
+                    {/* Badge de destacado */}
+                    <div class="absolute top-4 left-4">
+                      <span class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900 px-4 py-2 rounded-full text-xs font-bold shadow-lg">
+                        ⭐ DESTACADO
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* INFORMACIÓN ABAJO - RESPONSIVE */}
+                  <div class="p-6 sm:p-8">
+                    {/* Badge de categoría */}
+                    <div class="mb-4">
+                      <span class={`inline-block px-3 py-1 rounded-full bg-green-500 text-white text-xs font-bold ${getCategoryColor(heroArticle.data?.category || 'general')}`}>
+                        {heroArticle.data?.category || 'General'}
+                      </span>
+                    </div>
+                    
+                    {/* Título */}
+                    <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight hover:text-green-600 transition-colors">
+                      {heroArticle.data?.title || 'Título del artículo'}
+                    </h3>
+                    
+                    {/* Descripción */}
+                    <p class="text-gray-600 mb-6 text-sm sm:text-base lg:text-lg leading-relaxed line-clamp-3">
+                      {heroArticle.data?.description || 'Descripción del artículo'}
+                    </p>
+                    
+                    {/* Meta información y botón */}
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      {/* Meta información */}
+                      <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500">
+                        <span class="flex items-center gap-1">
+                          <span>👤</span>
+                          <span>{heroArticle.data?.author || 'Editor Balto'}</span>
+                        </span>
+                        <span class="flex items-center gap-1">
+                          <span>📅</span>
+                          <span>{heroArticle.data?.date ? getTimeAgo(heroArticle.data.date) : 'Reciente'}</span>
+                        </span>
+                        <span class="flex items-center gap-1">
+                          <span>⏱️</span>
+                          <span>{heroArticle.data?.readingTime || 5} min lectura</span>
+                        </span>
+                      </div>
+                      
+                      {/* Botón de acción */}
+                      <div class="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-lg font-bold transition-colors duration-200 shadow-lg text-sm sm:text-base">
+                        <span>Leer artículo</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </a>
+            </div>
+          </div>
+
+          {/* SIDEBAR CON ARTÍCULOS TRENDING */}
+          {trendingArticles.length > 0 && (
+            <div class="lg:col-span-4">
+              <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                  <img src="/images/perro3.svg" alt="Destacado" class="w-20" />
+                  <h2 class="text-lg font-bold text-gray-900">Artículos destacados</h2>
+                  <a href="/articulos" class="text-sm text-green-600 font-medium">Ver todo</a>
+                </div>
+                
+                <div class="space-y-4">
+                  {trendingArticles.map((article, index) => (
+                    <>
+                      <a href={`/articulos/${article.slug}`} class="block">
+                        <article class="flex items-start space-x-3 py-2 rounded-lg">
+                          <div class={`flex-shrink-0 w-8 h-8 ${index === 0 ? 'bg-yellow-400' : 'bg-green-500'} rounded-lg flex items-center justify-center text-white font-bold text-sm`}>
+                            {index + 1}
+                          </div>
+                          <div class="flex-1 min-w-0">
+                            <h3 class="text-sm font-semibold text-gray-900 line-clamp-2">
+                              {article.data.title}
+                            </h3>
+                            <div class="flex items-center space-x-2 mt-1 text-xs text-gray-500">
+                              <span class={`px-2 py-0.5 rounded-full ${getCategoryColor(article.data.category)}`}>
+                                {article.data.category}
+                              </span>
+                              <span>•</span>
+                              <span>{article.data.readingTime || 5}m</span>
+                            </div>
+                          </div>
+                        </article>
+                      </a>
+                      
+                      {index < trendingArticles.length - 1 && (
+                        <div class="border-t border-gray-200 my-3"></div>
+                      )}
+                    </>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </Container>
+    </section>
+  )}
+
+  {/* 📰 ARTÍCULOS RECIENTES */}
+  {allArticles.length > 0 && (
+    <section class="py-16 px-0 md:px-24 bg-white">
+      <Container size="xl">
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-3xl font-bold text-gray-900">Últimas noticias</h2>
+          <Button href="/articulos" variant="outline" size="sm" class="border-green-500 text-green-600">
+            Ver todo
+          </Button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {allArticles.slice(heroArticle ? 1 : 0, 10).map((article) => (
+            <a href={`/articulos/${article.slug}`} class="block">
+              <article class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-200">
+                <div class="aspect-[16/10] relative overflow-hidden">
+                  <Image 
+                    src={article.data.image || '/images/articles/default.jpg'} 
+                    alt={article.data.title}
+                    width={400}
+                    height={250}
+                    class="w-full h-full object-cover"
+                  />
+                  <div class="absolute top-3 left-3">
+                    <span class={`px-2 py-1 rounded-full text-xs font-semibold ${getCategoryColor(article.data.category)}`}>
+                      {article.data.category}
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="p-5">
+                  <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
+                    {article.data.title}
+                  </h3>
+                  
+                  <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                    {article.data.description}
+                  </p>
+                  
+                  <div class="flex items-center justify-between text-xs text-gray-500">
+                    <div class="flex items-center space-x-2">
+                      <span class="font-medium">{article.data.author || 'Editor'}</span>
+                      <span>•</span>
+                      <span>{getTimeAgo(article.data.date)}</span>
+                    </div>
+                    <span>{article.data.readingTime || 5}m</span>
+                  </div>
+                </div>
+              </article>
+            </a>
+          ))}
+        </div>
+      </Container>
+    </section>
+  )}
+
+  {/* 📝 MENSAJE SI NO HAY ARTÍCULOS */}
+  {allArticles.length === 0 && (
+    <section class="py-16 bg-green-50">
+      <Container size="lg">
+        <div class="text-center max-w-2xl mx-auto">
+          <div class="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="text-4xl">📝</span>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            ¡Bienvenido a Balto!
+          </h2>
+          <p class="text-gray-600 mb-8">
+            Aún no hay artículos publicados. Comienza creando contenido increíble para los amantes de las mascotas.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button href="/admin/" variant="primary" size="lg" class="bg-green-600 hover:bg-green-700 text-white">
+              📝 Crear primer artículo
+            </Button>
+            <Button href="/comparador-razas" variant="outline" size="lg" class="border-yellow-500 text-yellow-600">
+              🔍 Explorar comparador
+            </Button>
+          </div>
+        </div>
+      </Container>
+    </section>
+  )}
+
+  {/* 🎯 SECCIÓN COMPARADOR CON VERDE PRINCIPAL */}
+  <section class="py-16 px-0 md:px-24 bg-gradient-to-br from-green-500 to-green-600 text-white">
+    <Container size="xl">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <h2 class="text-3xl lg:text-4xl font-bold mb-6">
+            Encuentra tu mascota ideal
+          </h2>
+          <p class="text-lg text-green-100 mb-8">
+            Nuestro algoritmo inteligente analiza tu estilo de vida y te recomienda 
+            las razas más compatibles. Muchas familias ya encontraron su compañero perfecto.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <Button href="/tu-raza-ideal" variant="secondary" size="lg" class="bg-yellow-400 text-yellow-900 hover:bg-yellow-500">
+              🎯 Test personalizado
+            </Button>
+            <Button href="/comparador-razas" variant="outline" size="lg" class="border-white text-white hover:bg-white/10">
+              🔍 Comparar razas
+            </Button>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-white/10 rounded-xl p-6 text-center">
+            <div class="text-3xl font-bold mb-2">50+</div>
+            <div class="text-sm text-green-100">Razas analizadas</div>
+          </div>
+          <div class="bg-yellow-400/20 rounded-xl p-6 text-center">
+            <div class="text-3xl font-bold mb-2">95%</div>
+            <div class="text-sm text-green-100">Satisfacción</div>
+          </div>
+          <div class="col-span-2 bg-white/10 rounded-xl p-6 text-center">
+            <div class="text-sm text-green-100">Familias ayudadas</div>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </section>
+
+ {/* 📧 NEWSLETTER */}
+<section class="py-16 bg-yellow-50">
+  <Container size="lg">
+    <div class="max-w-3xl mx-auto text-center">
+      <Newsletter variant="homepage" />
+
+    </div>
+  </Container>
+</section>
+</BaseLayout>
+
+<style>
+  /* 📐 ESTILOS SIMPLES Y LIMPIOS */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Transiciones suaves pero simples */
+  a, button {
+    transition: all 0.2s ease;
+  }
+
+  /* Focus accesible */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible {
+    outline: 2px solid #eab308;
+    outline-offset: 2px;
+  }
+
+  /* Scroll suave */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Mejoras responsive */
+  @media (max-width: 768px) {
+    .text-3xl {
+      font-size: 1.875rem;
+    }
+    
+    .text-4xl {
+      font-size: 2.25rem;
+    }
+  }
+</style>

@@ -1,0 +1,110 @@
+---
+// src/pages/cachorros/index.astro - VERSIÓN CON TIPOS CORREGIDOS
+import { getCollection } from 'astro:content';
+import CategoryLayout from '../../layouts/CategoryLayout.astro';
+
+// 🔧 INTERFACES PARA TIPOS
+interface Tag {
+  slug: string;
+  data: {
+    name: string;
+    categories?: string[];
+  };
+}
+
+interface Article {
+  slug: string;
+  data: {
+    category: string;
+    tags?: string[];
+    title: string;
+    description?: string;
+    excerpt?: string;
+    image?: string;
+    date: Date;
+    author?: string;
+    readingTime?: number;
+    status?: string;
+  };
+}
+
+interface Category {
+  slug: string;
+  data: {
+    name: string;
+    description: string;
+    image?: string;
+  };
+}
+
+// Obtener datos del CMS con tipos
+const todosLosArticulos: Article[] = await getCollection('articulos').catch(() => []);
+const todasLasCategorias: Category[] = await getCollection('categorias').catch(() => []);
+const todasLasEtiquetas: Tag[] = await getCollection('etiquetas').catch(() => []);
+
+// Filtrar artículos sobre cachorros
+const articles = todosLosArticulos
+  .filter((articulo: Article) => {
+    const categoria = articulo.data.category;
+    const etiquetas = articulo.data.tags || [];
+    
+    return categoria === 'cachorros' || 
+           etiquetas.includes('cachorros') ||
+           etiquetas.includes('puppies') ||
+           etiquetas.includes('cachorro') ||
+           etiquetas.includes('socializacion') ||
+           etiquetas.includes('entrenamiento-cachorro') ||
+           etiquetas.includes('primeros-dias');
+  })
+  .map((articulo: Article) => ({
+    id: articulo.slug,
+    title: articulo.data.title,
+    excerpt: articulo.data.description || articulo.data.excerpt || '',
+    image: articulo.data.image || '/images/articles/default.jpg',
+    date: articulo.data.date.toISOString().split('T')[0],
+    author: {
+      name: articulo.data.author || 'Editor Balto',
+      avatar: '/images/authors/default.jpg'
+    },
+    readingTime: articulo.data.readingTime || 5,
+    categories: [articulo.data.category, ...(articulo.data.tags || [])].filter(Boolean)
+  }));
+
+// Obtener datos de categoría del CMS
+const categoriaCachorros: Category | undefined = todasLasCategorias.find((cat: Category) => cat.slug === 'cachorros');
+
+// Artículo destacado (el más reciente)
+const featuredArticle = articles
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+// 🔧 CORREGIR TIPO DEL PARÁMETRO TAG
+const popularTags = todasLasEtiquetas
+  .filter((tag: Tag) => {
+    const relatedCategories = tag.data.categories || [];
+    return relatedCategories.includes('cachorros');
+  })
+  .map((tag: Tag) => tag.data.name);
+
+// Subcategorías dinámicas basadas en etiquetas
+const subcategories = todasLasEtiquetas
+  .filter((tag: Tag) => {
+    const relatedCategories = tag.data.categories || [];
+    return relatedCategories.includes('cachorros');
+  })
+  .map((tag: Tag) => tag.data.name);
+
+const title = categoriaCachorros?.data.name || "Cachorros";
+const description = categoriaCachorros?.data.description || "Todo lo que necesitas saber sobre el cuidado, entrenamiento y desarrollo de tu cachorro.";
+const image = categoriaCachorros?.data.image || "/images/categories/puppies-banner.jpg";
+---
+
+<CategoryLayout
+  title={title}
+  description={description}
+  image={image}
+  category="cachorros"
+  subcategories={subcategories}
+  articles={articles}
+  popularTags={popularTags}
+  featuredArticle={featuredArticle}
+/>

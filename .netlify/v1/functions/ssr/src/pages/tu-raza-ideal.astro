@@ -1,0 +1,231 @@
+---
+// src/pages/tu-raza-ideal.astro - Cuestionario usando datos compartidos
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import BreedMatchQuiz from '../components/features/breed-quiz/BreedMatchQuiz.jsx';
+
+const title = "Tu Raza Ideal | Descubre la mascota perfecta para ti";
+const description = "Contesta unas simples preguntas y te mostraremos qué razas de perros o gatos se adaptan mejor a tu estilo de vida y preferencias.";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="bg-[#f3f3f3] bg-opacity-20 py-12">
+    <Container>
+      <div class="max-w-3xl mx-auto text-center mb-10">
+        <h1 class="text-3xl md:text-4xl font-bold text-[#2E2E2E] mb-4">
+          🎯 Descubre tu mascota ideal
+        </h1>
+        <p class="text-lg text-gray-600 mb-6">
+          ¿Estás pensando en adoptar una mascota pero no sabes qué raza elegir? 
+          Nuestro cuestionario inteligente analiza tu estilo de vida y te recomienda 
+          las razas más compatibles contigo.
+        </p>
+        
+        <!-- Beneficios del cuestionario -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <h2 class="text-xl font-bold text-[#2E2E2E] mb-4">¿Qué obtienes al completarlo?</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm">Recomendación personalizada</h3>
+                <p class="text-sm text-gray-600">Tu raza ideal con puntuación de compatibilidad específica</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm">Análisis detallado</h3>
+                <p class="text-sm text-gray-600">Por qué es compatible y qué considerar antes de adoptar</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm">Comparador mejorado</h3>
+                <p class="text-sm text-gray-600">Análisis personalizado cuando uses nuestro comparador</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-600" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-bold text-sm">Prevención de problemas</h3>
+                <p class="text-sm text-gray-600">Evita adopciones problemáticas con información anticipada</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6 md:p-8">
+          <BreedMatchQuiz client:load />
+        </div>
+      </div>
+      
+      <div class="max-w-3xl mx-auto mt-12 text-center">
+        <h2 class="text-2xl font-bold text-[#2E2E2E] mb-4">
+          🤔 ¿Por qué es importante elegir la raza adecuada?
+        </h2>
+        <p class="text-gray-600 mb-8">
+          Cada raza tiene características y necesidades diferentes. Encontrar 
+          la que mejor se adapte a tu estilo de vida aumentará la felicidad 
+          tanto de tu mascota como tuya, y reducirá los problemas de convivencia 
+          y abandono.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="w-12 h-12 bg-[#AFC2D5] bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#AFC2D5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-[#2E2E2E] mb-2">🏠 Espacio</h3>
+            <p class="text-gray-600 text-sm">
+              Algunas razas necesitan mucho espacio para correr, mientras que 
+              otras son perfectas para apartamentos pequeños.
+            </p>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="w-12 h-12 bg-[#F6B89E] bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#F6B89E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-[#2E2E2E] mb-2">⚡ Energía</h3>
+            <p class="text-gray-600 text-sm">
+              El nivel de actividad de tu mascota debe coincidir con tu propio 
+              estilo de vida para evitar problemas de comportamiento.
+            </p>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="w-12 h-12 bg-[#C8D6B9] bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#5A7251]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-[#2E2E2E] mb-2">⏰ Tiempo</h3>
+            <p class="text-gray-600 text-sm">
+              Algunas razas requieren más tiempo para cuidados, paseos y 
+              entrenamiento que otras.
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Estadísticas y datos -->
+      <div class="max-w-4xl mx-auto mt-16 bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-8 text-white">
+        <div class="text-center mb-8">
+          <h2 class="text-2xl font-bold mb-2">📊 ¿Sabías que...?</h2>
+          <p class="opacity-90">Datos importantes sobre adopción de mascotas</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+          <div>
+            <div class="text-3xl font-bold mb-2">23%</div>
+            <p class="text-sm opacity-90">de las mascotas son devueltas a refugios por incompatibilidad de raza</p>
+          </div>
+          <div>
+            <div class="text-3xl font-bold mb-2">67%</div>
+            <p class="text-sm opacity-90">de los problemas de comportamiento se deben a necesidades no satisfechas</p>
+          </div>
+          <div>
+            <div class="text-3xl font-bold mb-2">89%</div>
+            <p class="text-sm opacity-90">de las familias que investigan antes de adoptar están más satisfechas</p>
+          </div>
+        </div>
+        
+        <div class="text-center mt-6">
+          <p class="text-sm opacity-90">
+            <strong>Nuestro cuestionario te ayuda a estar en ese 89% de familias satisfechas</strong>
+          </p>
+        </div>
+      </div>
+      
+      <!-- FAQ mejoradas -->
+      <div class="max-w-3xl mx-auto mt-16 bg-white p-6 md:p-8 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold text-[#2E2E2E] mb-6 text-center">
+          ❓ Preguntas frecuentes
+        </h2>
+        
+        <div class="space-y-6">
+          <div class="border-b border-gray-200 pb-4">
+            <h3 class="text-lg font-bold text-[#2E2E2E] mb-2">¿Cómo funciona el algoritmo de recomendación?</h3>
+            <p class="text-gray-600">
+              Nuestro sistema analiza más de 15 factores de tu estilo de vida (espacio, tiempo, actividad, familia, presupuesto, etc.) 
+              y los compara con las características de cada raza. Genera una puntuación de compatibilidad del 0 al 100% 
+              y te explica específicamente por qué cada raza es buena o problemática para TU situación particular.
+            </p>
+          </div>
+          
+          <div class="border-b border-gray-200 pb-4">
+            <h3 class="text-lg font-bold text-[#2E2E2E] mb-2">¿Qué pasa si mi raza ideal no está disponible en refugios locales?</h3>
+            <p class="text-gray-600">
+              Nuestro cuestionario te recomienda las 5 razas más compatibles, no solo una. Además, muchas veces encontrarás 
+              mezclas de estas razas en refugios que mantienen las características positivas. También puedes usar nuestro 
+              comparador para explorar razas similares que podrían estar disponibles.
+            </p>
+          </div>
+          
+          <div class="border-b border-gray-200 pb-4">
+            <h3 class="text-lg font-bold text-[#2E2E2E] mb-2">¿Las recomendaciones son precisas al 100%?</h3>
+            <p class="text-gray-600">
+              Nuestro algoritmo usa datos estadísticos y características generales de cada raza, pero cada animal es único. 
+              La puntuación de compatibilidad es una guía muy útil, pero siempre recomendamos conocer al animal individual 
+              antes de adoptar. Lo importante es que te damos información que el 90% de las personas no considera al elegir mascota.
+            </p>
+          </div>
+          
+          <div>
+            <h3 class="text-lg font-bold text-[#2E2E2E] mb-2">¿Puedo hacer el cuestionario varias veces?</h3>
+            <p class="text-gray-600">
+              ¡Por supuesto! Puedes repetir el cuestionario si tu situación cambia (mudanza, cambio de trabajo, nueva pareja, etc.) 
+              o si quieres explorar diferentes escenarios. Cada vez que lo completes, se guardará tu nuevo perfil para usar 
+              en el comparador de razas.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Call to action final -->
+      <div class="text-center mt-12">
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+          <h3 class="text-lg font-bold text-yellow-800 mb-2">🎯 ¿Listo para comenzar?</h3>
+          <p class="text-yellow-700 text-sm">
+            El cuestionario toma solo 3-5 minutos y puede ahorrarte años de problemas con una mascota incompatible.
+          </p>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="#" onclick="document.querySelector('.bg-white.rounded-lg.shadow-md').scrollIntoView({behavior: 'smooth'})" 
+             class="px-6 py-3 bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white rounded-md font-medium transition-colors">
+            ↑ Comenzar cuestionario
+          </a>
+          <a href="/comparador-razas" 
+             class="px-6 py-3 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-md font-medium transition-colors">
+            Ver comparador de razas
+          </a>
+        </div>
+      </div>
+    </Container>
+  </div>
+</BaseLayout>

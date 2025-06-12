@@ -1,0 +1,39 @@
+---
+// src/pages/debug-breed.astro - Para ver qué datos tienes
+import { breedsData } from '../data/breeds/index.js';
+
+// Buscar Afghan Hound o la primera raza disponible
+const afghanHound = breedsData.find(breed => breed.id === 'afghan-hound') || breedsData[0];
+---
+
+<html>
+<head>
+  <title>Debug Breed Data</title>
+  <style>
+    body { font-family: monospace; padding: 20px; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 5px; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h1>Debug: Datos de la raza</h1>
+  
+  <h2>Estructura completa:</h2>
+  <pre>{JSON.stringify(afghanHound, null, 2)}</pre>
+  
+  <h2>Verificaciones específicas:</h2>
+  <p><strong>breed.id:</strong> {afghanHound?.id || 'undefined'}</p>
+  <p><strong>breed.name:</strong> {afghanHound?.name || 'undefined'}</p>
+  <p><strong>breed.image:</strong> {afghanHound?.image || 'undefined'}</p>
+  <p><strong>breed.images:</strong> {afghanHound?.images ? JSON.stringify(afghanHound.images) : 'undefined'}</p>
+  <p><strong>breed.type:</strong> {afghanHound?.type || 'undefined'}</p>
+  
+  <h2>¿Cómo se pasa al layout?</h2>
+  <p>En tu página [slug].astro, probablemente tienes algo como:</p>
+  <pre>const breed = {`{
+  data: breedData
+}`}</pre>
+  
+  <p>Pero tal vez debería ser simplemente:</p>
+  <pre>const breed = breedData</pre>
+</body>
+</html>
