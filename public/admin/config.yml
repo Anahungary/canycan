@@ -107,7 +107,20 @@ collections:
       - { label: "Nombre", name: "name", widget: "string", required: true }
       - { label: "Slug (URL)", name: "slug", widget: "string", pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', "Solo minúsculas, números y guiones"], required: true }
       - { label: "Descripción", name: "description", widget: "text", required: false }
-      - { label: "Color", name: "color", widget: "color", required: false }
+      - label: "Color"
+    name: "color"
+    widget: "select"
+    default: "green"
+    options:
+      - { label: "🟢 Verde", value: "green" }
+      - { label: "🔵 Azul", value: "blue" }
+      - { label: "🔴 Rojo", value: "red" }
+      - { label: "🟡 Amarillo", value: "yellow" }
+      - { label: "🟣 Púrpura", value: "purple" }
+      - { label: "🟠 Naranja", value: "orange" }
+      - { label: "🩷 Rosa", value: "pink" }
+      - { label: "🟤 Marrón", value: "brown" }
+      - { label: "⚫ Gris", value: "gray" }
       - { label: "Categorías relacionadas", name: "categories", widget: "relation", collection: "categorias", search_fields: ["name"], value_field: "slug", display_fields: ["name"], multiple: true, required: false }
       - { label: "Etiqueta destacada", name: "featured", widget: "boolean", default: false }
       - { label: "Contador de uso", name: "count", widget: "number", default: 0 }

@@ -1,10 +1,13 @@
 ---
 name: "Perros"
 slug: "perros"
-description: "Contenido específico sobre cuidado, comportamiento y bienestar canino."
-categories: ["razas", "cuidados"]
+description: "Contenido específico sobre el cuidado y comportamiento canino"
 color: "brown"
-icon: "🐕"
+categories: ["consejos"]
 featured: true
-articlesCount: 45
+count: 0
 ---
+
+# Cuidado de Perros
+
+Guías completas sobre el cuidado, entrenamiento y bienestar de los perros.

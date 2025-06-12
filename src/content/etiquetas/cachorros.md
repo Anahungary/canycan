@@ -1,10 +1,13 @@
 ---
 name: "Cachorros"
 slug: "cachorros"
-description: "Cuidados específicos para cachorros, socialización temprana y desarrollo."
-categories: ["cuidados", "comportamiento"]
+description: "Cuidado especializado para cachorros y gatitos"
 color: "pink"
-icon: "🐶"
+categories: ["consejos"]
 featured: true
-articlesCount: 10
+count: 0
 ---
+
+# Cuidado de Cachorros
+
+Todo sobre el cuidado, desarrollo y entrenamiento de cachorros desde sus primeros días.

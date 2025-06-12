@@ -30,14 +30,14 @@ export const dogsIM = [
   grooming: 2,
   training: 4,
   type: 'dog',
-  goodWith: ['active_owner', 'dogs'],
+  goodWith: ['active_owners', 'dogs'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 4,
   healthIssues: 2,
   costLevel: 2,
   independenceLevel: 3,
-  suitableFor: ['training', 'agility', 'active_owner']
+  suitableFor: ['training', 'agility', 'active_owners']
 },{
   id: 'pastor-aleman',
   name: 'Pastor alemán',
@@ -49,14 +49,14 @@ export const dogsIM = [
   grooming: 3,
   training: 5,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: false,
   furLength: 'medium',
   noiseLevel: 3,
   healthIssues: 4,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['training', 'guarding', 'active_family']
+  suitableFor: ['training', 'guarding', 'active_families']
 },
 {
   id: 'pastor-australiano',
@@ -76,7 +76,7 @@ export const dogsIM = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['sports', 'herding', 'active_family']
+  suitableFor: ['sports', 'herding', 'active_families']
 },
 {
   id: 'pastor-belga-groenendael',
@@ -129,14 +129,14 @@ export const dogsIM = [
   grooming: 4,
   training: 5,
   type: 'dog',
-  goodWith: ['family', 'experienced_owner'],
+  goodWith: ['families', 'experienced_owner'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 3,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 4,
-  suitableFor: ['training', 'guarding', 'active_owner']
+  suitableFor: ['training', 'guarding', 'active_owners']
 },{
   id: 'pastor-de-anatolia',
   name: 'Pastor de Anatolia',
@@ -168,14 +168,14 @@ export const dogsIM = [
   grooming: 5,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 2,
   healthIssues: 3,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['family', 'training']
+  suitableFor: ['families', 'training']
 },
 {
   id: 'pastor-de-los-pirineos',
@@ -188,7 +188,7 @@ export const dogsIM = [
   grooming: 3,
   training: 4,
   type: 'dog',
-  goodWith: ['adults', 'active_owner'],
+  goodWith: ['adults', 'active_owners'],
   hypoallergenic: false,
   furLength: 'medium',
   noiseLevel: 3,
@@ -208,7 +208,7 @@ export const dogsIM = [
   grooming: 3,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'livestock'],
+  goodWith: ['families', 'livestock'],
   hypoallergenic: false,
   furLength: 'double',
   noiseLevel: 3,
@@ -228,14 +228,14 @@ export const dogsIM = [
   grooming: 4,
   training: 5,
   type: 'dog',
-  goodWith: ['children', 'family', 'dogs'],
+  goodWith: ['children', 'families', 'dogs'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 3,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'training']
+  suitableFor: ['families', 'training']
 },{
   id: 'pastor-ganadero-australiano',
   name: 'Pastor ganadero australiano',
@@ -267,7 +267,7 @@ export const dogsIM = [
   grooming: 3,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'double',
   noiseLevel: 3,
@@ -287,14 +287,14 @@ export const dogsIM = [
   grooming: 4,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 3,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 4,
-  suitableFor: ['herding', 'family']
+  suitableFor: ['herding', 'families']
 },
 {
   id: 'perro-de-canaan',
@@ -327,14 +327,14 @@ export const dogsIM = [
   grooming: 3,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: true,
   furLength: 'curly',
   noiseLevel: 3,
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 4,
-  suitableFor: ['water_sports', 'training', 'family']
+  suitableFor: ['water_sports', 'training', 'families']
 },{
   id: 'perro-de-agua-irlandes',
   name: 'Perro de agua irlandés',
@@ -346,14 +346,14 @@ export const dogsIM = [
   grooming: 4,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: true,
   furLength: 'curly',
   noiseLevel: 2,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['water_sports', 'training', 'active_family']
+  suitableFor: ['water_sports', 'training', 'active_families']
 },
 {
   id: 'perro-de-agua-portugues',
@@ -366,14 +366,14 @@ export const dogsIM = [
   grooming: 4,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'children', 'dogs'],
+  goodWith: ['families', 'children', 'dogs'],
   hypoallergenic: true,
   furLength: 'curly',
   noiseLevel: 3,
   healthIssues: 2,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['water_sports', 'family']
+  suitableFor: ['water_sports', 'families']
 },
 {
   id: 'perro-del-faraon',
@@ -386,7 +386,7 @@ export const dogsIM = [
   grooming: 1,
   training: 3,
   type: 'dog',
-  goodWith: ['active_owner'],
+  goodWith: ['active_owners'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 3,
@@ -406,14 +406,14 @@ export const dogsIM = [
   grooming: 3,
   training: 4,
   type: 'dog',
-  goodWith: ['children', 'dogs', 'family'],
+  goodWith: ['children', 'dogs', 'families'],
   hypoallergenic: false,
   furLength: 'double',
   noiseLevel: 2,
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['cold_climate', 'family']
+  suitableFor: ['cold_climate', 'families']
 },
 {
   id: 'perro-serra-da-estrela',
@@ -445,7 +445,7 @@ export const dogsIM = [
   grooming: 4,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 2,
@@ -465,7 +465,7 @@ export const dogsIM = [
   grooming: 2,
   training: 4,
   type: 'dog',
-  goodWith: ['active_owner', 'dogs'],
+  goodWith: ['active_owners', 'dogs'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 3,
@@ -505,7 +505,7 @@ export const dogsIM = [
   grooming: 5,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: true,
   furLength: 'corded',
   noiseLevel: 3,
@@ -525,7 +525,7 @@ export const dogsIM = [
   grooming: 3,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'wavy',
   noiseLevel: 3,
@@ -552,7 +552,7 @@ export const dogsIM = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'hunting']
+  suitableFor: ['families', 'hunting']
 },
 {
   id: 'retriever-de-pelo-rizado',
@@ -612,7 +612,7 @@ export const dogsIM = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'training']
+  suitableFor: ['families', 'training']
 },{
   id: 'sabueso-bavaro-de-montana',
   name: 'Sabueso bávaro de montaña',
@@ -644,7 +644,7 @@ export const dogsIM = [
   grooming: 1,
   training: 3,
   type: 'dog',
-  goodWith: ['dogs', 'active_owner'],
+  goodWith: ['dogs', 'active_owners'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 3,
@@ -691,7 +691,7 @@ export const dogsIM = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 5,
-  suitableFor: ['active_owner', 'calm_home']
+  suitableFor: ['active_owners', 'calm_home']
 },
 {
   id: 'samoyedo',
@@ -704,14 +704,14 @@ export const dogsIM = [
   grooming: 5,
   training: 4,
   type: 'dog',
-  goodWith: ['children', 'family', 'dogs'],
+  goodWith: ['children', 'families', 'dogs'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 3,
   healthIssues: 3,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['cold_climate', 'family']
+  suitableFor: ['cold_climate', 'families']
 },
 {
   id: 'san-bernardo',
@@ -724,14 +724,14 @@ export const dogsIM = [
   grooming: 4,
   training: 3,
   type: 'dog',
-  goodWith: ['children', 'family'],
+  goodWith: ['children', 'families'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 2,
   healthIssues: 4,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['family', 'cold_climate']
+  suitableFor: ['families', 'cold_climate']
 },{
   id: 'schipperke',
   name: 'Schipperke',
@@ -790,7 +790,7 @@ export const dogsIM = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'apartment']
+  suitableFor: ['families', 'apartment']
 },
 {
   id: 'schnauzer-estandar',
@@ -803,7 +803,7 @@ export const dogsIM = [
   grooming: 4,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: true,
   furLength: 'wire',
   noiseLevel: 3,
@@ -842,14 +842,14 @@ export const dogsIM = [
   grooming: 4,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 3,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['hunting', 'family']
+  suitableFor: ['hunting', 'families']
 },
 {
   id: 'setter-ingles',
@@ -862,14 +862,14 @@ export const dogsIM = [
   grooming: 4,
   training: 4,
   type: 'dog',
-  goodWith: ['children', 'family'],
+  goodWith: ['children', 'families'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 2,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_family', 'hunting']
+  suitableFor: ['active_families', 'hunting']
 },
 {
   id: 'setter-irlandes',
@@ -882,14 +882,14 @@ export const dogsIM = [
   grooming: 4,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 3,
   healthIssues: 3,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['active_family', 'outdoors']
+  suitableFor: ['active_families', 'outdoors']
 },
 {
   id: 'setter-irlandes-rojo-y-blanco',
@@ -902,14 +902,14 @@ export const dogsIM = [
   grooming: 3,
   training: 4,
   type: 'dog',
-  goodWith: ['children', 'family'],
+  goodWith: ['children', 'families'],
   hypoallergenic: false,
   furLength: 'medium',
   noiseLevel: 2,
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['hunting', 'family']
+  suitableFor: ['hunting', 'families']
 },
 {
   id: 'shar-pei',

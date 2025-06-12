@@ -17,7 +17,7 @@ export const dogsNZ = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 4,
-  suitableFor: ['active_owner', 'calm_home']
+  suitableFor: ['active_owners', 'calm_home']
 },{
   id: 'soft-coated-wheaten-terrier',
   name: 'Soft Coated Wheaten Terrier',
@@ -29,14 +29,14 @@ export const dogsNZ = [
   grooming: 4,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: true,
   furLength: 'wavy',
   noiseLevel: 3,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'training']
+  suitableFor: ['families', 'training']
 },
 {
   id: 'spaniel-holandes',
@@ -56,7 +56,7 @@ export const dogsNZ = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'active_owner']
+  suitableFor: ['families', 'active_owners']
 },
 {
   id: 'spaniel-tibetano',
@@ -96,7 +96,7 @@ export const dogsNZ = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['hunting', 'family']
+  suitableFor: ['hunting', 'families']
 },
 {
   id: 'spitz-aleman-mediano',
@@ -109,7 +109,7 @@ export const dogsNZ = [
   grooming: 4,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'elderly'],
+  goodWith: ['families', 'elderly'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 3,
@@ -155,7 +155,7 @@ export const dogsNZ = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_owner', 'cold_climate']
+  suitableFor: ['active_owners', 'cold_climate']
 },
 {
   id: 'spitz-japones',
@@ -188,14 +188,14 @@ export const dogsNZ = [
   grooming: 3,
   training: 4,
   type: 'dog',
-  goodWith: ['children', 'family'],
+  goodWith: ['children', 'families'],
   hypoallergenic: false,
   furLength: 'medium',
   noiseLevel: 2,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'hunting']
+  suitableFor: ['families', 'hunting']
 },
 {
   id: 'springer-spaniel-ingles',
@@ -215,7 +215,7 @@ export const dogsNZ = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_family', 'water_sports']
+  suitableFor: ['active_families', 'water_sports']
 },{
   id: 'staffordshire-bull-terrier',
   name: 'Staffordshire Bull Terrier',
@@ -234,7 +234,7 @@ export const dogsNZ = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'training']
+  suitableFor: ['families', 'training']
 },
 {
   id: 'sussex-spaniel',
@@ -247,7 +247,7 @@ export const dogsNZ = [
   grooming: 3,
   training: 3,
   type: 'dog',
-  goodWith: ['elderly', 'family'],
+  goodWith: ['elderly', 'families'],
   hypoallergenic: false,
   furLength: 'medium',
   noiseLevel: 2,
@@ -274,7 +274,7 @@ export const dogsNZ = [
   healthIssues: 3,
   costLevel: 2,
   independenceLevel: 4,
-  suitableFor: ['apartment', 'family']
+  suitableFor: ['apartment', 'families']
 },
 {
   id: 'teckel-pelo-duro',
@@ -386,7 +386,7 @@ export const dogsNZ = [
   grooming: 3,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: true,
   furLength: 'wire',
   noiseLevel: 3,
@@ -413,7 +413,7 @@ export const dogsNZ = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['apartment', 'family']
+  suitableFor: ['apartment', 'families']
 },
 {
   id: 'terrier-de-norwich',
@@ -466,14 +466,14 @@ export const dogsNZ = [
   grooming: 3,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: true,
   furLength: 'wire',
   noiseLevel: 3,
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'training']
+  suitableFor: ['families', 'training']
 },
 {
   id: 'terrier-irlandes',
@@ -513,7 +513,7 @@ export const dogsNZ = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'companion']
+  suitableFor: ['families', 'companion']
 },
 {
   id: 'terranova',
@@ -526,14 +526,14 @@ export const dogsNZ = [
   grooming: 4,
   training: 3,
   type: 'dog',
-  goodWith: ['children', 'family'],
+  goodWith: ['children', 'families'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 2,
   healthIssues: 4,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['cold_climate', 'family']
+  suitableFor: ['cold_climate', 'families']
 },
 {
   id: 'toy-terrier-ingles',
@@ -566,14 +566,14 @@ export const dogsNZ = [
   grooming: 2,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'medium',
   noiseLevel: 3,
   healthIssues: 2,
   costLevel: 2,
   independenceLevel: 3,
-  suitableFor: ['herding', 'active_owner']
+  suitableFor: ['herding', 'active_owners']
 },
 {
   id: 'west-highland-white-terrier',
@@ -593,7 +593,7 @@ export const dogsNZ = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'training']
+  suitableFor: ['families', 'training']
 },
 {
   id: 'whippet',

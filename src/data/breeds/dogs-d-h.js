@@ -17,7 +17,7 @@ export const dogsDH = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'apartment', 'companion']
+  suitableFor: ['families', 'apartment', 'companion']
 },
 {
   id: 'cocker-spaniel-americano',
@@ -37,7 +37,7 @@ export const dogsDH = [
   healthIssues: 4,
   costLevel: 3,
   independenceLevel: 2,
-  suitableFor: ['family', 'companion']
+  suitableFor: ['families', 'companion']
 },
 {
   id: 'cocker-spaniel-ingles',
@@ -57,7 +57,7 @@ export const dogsDH = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'active_owner']
+  suitableFor: ['families', 'active_owners']
 },
 {
   id: 'collie-barbudo',
@@ -77,7 +77,7 @@ export const dogsDH = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_owner', 'cold_climate']
+  suitableFor: ['active_owners', 'cold_climate']
 },
 {
   id: 'collie-pelo-corto',
@@ -90,14 +90,14 @@ export const dogsDH = [
   grooming: 2,
   training: 5,
   type: 'dog',
-  goodWith: ['children', 'family', 'dogs'],
+  goodWith: ['children', 'families', 'dogs'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 2,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'training', 'outdoors']
+  suitableFor: ['families', 'training', 'outdoors']
 },{
   id: 'corgi-gales-de-cardigan',
   name: 'Corgi galés de Cardigan (de pelo medio/largo)',
@@ -109,14 +109,14 @@ export const dogsDH = [
   grooming: 3,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: false,
   furLength: 'medium',
   noiseLevel: 3,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'active_owner']
+  suitableFor: ['families', 'active_owners']
 },
 {
   id: 'corgi-gales-de-pembroke',
@@ -136,7 +136,7 @@ export const dogsDH = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'training']
+  suitableFor: ['families', 'training']
 },
 {
   id: 'coton-de-tulear',
@@ -189,14 +189,14 @@ export const dogsDH = [
   grooming: 2,
   training: 4,
   type: 'dog',
-  goodWith: ['children', 'active_family'],
+  goodWith: ['children', 'active_families'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 3,
   healthIssues: 4,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_owner', 'sports']
+  suitableFor: ['active_owners', 'sports']
 },{
   id: 'dandie-dinmont-terrier',
   name: 'Dandie Dinmont Terrier',
@@ -228,14 +228,14 @@ export const dogsDH = [
   grooming: 1,
   training: 5,
   type: 'dog',
-  goodWith: ['family', 'experienced_owner'],
+  goodWith: ['families', 'experienced_owner'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 3,
   healthIssues: 4,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['guarding', 'training', 'active_owner']
+  suitableFor: ['guarding', 'training', 'active_owners']
 },
 {
   id: 'dogo-de-burdeos',
@@ -248,7 +248,7 @@ export const dogsDH = [
   grooming: 2,
   training: 3,
   type: 'dog',
-  goodWith: ['adults', 'family'],
+  goodWith: ['adults', 'families'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 2,
@@ -268,14 +268,14 @@ export const dogsDH = [
   grooming: 3,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: false,
   furLength: 'medium',
   noiseLevel: 2,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_family', 'country_life']
+  suitableFor: ['active_families', 'country_life']
 },
 {
   id: 'fox-terrier-pelo-duro',
@@ -288,14 +288,14 @@ export const dogsDH = [
   grooming: 3,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'wire',
   noiseLevel: 4,
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 4,
-  suitableFor: ['active_owner', 'training']
+  suitableFor: ['active_owners', 'training']
 },{
   id: 'fox-terrier-pelo-liso',
   name: 'Fox Terrier de pelo liso',
@@ -314,7 +314,7 @@ export const dogsDH = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 4,
-  suitableFor: ['active_owner', 'training']
+  suitableFor: ['active_owners', 'training']
 },
 {
   id: 'foxhound',
@@ -327,14 +327,14 @@ export const dogsDH = [
   grooming: 2,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 3,
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['rural_life', 'hunting', 'active_owner']
+  suitableFor: ['rural_life', 'hunting', 'active_owners']
 },
 {
   id: 'galgo',
@@ -394,7 +394,7 @@ export const dogsDH = [
   healthIssues: 4,
   costLevel: 3,
   independenceLevel: 2,
-  suitableFor: ['family', 'sports', 'therapy']
+  suitableFor: ['families', 'sports', 'therapy']
 },{
   id: 'gran-azul-de-gascuna',
   name: 'Gran azul de Gascuña',
@@ -426,14 +426,14 @@ export const dogsDH = [
   grooming: 2,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 2,
   healthIssues: 5,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['family', 'experienced_owner', 'large_space']
+  suitableFor: ['families', 'experienced_owner', 'large_space']
 },
 {
   id: 'grifon-de-bruselas',
@@ -473,7 +473,7 @@ export const dogsDH = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 2,
-  suitableFor: ['family', 'apartment', 'companion']
+  suitableFor: ['families', 'apartment', 'companion']
 },
 {
   id: 'hamilton-stovare',
@@ -486,7 +486,7 @@ export const dogsDH = [
   grooming: 2,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 3,
@@ -505,7 +505,7 @@ export const dogsDH = [
   grooming: 3,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'experienced_owner'],
+  goodWith: ['families', 'experienced_owner'],
   hypoallergenic: false,
   furLength: 'medium',
   noiseLevel: 3,
@@ -525,14 +525,14 @@ export const dogsDH = [
   grooming: 4,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'double',
   noiseLevel: 3,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 5,
-  suitableFor: ['cold_climate', 'active_owner']
+  suitableFor: ['cold_climate', 'active_owners']
 },
 {
   id: 'keeshond',
@@ -552,7 +552,7 @@ export const dogsDH = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'apartment']
+  suitableFor: ['families', 'apartment']
 },
 {
   id: 'kerry-blue-terrier',
@@ -565,14 +565,14 @@ export const dogsDH = [
   grooming: 4,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: true,
   furLength: 'curly',
   noiseLevel: 3,
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 4,
-  suitableFor: ['active_owner', 'training']
+  suitableFor: ['active_owners', 'training']
 },
 {
   id: 'komondor',
@@ -585,7 +585,7 @@ export const dogsDH = [
   grooming: 5,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'experienced_owner'],
+  goodWith: ['families', 'experienced_owner'],
   hypoallergenic: false,
   furLength: 'corded',
   noiseLevel: 3,
@@ -605,7 +605,7 @@ export const dogsDH = [
   grooming: 3,
   training: 3,
   type: 'dog',
-  goodWith: ['adults', 'family'],
+  goodWith: ['adults', 'families'],
   hypoallergenic: false,
   furLength: 'double',
   noiseLevel: 2,
@@ -632,7 +632,7 @@ export const dogsDH = [
     healthIssues: 3,
     costLevel: 3,
     independenceLevel: 2,
-    suitableFor: ['family', 'companion', 'sports']
+    suitableFor: ['families', 'companion', 'sports']
   },
 {
   id: 'labradoodle',
@@ -652,7 +652,7 @@ export const dogsDH = [
   healthIssues: 3,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['family', 'therapy', 'apartment']
+  suitableFor: ['families', 'therapy', 'apartment']
 },
 {
   id: 'laekenois',
@@ -665,7 +665,7 @@ export const dogsDH = [
   grooming: 3,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'experienced_owner'],
+  goodWith: ['families', 'experienced_owner'],
   hypoallergenic: false,
   furLength: 'wire',
   noiseLevel: 3,
@@ -692,7 +692,7 @@ export const dogsDH = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 4,
-  suitableFor: ['active_owner', 'training']
+  suitableFor: ['active_owners', 'training']
 },
 {
   id: 'lancashire-heeler',
@@ -705,7 +705,7 @@ export const dogsDH = [
   grooming: 2,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 3,
@@ -725,7 +725,7 @@ export const dogsDH = [
   grooming: 2,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'elderly'],
+  goodWith: ['families', 'elderly'],
   hypoallergenic: false,
   furLength: 'rough',
   noiseLevel: 2,
@@ -745,14 +745,14 @@ export const dogsDH = [
   grooming: 4,
   training: 4,
   type: 'dog',
-  goodWith: ['children', 'family'],
+  goodWith: ['children', 'families'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 2,
   healthIssues: 4,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['family', 'cold_climate']
+  suitableFor: ['families', 'cold_climate']
 },
 {
   id: 'lhasa-apso',
@@ -785,7 +785,7 @@ export const dogsDH = [
   grooming: 2,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'elderly'],
+  goodWith: ['families', 'elderly'],
   hypoallergenic: false,
   furLength: 'rough',
   noiseLevel: 2,
@@ -824,14 +824,14 @@ export const dogsDH = [
   grooming: 4,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'double',
   noiseLevel: 3,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 4,
-  suitableFor: ['cold_climate', 'working', 'active_owner']
+  suitableFor: ['cold_climate', 'working', 'active_owners']
 },
 {
   id: 'maltes',
@@ -871,7 +871,7 @@ export const dogsDH = [
   healthIssues: 2,
   costLevel: 2,
   independenceLevel: 4,
-  suitableFor: ['apartment', 'active_owner']
+  suitableFor: ['apartment', 'active_owners']
 },
 {
   id: 'mastin-ingles',
@@ -884,14 +884,14 @@ export const dogsDH = [
   grooming: 2,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 2,
   healthIssues: 4,
   costLevel: 4,
   independenceLevel: 4,
-  suitableFor: ['large_yard', 'family']
+  suitableFor: ['large_yard', 'families']
 },
 {
   id: 'mastin-napolitano',
@@ -923,7 +923,7 @@ export const dogsDH = [
   grooming: 4,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'experienced_owner'],
+  goodWith: ['families', 'experienced_owner'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 2,
@@ -943,14 +943,14 @@ export const dogsDH = [
   grooming: 3,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'medium',
   noiseLevel: 3,
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['hunting', 'active_owner']
+  suitableFor: ['hunting', 'active_owners']
 },
 {
   id: 'otterhound',
@@ -963,7 +963,7 @@ export const dogsDH = [
   grooming: 4,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'rough',
   noiseLevel: 3,

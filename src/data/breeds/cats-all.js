@@ -17,7 +17,7 @@ export const catsALL = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_family', 'companionship']
+  suitableFor: ['active_families', 'companionship']
 },
 {
   id: 'american-wirehair',
@@ -97,7 +97,7 @@ export const catsALL = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'calm_home']
+  suitableFor: ['families', 'calm_home']
 },{
   id: 'bobtail-japones-corto',
   name: 'Bobtail japonés de pelo corto',
@@ -149,7 +149,7 @@ export const catsALL = [
   grooming: 4,
   training: 3,
   type: 'cat',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 2,
@@ -176,7 +176,7 @@ export const catsALL = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'cold_climate']
+  suitableFor: ['families', 'cold_climate']
 },{
   id: 'britanico-pelo-corto',
   name: 'Británico de pelo corto',
@@ -208,14 +208,14 @@ export const catsALL = [
   grooming: 2,
   training: 4,
   type: 'cat',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 2,
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'indoor']
+  suitableFor: ['families', 'indoor']
 },
 {
   id: 'chinchilla',
@@ -255,7 +255,7 @@ export const catsALL = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_owner', 'apartment']
+  suitableFor: ['active_owners', 'apartment']
 },
 {
   id: 'cymric',
@@ -294,7 +294,7 @@ export const catsALL = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 2,
-  suitableFor: ['apartment', 'active_owner']
+  suitableFor: ['apartment', 'active_owners']
 },
 {
   id: 'exotico-pelo-corto',
@@ -374,7 +374,7 @@ export const catsALL = [
   healthIssues: 3,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['active_owner', 'training']
+  suitableFor: ['active_owners', 'training']
 },{
   id: 'bombay',
   name: 'Bombay',
@@ -413,7 +413,7 @@ export const catsALL = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 2,
-  suitableFor: ['family', 'companionship']
+  suitableFor: ['families', 'companionship']
 },
 {
   id: 'sphynx',
@@ -492,7 +492,7 @@ export const catsALL = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'apartment']
+  suitableFor: ['families', 'apartment']
 },
 {
   id: 'maine-coon',
@@ -512,7 +512,7 @@ export const catsALL = [
   healthIssues: 3,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['family', 'cold_climate']
+  suitableFor: ['families', 'cold_climate']
 },
 {
   id: 'manx',
@@ -532,7 +532,7 @@ export const catsALL = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_family', 'indoor']
+  suitableFor: ['active_families', 'indoor']
 },
 {
   id: 'mau-egipcio',
@@ -572,7 +572,7 @@ export const catsALL = [
   healthIssues: 2,
   costLevel: 2,
   independenceLevel: 3,
-  suitableFor: ['family', 'apartment']
+  suitableFor: ['families', 'apartment']
 },{
   id: 'munchkin',
   name: 'Munchkin',
@@ -611,7 +611,7 @@ export const catsALL = [
   healthIssues: 2,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['active_family', 'training']
+  suitableFor: ['active_families', 'training']
 },
 {
   id: 'oriental-corto',
@@ -690,7 +690,7 @@ export const catsALL = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'indoor']
+  suitableFor: ['families', 'indoor']
 },
 {
   id: 'ragdoll',
@@ -770,7 +770,7 @@ export const catsALL = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 2,
-  suitableFor: ['active_owner', 'indoor']
+  suitableFor: ['active_owners', 'indoor']
 },{
   id: 'singapura',
   name: 'Singapura',
@@ -809,7 +809,7 @@ export const catsALL = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'indoor']
+  suitableFor: ['families', 'indoor']
 },
 {
   id: 'somali',
@@ -829,7 +829,7 @@ export const catsALL = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_owner', 'companionship']
+  suitableFor: ['active_owners', 'companionship']
 },
 {
   id: 'tiffanie',
@@ -889,7 +889,7 @@ export const catsALL = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_owner', 'family']
+  suitableFor: ['active_owners', 'families']
 }
 ];
 

@@ -11,20 +11,23 @@ const SuccessNotification = ({
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (show) {
-      setIsVisible(true);
-      
-      // Auto-hide después del duration especificado
-      const timer = setTimeout(() => {
-        setIsVisible(false);
-        if (onClose) {
-          setTimeout(onClose, 300); // Esperar a que termine la animación
-        }
-      }, duration);
-
-      return () => clearTimeout(timer);
-    }
-  }, [show, duration, onClose]);
+  if (!show) return;
+  
+  setIsVisible(true);
+  
+  const hideTimer = setTimeout(() => {
+    setIsVisible(false);
+  }, duration);
+  
+  const closeTimer = setTimeout(() => {
+    if (onClose) onClose();
+  }, duration + 300);
+  
+  return () => {
+    clearTimeout(hideTimer);
+    clearTimeout(closeTimer);
+  };
+}, [show, duration, onClose]);
 
   if (!show && !isVisible) return null;
 

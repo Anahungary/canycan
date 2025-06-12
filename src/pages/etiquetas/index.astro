@@ -1,100 +1,94 @@
 ---
-// src/pages/etiquetas/index.astro - Lista de etiquetas
-const etiquetas = [
-  {
-    name: "Adopción",
-    slug: "adopcion",
-    description: "Todo sobre adopción responsable de mascotas y adaptación.",
-    color: "green",
-    icon: "🏠",
-    articlesCount: 8,
-    featured: true
-  },
-  {
-    name: "Alimentación", 
-    slug: "alimentacion",
-    description: "Nutrición, dietas especiales y consejos alimentarios.",
-    color: "orange",
-    icon: "🍽️",
-    articlesCount: 15,
-    featured: true
-  },
-  {
-    name: "Entrenamiento",
-    slug: "entrenamiento", 
-    description: "Técnicas de adiestramiento y modificación de conducta.",
-    color: "blue",
-    icon: "🎯",
-    articlesCount: 12,
-    featured: true
-  },
-  {
-    name: "Salud",
-    slug: "salud",
-    description: "Cuidados veterinarios y prevención de enfermedades.", 
-    color: "red",
-    icon: "🏥",
-    articlesCount: 20,
-    featured: true
-  },
-  {
-    name: "Cachorros",
-    slug: "cachorros",
-    description: "Cuidados específicos para cachorros y socialización.",
-    color: "pink", 
-    icon: "🐶",
-    articlesCount: 10,
-    featured: true
-  },
-  {
-    name: "Perros",
-    slug: "perros",
-    description: "Contenido específico sobre cuidado y comportamiento canino.",
-    color: "brown",
-    icon: "🐕", 
-    articlesCount: 45,
-    featured: true
-  },
-  {
-    name: "Gatos",
-    slug: "gatos",
-    description: "Todo sobre el mundo felino y bienestar de gatos.",
-    color: "purple",
-    icon: "🐱",
-    articlesCount: 25,
-    featured: true
-  },
-  {
-    name: "Veterinaria",
-    slug: "veterinaria",
-    description: "Información médica y cuidados profesionales.",
-    color: "teal",
-    icon: "⚕️",
-    articlesCount: 18,
-    featured: false
-  },
-  {
-    name: "Comportamiento",
-    slug: "comportamiento", 
-    description: "Psicología animal y problemas de conducta.",
-    color: "indigo",
-    icon: "🧠",
-    articlesCount: 14,
-    featured: false
-  },
-  {
-    name: "Razas",
-    slug: "razas",
-    description: "Guías específicas de razas de perros y gatos.",
-    color: "cyan",
-    icon: "📋",
-    articlesCount: 22,
-    featured: false
-  }
-];
+// src/pages/etiquetas/index.astro - VERSIÓN DINÁMICA CON CMS
+import { getCollection } from 'astro:content';
 
-// Ordenar por cantidad de artículos
-etiquetas.sort((a, b) => b.articlesCount - a.articlesCount);
+// 🔧 FUNCIÓN HELPER PARA ICONOS
+function getIconForTag(tagName: string): string {
+  const iconMap: Record<string, string> = {
+    'Adopción': '🏠',
+    'Alimentación': '🍽️',
+    'Alimentación Casera': '👨‍🍳',
+    'Nutrición Económica': '💰',
+    'Entrenamiento': '🎯',
+    'Adiestramiento': '🎓',
+    'Salud': '🏥',
+    'Salud Veterinaria': '⚕️',
+    'Comportamiento': '🧠',
+    'Cachorros': '🐶',
+    'Gatos': '🐱',
+    'Perros': '🐕',
+    'Socialización': '👥',
+    'Primeros Auxilios': '🆘',
+    'Cuidado Básico': '💚',
+    'Nuevos Dueños': '🐾',
+    'Veterinaria': '⚕️',
+    'Razas': '📋'
+  };
+  
+  return iconMap[tagName] || '🏷️';
+}
+
+// 🔧 FUNCIÓN PARA CALCULAR ARTÍCULOS POR ETIQUETA
+async function getArticleCountForTag(tagSlug: string): Promise<number> {
+  try {
+    const todosLosArticulos = await getCollection('articulos');
+    const articulosPublicados = todosLosArticulos.filter(articulo => 
+      articulo.data.status === 'published'
+    );
+    
+    const count = articulosPublicados.filter(articulo => {
+      const tags = articulo.data.tags || [];
+      const category = articulo.data.category || '';
+      
+      return tags.includes(tagSlug) || 
+             tags.some((tag: string) => tag.toLowerCase() === tagSlug.toLowerCase()) ||
+             category.toLowerCase() === tagSlug.toLowerCase();
+    }).length;
+    
+    return count;
+  } catch (error) {
+    console.log(`⚠️ Error contando artículos para ${tagSlug}:`, error);
+    return 0;
+  }
+}
+
+// ✅ CARGAR ETIQUETAS DEL CMS
+let etiquetasFromCMS: any[] = [];
+try {
+  etiquetasFromCMS = await getCollection('etiquetas');
+  console.log(`📊 Cargadas ${etiquetasFromCMS.length} etiquetas del CMS`);
+} catch (error) {
+  console.log('⚠️ No se pudieron cargar etiquetas del CMS:', error);
+  etiquetasFromCMS = [];
+}
+
+// 🔄 PROCESAR ETIQUETAS PARA EL FORMATO DE LA PÁGINA
+const etiquetas = await Promise.all(
+  etiquetasFromCMS.map(async (etiqueta) => {
+    const articleCount = await getArticleCountForTag(etiqueta.data.slug);
+    
+    return {
+      name: etiqueta.data.name,
+      slug: etiqueta.data.slug,
+      description: etiqueta.data.description || `Artículos sobre ${etiqueta.data.name.toLowerCase()}`,
+      color: etiqueta.data.color || 'gray',
+      icon: getIconForTag(etiqueta.data.name),
+      articlesCount: articleCount,
+      featured: etiqueta.data.featured || false
+    };
+  })
+);
+
+// 📊 ORDENAR POR CANTIDAD DE ARTÍCULOS Y DESTACADAS
+etiquetas.sort((a, b) => {
+  // Primero por featured
+  if (a.featured && !b.featured) return -1;
+  if (!a.featured && b.featured) return 1;
+  // Luego por cantidad de artículos
+  return b.articlesCount - a.articlesCount;
+});
+
+console.log(`✅ Procesadas ${etiquetas.length} etiquetas dinámicamente`);
 ---
 
 <html lang="es">
@@ -127,6 +121,11 @@ etiquetas.sort((a, b) => b.articlesCount - a.articlesCount);
               ${etiqueta.color === 'pink' ? 'bg-pink-100' : ''}
               ${etiqueta.color === 'brown' ? 'bg-yellow-100' : ''}
               ${etiqueta.color === 'purple' ? 'bg-purple-100' : ''}
+              ${etiqueta.color === 'teal' ? 'bg-teal-100' : ''}
+              ${etiqueta.color === 'indigo' ? 'bg-indigo-100' : ''}
+              ${etiqueta.color === 'cyan' ? 'bg-cyan-100' : ''}
+              ${etiqueta.color === 'yellow' ? 'bg-yellow-100' : ''}
+              ${etiqueta.color === 'gray' ? 'bg-gray-100' : ''}
             `}>
               {etiqueta.icon}
             </div>
@@ -145,13 +144,18 @@ etiquetas.sort((a, b) => b.articlesCount - a.articlesCount);
                   ${etiqueta.color === 'pink' ? 'bg-pink-100 text-pink-800' : ''}
                   ${etiqueta.color === 'brown' ? 'bg-yellow-100 text-yellow-800' : ''}
                   ${etiqueta.color === 'purple' ? 'bg-purple-100 text-purple-800' : ''}
+                  ${etiqueta.color === 'teal' ? 'bg-teal-100 text-teal-800' : ''}
+                  ${etiqueta.color === 'indigo' ? 'bg-indigo-100 text-indigo-800' : ''}
+                  ${etiqueta.color === 'cyan' ? 'bg-cyan-100 text-cyan-800' : ''}
+                  ${etiqueta.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' : ''}
+                  ${etiqueta.color === 'gray' ? 'bg-gray-100 text-gray-800' : ''}
                 `}>
                   Popular
                 </span>
               </div>
               
               <a 
-                href={`/${etiqueta.slug}/`}
+                href={`/etiquetas/${etiqueta.slug}/`}
                 class="inline-flex items-center px-4 py-2 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors text-sm w-full justify-center"
               >
                 Ver artículos →
@@ -171,7 +175,7 @@ etiquetas.sort((a, b) => b.articlesCount - a.articlesCount);
         <div class="flex flex-wrap gap-3 justify-center">
           {etiquetas.map((etiqueta) => (
             <a 
-              href={`/${etiqueta.slug}/`}
+              href={`/etiquetas/${etiqueta.slug}/`}
               class={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all hover:scale-105
                 ${etiqueta.articlesCount > 20 ? 'text-lg' : etiqueta.articlesCount > 10 ? 'text-base' : 'text-sm'}
                 ${etiqueta.color === 'green' ? 'bg-green-100 text-green-800 hover:bg-green-200' : ''}
@@ -184,7 +188,8 @@ etiquetas.sort((a, b) => b.articlesCount - a.articlesCount);
                 ${etiqueta.color === 'teal' ? 'bg-teal-100 text-teal-800 hover:bg-teal-200' : ''}
                 ${etiqueta.color === 'indigo' ? 'bg-indigo-100 text-indigo-800 hover:bg-indigo-200' : ''}
                 ${etiqueta.color === 'cyan' ? 'bg-cyan-100 text-cyan-800 hover:bg-cyan-200' : ''}
-                ${!etiqueta.color ? 'bg-gray-100 text-gray-800 hover:bg-gray-200' : ''}
+                ${etiqueta.color === 'yellow' ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' : ''}
+                ${etiqueta.color === 'gray' ? 'bg-gray-100 text-gray-800 hover:bg-gray-200' : ''}
               `}
             >
               <span>{etiqueta.icon}</span>
@@ -225,13 +230,14 @@ etiquetas.sort((a, b) => b.articlesCount - a.articlesCount);
                 ${etiqueta.color === 'teal' ? 'bg-teal-100 text-teal-800' : ''}
                 ${etiqueta.color === 'indigo' ? 'bg-indigo-100 text-indigo-800' : ''}
                 ${etiqueta.color === 'cyan' ? 'bg-cyan-100 text-cyan-800' : ''}
-                ${!etiqueta.color ? 'bg-gray-100 text-gray-800' : ''}
+                ${etiqueta.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' : ''}
+                ${etiqueta.color === 'gray' ? 'bg-gray-100 text-gray-800' : ''}
               `}>
                 {etiqueta.featured ? 'Popular' : 'Tema'}
               </span>
               
               <a 
-                href={`/${etiqueta.slug}/`}
+                href={`/etiquetas/${etiqueta.slug}/`}
                 class="text-blue-600 hover:text-blue-800 font-medium text-sm"
               >
                 Ver →

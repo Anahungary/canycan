@@ -1,11 +1,16 @@
 ---
 // src/components/common/Newsletter.astro - Con 3 variants: default, homepage, footer
+
+import AddSentNewsletter from '../marketing/AddSentNewsletter.jsx';
+
 interface Props {
   source?: string;
   title?: string;
   description?: string;
   variant?: 'default' | 'homepage' | 'footer';
 }
+
+
 
 const { 
   source = 'general',
@@ -156,7 +161,7 @@ const config = variantConfig[variant];
   </div>
 )}
 
-<!-- VARIANT: FOOTER (Diseño minimalista) -->
+
 <!-- VARIANT: FOOTER (Diseño minimalista) -->
 {variant === 'footer' && (
   <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">

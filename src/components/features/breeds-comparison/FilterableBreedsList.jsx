@@ -13,17 +13,25 @@ const FilterableBreedsList = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [localFilters, setLocalFilters] = useState({
-    type: [],
-    size: [],
-    energyLevel: [],
-    furLength: [],
-    hypoallergenic: null,
-    goodWith: [],
-    experience: [],
-    apartmentFriendly: null,
+  const [localFilters, setLocalFilters] = useState(() => ({
+  type: [],
+  size: [],
+  energyLevel: [],
+  furLength: [],
+  hypoallergenic: null,
+  goodWith: [],
+  experience: [],
+  apartmentFriendly: null,
+  ...activeFilters
+}));
+
+// ✅ Sincronizar cuando las props cambien
+useEffect(() => {
+  setLocalFilters(prev => ({
+    ...prev,
     ...activeFilters
-  });
+  }));
+}, [activeFilters]);
   
   const BREEDS_PER_PAGE = 20;
 

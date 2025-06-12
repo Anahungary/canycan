@@ -1,10 +1,13 @@
 ---
 name: "Entrenamiento"
 slug: "entrenamiento"
-description: "Técnicas de adiestramiento, obediencia básica y modificación de conducta."
-categories: ["comportamiento"]
+description: "Técnicas de adiestramiento y entrenamiento para mascotas"
 color: "blue"
-icon: "🎯"
+categories: ["consejos"]
 featured: true
-articlesCount: 12
+count: 0
 ---
+
+# Entrenamiento de Mascotas
+
+Guías paso a paso para entrenar a tu mascota con métodos positivos y efectivos.

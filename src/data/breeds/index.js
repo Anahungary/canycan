@@ -109,7 +109,7 @@ if (breedsData.length === 0) {
       healthIssues: 3,
       costLevel: 3,
       independenceLevel: 2,
-      suitableFor: ['family', 'companion']
+      suitableFor: ['families', 'companion']
     },
     {
       id: 'persian-cat',

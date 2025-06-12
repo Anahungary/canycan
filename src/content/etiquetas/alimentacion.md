@@ -1,10 +1,13 @@
 ---
 name: "Alimentación"
 slug: "alimentacion"
-description: "Nutrición, dietas especiales, tipos de comida y consejos alimentarios para perros y gatos."
-categories: ["salud", "cuidados"]
+description: "Nutrición general y dietas para mascotas"
 color: "orange"
-icon: "🍽️"
+categories: ["alimentacion"]
 featured: true
-articlesCount: 15
+count: 0
 ---
+
+# Alimentación de Mascotas
+
+Guías nutricionales, dietas especiales y consejos alimentarios para cada etapa de vida.

@@ -33,121 +33,239 @@ const BreedMatchQuiz = () => {
   const BREEDS_PER_PAGE = 20;
   
   // 🔧 CARGA DE DATOS MEJORADA CON VALIDACIÓN
-  useEffect(() => {
-    async function loadData() {
-      try {
-        console.log('🔄 Cargando datos del cuestionario...');
-        
-        if (!breedsData || !Array.isArray(breedsData) || breedsData.length === 0) {
-          console.error('❌ Error: No se encontraron datos de razas en el índice');
-          throw new Error('Datos de razas no disponibles');
+ useEffect(() => {
+  // ✅ NUEVO: Flag para evitar updates en componente desmontado
+  let isMounted = true;
+  
+  // ✅ NUEVO: AbortController para cancelar operaciones async
+  const abortController = new AbortController();
+  
+  // ✅ NUEVO: Datos de emergencia definidos localmente para evitar errores
+  const emergencyBreeds = [
+    {
+      id: 'golden-retriever-emergency',
+      name: 'Golden Retriever',
+      type: 'dog',
+      size: 'large',
+      energyLevel: 4,
+      friendliness: 5,
+      grooming: 3,
+      training: 4,
+      apartmentFriendly: false,
+      hypoallergenic: false,
+      image: '/images/breeds/golden-retriever.jpg'
+    },
+    {
+      id: 'persian-cat-emergency',
+      name: 'Gato Persa',
+      type: 'cat',
+      size: 'medium',
+      energyLevel: 2,
+      friendliness: 3,
+      grooming: 5,
+      training: 2,
+      apartmentFriendly: true,
+      hypoallergenic: false,
+      image: '/images/breeds/persian-cat.jpg'
+    }
+  ];
+
+  async function loadData() {
+    try {
+      // ✅ MEJORADO: Verificar si el componente sigue montado antes de cada operación
+      if (!isMounted) return;
+      
+      console.log('🔄 Cargando datos del cuestionario...');
+      
+      // ✅ MEJORADO: Validación más robusta con mejor logging
+      if (!breedsData) {
+        console.error('❌ Error: breedsData es undefined o null');
+        throw new Error('Datos de razas no disponibles - variable undefined');
+      }
+      
+      if (!Array.isArray(breedsData)) {
+        console.error('❌ Error: breedsData no es un array:', typeof breedsData);
+        throw new Error('Datos de razas no disponibles - formato inválido');
+      }
+      
+      if (breedsData.length === 0) {
+        console.error('❌ Error: breedsData está vacío');
+        throw new Error('Datos de razas no disponibles - array vacío');
+      }
+      
+      // ✅ MEJORADO: Validación más exhaustiva de cada raza
+      const validBreeds = breedsData.filter(breed => {
+        // Verificación básica de existencia
+        if (!breed || typeof breed !== 'object') {
+          console.warn('⚠️ Raza inválida (no es objeto):', breed);
+          return false;
         }
         
-        const validBreeds = breedsData.filter(breed => 
-          breed && 
-          breed.id && 
-          breed.name && 
-          breed.type && 
-          ['dog', 'cat'].includes(breed.type) &&
-          typeof breed.energyLevel === 'number' &&
-          typeof breed.friendliness === 'number' &&
-          typeof breed.grooming === 'number'
-        );
-        
-        if (validBreeds.length === 0) {
-          console.error('❌ Error: No se encontraron razas válidas');
-          throw new Error('Datos de razas inválidos');
-        }
-        
-        console.log(`✅ Datos validados: ${validBreeds.length} razas válidas de ${breedsData.length} totales`);
-        
-        const stats = {
-          total: validBreeds.length,
-          dogs: validBreeds.filter(b => b.type === 'dog').length,
-          cats: validBreeds.filter(b => b.type === 'cat').length,
-          withImages: validBreeds.filter(b => b.image).length,
-          hypoallergenic: validBreeds.filter(b => b.hypoallergenic).length
-        };
-        
-        console.log('📊 Estadísticas de razas cargadas:', stats);
-        
-        setBreeds(validBreeds);
-        setIsLoading(false);
-        
-      } catch (error) {
-        console.error('❌ Error crítico cargando datos del cuestionario:', error);
-        
-        // Modo de emergencia con datos mínimos
-        const emergencyBreeds = [
-          {
-            id: 'labrador-retriever',
-            name: 'Labrador Retriever',
-            image: '/images/breeds/labrador-retriever.jpg',
-            description: 'Raza amigable y leal, perfecta para familias.',
-            size: 'large',
-            energyLevel: 4,
-            friendliness: 5,
-            grooming: 2,
-            training: 5,
-            type: 'dog',
-            goodWith: ['children', 'dogs'],
-            hypoallergenic: false,
-            furLength: 'short',
-            noiseLevel: 3,
-            healthIssues: 3,
-            costLevel: 3,
-            independenceLevel: 2,
-            suitableFor: ['family', 'companion']
-          },
-          {
-            id: 'golden-retriever',
-            name: 'Golden Retriever',
-            image: '/images/breeds/golden-retriever.jpg',
-            description: 'Perro inteligente y cariñoso.',
-            size: 'large',
-            energyLevel: 4,
-            friendliness: 5,
-            grooming: 3,
-            training: 5,
-            type: 'dog',
-            goodWith: ['children', 'dogs'],
-            hypoallergenic: false,
-            furLength: 'medium',
-            noiseLevel: 2,
-            healthIssues: 3,
-            costLevel: 3,
-            independenceLevel: 2,
-            suitableFor: ['family', 'companion']
-          },
-          {
-            id: 'persian-cat',
-            name: 'Persa',
-            image: '/images/breeds/persian.jpg',
-            description: 'Gato elegante y tranquilo.',
-            size: 'medium',
-            energyLevel: 2,
-            friendliness: 3,
-            grooming: 5,
-            training: 2,
-            type: 'cat',
-            goodWith: ['seniors', 'apartments'],
-            hypoallergenic: false,
-            furLength: 'long',
-            noiseLevel: 1,
-            healthIssues: 4,
-            costLevel: 4,
-            independenceLevel: 4,
-            suitableFor: ['companion']
+        // Verificación de campos requeridos
+        const requiredStringFields = ['id', 'name', 'type'];
+        for (const field of requiredStringFields) {
+          if (!breed[field] || typeof breed[field] !== 'string' || breed[field].trim() === '') {
+            console.warn(`⚠️ Raza inválida (campo ${field} faltante o inválido):`, breed.name || 'Unknown');
+            return false;
           }
-        ];
+        }
         
-        console.log('🔄 Usando datos de emergencia:', emergencyBreeds.length, 'razas');
-        setBreeds(emergencyBreeds);
-        setIsLoading(false);
+        // Verificación de tipo válido
+        if (!['dog', 'cat'].includes(breed.type)) {
+          console.warn('⚠️ Raza con tipo inválido:', breed.name, breed.type);
+          return false;
+        }
+        
+        // ✅ MEJORADO: Validación más flexible de campos numéricos
+        const numericFields = ['energyLevel', 'friendliness', 'grooming'];
+        for (const field of numericFields) {
+          const value = breed[field];
+          if (value !== undefined && value !== null) {
+            const numValue = Number(value);
+            if (isNaN(numValue) || numValue < 1 || numValue > 5) {
+              console.warn(`⚠️ Raza con ${field} inválido:`, breed.name, value);
+              // ✅ NUEVO: Corregir valores en lugar de descartar
+              breed[field] = Math.max(1, Math.min(5, Math.round(numValue) || 3));
+            }
+          } else {
+            // ✅ NUEVO: Asignar valor por defecto si falta
+            breed[field] = 3;
+            console.warn(`⚠️ Asignando valor por defecto para ${field} en:`, breed.name);
+          }
+        }
+        
+        return true;
+      });
+      
+      // ✅ VERIFICAR: Componente sigue montado antes de continuar
+      if (!isMounted) return;
+      
+      if (validBreeds.length === 0) {
+        console.error('❌ Error: No se encontraron razas válidas después del filtrado');
+        throw new Error('Datos de razas inválidos - ninguna raza pasó la validación');
+      }
+      
+      console.log(`✅ Datos validados: ${validBreeds.length} razas válidas de ${breedsData.length} totales`);
+      
+      // ✅ MEJORADO: Estadísticas más detalladas
+      const stats = {
+        total: validBreeds.length,
+        dogs: validBreeds.filter(b => b.type === 'dog').length,
+        cats: validBreeds.filter(b => b.type === 'cat').length,
+        withImages: validBreeds.filter(b => b.image && b.image.trim() !== '').length,
+        hypoallergenic: validBreeds.filter(b => b.hypoallergenic === true).length,
+        apartmentFriendly: validBreeds.filter(b => b.apartmentFriendly === true).length,
+        sizes: {
+          small: validBreeds.filter(b => b.size === 'small').length,
+          medium: validBreeds.filter(b => b.size === 'medium').length,
+          large: validBreeds.filter(b => b.size === 'large').length
+        },
+        averageEnergy: (validBreeds.reduce((sum, b) => sum + (b.energyLevel || 0), 0) / validBreeds.length).toFixed(1),
+        averageFriendliness: (validBreeds.reduce((sum, b) => sum + (b.friendliness || 0), 0) / validBreeds.length).toFixed(1)
+      };
+      
+      console.log('📊 Estadísticas detalladas de razas cargadas:', stats);
+      
+      // ✅ NUEVO: Validación final antes de setear estado
+      if (!isMounted) {
+        console.log('⚠️ Componente desmontado, cancelando actualización de estado');
+        return;
+      }
+      
+      // ✅ MEJORADO: Actualizar estado solo si el componente sigue montado
+      setBreeds(validBreeds);
+      setIsLoading(false);
+      
+      // ✅ NUEVO: Trigger de evento personalizado para otros componentes
+      const dataLoadedEvent = new CustomEvent('breedsDataLoaded', {
+        detail: { breeds: validBreeds, stats }
+      });
+      window.dispatchEvent(dataLoadedEvent);
+      
+    } catch (error) {
+      // ✅ VERIFICAR: Solo proceder si el componente sigue montado
+      if (!isMounted) {
+        console.log('⚠️ Componente desmontado, cancelando manejo de error');
+        return;
+      }
+      
+      console.error('❌ Error crítico cargando datos del cuestionario:', {
+        message: error.message,
+        stack: error.stack,
+        breedsDataType: typeof breedsData,
+        breedsDataLength: Array.isArray(breedsData) ? breedsData.length : 'N/A'
+      });
+      
+      // ✅ MEJORADO: Logging más detallado de datos de emergencia
+      console.log(`🔄 Usando datos de emergencia: ${emergencyBreeds.length} razas de respaldo`);
+      console.log('📋 Razas de emergencia:', emergencyBreeds.map(b => `${b.name} (${b.type})`));
+      
+      // ✅ NUEVO: Establecer flag de error para mostrar al usuario
+      setError(`Error cargando datos: ${error.message}. Mostrando razas de ejemplo.`);
+      
+      setBreeds(emergencyBreeds);
+      setIsLoading(false);
+      
+      // ✅ NUEVO: Trigger de evento de error
+      const errorEvent = new CustomEvent('breedsDataError', {
+        detail: { error: error.message, fallbackCount: emergencyBreeds.length }
+      });
+      window.dispatchEvent(errorEvent);
+      
+      // ✅ NUEVO: Intentar tracking del error si hay analytics
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'data_loading_error', {
+          event_category: 'error',
+          event_label: 'breeds_data_loading',
+          value: error.message
+        });
       }
     }
-    loadData();
-  }, []);
+  }
+  
+  // ✅ NUEVO: Delay opcional para evitar loading muy rápido (mejor UX)
+  const loadWithDelay = async () => {
+    // Pequeño delay para mejor percepción de carga
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    if (isMounted && !abortController.signal.aborted) {
+      await loadData();
+    }
+  };
+  
+  // ✅ EJECUTAR: Iniciar carga con delay
+  loadWithDelay();
+  
+  // ✅ CLEANUP: Función de limpieza apropiada
+  return () => {
+    console.log('🧹 Limpiando useEffect de carga de datos...');
+    
+    // Marcar componente como desmontado
+    isMounted = false;
+    
+    // Cancelar operaciones pendientes
+    abortController.abort();
+    
+    // ✅ NUEVO: Limpiar event listeners si los hay
+    // (útil si agregas listeners en el futuro)
+  };
+}, []); // ✅ DEPENDENCY ARRAY: Vacío porque no depende de props/state
+
+// ✅ OPCIONAL: useEffect adicional para logging de cambios en breeds
+useEffect(() => {
+  if (breeds.length > 0) {
+    console.log(`🎉 Estado actualizado: ${breeds.length} razas disponibles`);
+    
+    // ✅ NUEVO: Validación post-carga
+    const invalidBreeds = breeds.filter(breed => 
+      !breed.id || !breed.name || !breed.type
+    );
+    
+    if (invalidBreeds.length > 0) {
+      console.warn('⚠️ Detectadas razas inválidas en estado:', invalidBreeds);
+    }
+  }
+}, [breeds]); // ✅ DEPENDENCY: Solo ejecutar cuando breeds cambie
   
   // Generar preguntas dinámicas
   const relevantQuestions = React.useMemo(() => {

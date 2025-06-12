@@ -2,7 +2,7 @@
 name: "American wirehair"
 slug: "american-wirehair"
 description: "Único por su pelaje áspero y rizado, el American wirehair es un gato equilibrado, cariñoso y adaptable. Ideal para familias que desean un compañero curioso y tranquilo."
-image: "/images/breeds/American-Wirehair.webp"
+image: "/images/breeds/American-wirehair.jpg"
 type: "cat"
 size: "medium"
 weight:

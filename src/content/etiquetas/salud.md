@@ -1,10 +1,13 @@
 ---
 name: "Salud"
 slug: "salud"
-description: "Cuidados veterinarios, prevención de enfermedades y bienestar general."
-categories: ["salud"]
+description: "Bienestar y salud general de las mascotas"
 color: "red"
-icon: "🏥"
+categories: ["salud"]
 featured: true
-articlesCount: 20
+count: 0
 ---
+
+# Salud de Mascotas
+
+Información sobre bienestar, prevención de enfermedades y cuidados de salud.

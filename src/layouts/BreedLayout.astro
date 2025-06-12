@@ -246,7 +246,7 @@ const canonicalUrl = `/razas/${breed.id}`;
           
           <!-- Botones de acción -->
           <div class="flex flex-col sm:flex-row gap-4">
-            <Button href="#caracteristicas" variant="primary" size="lg">
+            <Button href="#caracteristicas" variant="primary" size="lg" class="bg-green-500 text-white">
               Ver características completas
             </Button>
             <ShareButtons 
@@ -311,16 +311,16 @@ const canonicalUrl = `/razas/${breed.id}`;
   </section>
   
   <!-- CTA final -->
-  <section class="py-16 bg-gradient-to-r from-blue-600 to-purple-600">
+  <section class="py-16 ">
     <Container>
       <div class="text-center">
         <div class={`${breed.type === 'cat' 
-          ? 'bg-gradient-to-r from-purple-500 to-pink-500' 
-          : 'bg-gradient-to-r from-blue-500 to-green-500'} rounded-xl p-8 text-white`}>
+          ? 'bg-gradient-to-r from-green-500 to-green-700' 
+          : 'bg-gradient-to-r from-blue-500 to-blue-700'} rounded-xl p-8 text-white`}>
           <h2 class="text-2xl font-bold mb-4">¿Te gusta esta raza?</h2>
           <p class="mb-6 text-white opacity-90">Compárala con otras razas para encontrar tu mascota ideal</p>
           <Button 
-            href="/comparador-razas" 
+            href="/razas" 
             variant="secondary"
             class="bg-white text-gray-900 hover:bg-gray-100 font-semibold px-8 py-3"
           >

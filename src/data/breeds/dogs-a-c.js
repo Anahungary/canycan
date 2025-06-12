@@ -37,7 +37,7 @@ export const dogsAC = [
     healthIssues: 3,
     costLevel: 4,
     independenceLevel: 5,
-    suitableFor: ['family', 'exercise']
+    suitableFor: ['families', 'exercise']
   },
   {
     id: 'akita',
@@ -50,7 +50,7 @@ export const dogsAC = [
     grooming: 4,
     training: 4,
     type: 'dog',
-    goodWith: ['family', 'older_children'],
+    goodWith: ['families', 'older_children'],
     hypoallergenic: false,
     furLength: 'double',
     noiseLevel: 2,
@@ -77,7 +77,7 @@ export const dogsAC = [
     healthIssues: 2,
     costLevel: 3,
     independenceLevel: 5,
-    suitableFor: ['active_owner', 'apartment']
+    suitableFor: ['active_owners', 'apartment']
   },
   {
     id: 'basset-bleu-de-gascogne',
@@ -90,14 +90,14 @@ export const dogsAC = [
     grooming: 2,
     training: 3,
     type: 'dog',
-    goodWith: ['family', 'dogs'],
+    goodWith: ['families', 'dogs'],
     hypoallergenic: false,
     furLength: 'short',
     noiseLevel: 4,
     healthIssues: 2,
     costLevel: 3,
     independenceLevel: 3,
-    suitableFor: ['family', 'outdoors']
+    suitableFor: ['families', 'outdoors']
   },
   {
     id: 'grand-basset-griffon-vendeen',
@@ -110,14 +110,14 @@ export const dogsAC = [
     grooming: 3,
     training: 3,
     type: 'dog',
-    goodWith: ['family', 'dogs'],
+    goodWith: ['families', 'dogs'],
     hypoallergenic: false,
     furLength: 'medium',
     noiseLevel: 3,
     healthIssues: 2,
     costLevel: 3,
     independenceLevel: 4,
-    suitableFor: ['active_owner', 'family']
+    suitableFor: ['active_owners', 'families']
   },
   {
     id: 'petit-basset-griffon-vendeen',
@@ -130,14 +130,14 @@ export const dogsAC = [
     grooming: 3,
     training: 3,
     type: 'dog',
-    goodWith: ['family', 'dogs'],
+    goodWith: ['families', 'dogs'],
     hypoallergenic: false,
     furLength: 'medium',
     noiseLevel: 3,
     healthIssues: 2,
     costLevel: 3,
     independenceLevel: 4,
-    suitableFor: ['active_owner', 'family']
+    suitableFor: ['active_owners', 'families']
   },
   {
     id: 'basset-hound',
@@ -157,7 +157,7 @@ export const dogsAC = [
     healthIssues: 3,
     costLevel: 3,
     independenceLevel: 3,
-    suitableFor: ['family', 'companion']
+    suitableFor: ['families', 'companion']
   },
   {
     id: 'basset-fauve-de-bretagne',
@@ -170,14 +170,14 @@ export const dogsAC = [
     grooming: 1,
     training: 3,
     type: 'dog',
-    goodWith: ['family', 'dogs'],
+    goodWith: ['families', 'dogs'],
     hypoallergenic: false,
     furLength: 'short',
     noiseLevel: 3,
     healthIssues: 2,
     costLevel: 3,
     independenceLevel: 3,
-    suitableFor: ['family', 'active']
+    suitableFor: ['families', 'active']
   },
   {
     id: 'beagle',
@@ -197,7 +197,7 @@ export const dogsAC = [
     healthIssues: 3,
     costLevel: 3,
     independenceLevel: 3,
-    suitableFor: ['family', 'active']
+    suitableFor: ['families', 'active']
   },
   {
     id: 'beauceron',
@@ -210,14 +210,14 @@ export const dogsAC = [
     grooming: 2,
     training: 4,
     type: 'dog',
-    goodWith: ['family', 'experienced_owner'],
+    goodWith: ['families', 'experienced_owner'],
     hypoallergenic: false,
     furLength: 'short',
     noiseLevel: 3,
     healthIssues: 3,
     costLevel: 3,
     independenceLevel: 4,
-    suitableFor: ['active_owner', 'guarding']
+    suitableFor: ['active_owners', 'guarding']
   },
   {
     id: 'bedlington-terrier',
@@ -230,14 +230,14 @@ export const dogsAC = [
     grooming: 5,
     training: 4,
     type: 'dog',
-    goodWith: ['family', 'dogs', 'cats'],
+    goodWith: ['families', 'dogs', 'cats'],
     hypoallergenic: true,
     furLength: 'curly',
     noiseLevel: 3,
     healthIssues: 3,
     costLevel: 3,
     independenceLevel: 3,
-    suitableFor: ['family', 'apartment']
+    suitableFor: ['families', 'apartment']
   },
   {
     id: 'bergamasco',
@@ -250,14 +250,14 @@ export const dogsAC = [
     grooming: 2,
     training: 3,
     type: 'dog',
-    goodWith: ['family', 'dogs', 'children'],
+    goodWith: ['families', 'dogs', 'children'],
     hypoallergenic: true,
     furLength: 'flocked',
     noiseLevel: 2,
     healthIssues: 2,
     costLevel: 3,
     independenceLevel: 4,
-    suitableFor: ['active_owner', 'family']
+    suitableFor: ['active_owners', 'families']
   },
   {
     id: 'bichon-bolognese',
@@ -270,14 +270,14 @@ export const dogsAC = [
     grooming: 5,
     training: 4,
     type: 'dog',
-    goodWith: ['family', 'dogs', 'cats'],
+    goodWith: ['families', 'dogs', 'cats'],
     hypoallergenic: true,
     furLength: 'long',
     noiseLevel: 2,
     healthIssues: 2,
     costLevel: 3,
     independenceLevel: 2,
-    suitableFor: ['family', 'companion']
+    suitableFor: ['families', 'companion']
   },{
   id: 'bloodhound',
   name: 'Bloodhound',
@@ -289,14 +289,14 @@ export const dogsAC = [
   grooming: 2,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'children', 'dogs'],
+  goodWith: ['families', 'children', 'dogs'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 2,
   healthIssues: 4,
   costLevel: 3,
   independenceLevel: 4,
-  suitableFor: ['outdoors', 'tracking', 'family']
+  suitableFor: ['outdoors', 'tracking', 'families']
 },{
   id: 'bobtail',
   name: 'Bobtail',
@@ -308,14 +308,14 @@ export const dogsAC = [
   grooming: 5,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'children', 'dogs'],
+  goodWith: ['families', 'children', 'dogs'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 2,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'active_owner']
+  suitableFor: ['families', 'active_owners']
 },{
   id: 'border-collie',
   name: 'Border Collie',
@@ -327,7 +327,7 @@ export const dogsAC = [
   grooming: 3,
   training: 5,
   type: 'dog',
-  goodWith: ['family', 'active_owner'],
+  goodWith: ['families', 'active_owners'],
   hypoallergenic: false,
   furLength: 'double',
   noiseLevel: 3,
@@ -347,14 +347,14 @@ export const dogsAC = [
   grooming: 2,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'wire',
   noiseLevel: 4,
   healthIssues: 2,
   costLevel: 2,
   independenceLevel: 4,
-  suitableFor: ['active_owner', 'apartment']
+  suitableFor: ['active_owners', 'apartment']
 },{
   id: 'borzoi',
   name: 'Borzoi',
@@ -393,7 +393,7 @@ export const dogsAC = [
   healthIssues: 4,
   costLevel: 2,
   independenceLevel: 3,
-  suitableFor: ['apartment', 'family']
+  suitableFor: ['apartment', 'families']
 },
 {
   id: 'boxer',
@@ -406,14 +406,14 @@ export const dogsAC = [
   grooming: 2,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 3,
   healthIssues: 4,
   costLevel: 3,
   independenceLevel: 2,
-  suitableFor: ['active_family', 'guarding']
+  suitableFor: ['active_families', 'guarding']
 },
 {
   id: 'boyero-de-berna',
@@ -426,14 +426,14 @@ export const dogsAC = [
   grooming: 4,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'children', 'dogs'],
+  goodWith: ['families', 'children', 'dogs'],
   hypoallergenic: false,
   furLength: 'long',
   noiseLevel: 2,
   healthIssues: 5,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['family', 'cold_climate', 'large_yard']
+  suitableFor: ['families', 'cold_climate', 'large_yard']
 },
 {
   id: 'boyero-de-flandes',
@@ -453,7 +453,7 @@ export const dogsAC = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 4,
-  suitableFor: ['farm', 'guarding', 'active_owner']
+  suitableFor: ['farm', 'guarding', 'active_owners']
 },{
   id: 'bracco-italiano',
   name: 'Bracco italiano',
@@ -465,14 +465,14 @@ export const dogsAC = [
   grooming: 2,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'children', 'dogs'],
+  goodWith: ['families', 'children', 'dogs'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 2,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_owner', 'hunting']
+  suitableFor: ['active_owners', 'hunting']
 },
 {
   id: 'braco-aleman-pelo-corto',
@@ -485,14 +485,14 @@ export const dogsAC = [
   grooming: 2,
   training: 5,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 3,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 4,
-  suitableFor: ['hunting', 'sport', 'active_family']
+  suitableFor: ['hunting', 'sport', 'active_families']
 },
 {
   id: 'braco-aleman-pelo-duro',
@@ -505,7 +505,7 @@ export const dogsAC = [
   grooming: 3,
   training: 5,
   type: 'dog',
-  goodWith: ['family', 'experienced_owner'],
+  goodWith: ['families', 'experienced_owner'],
   hypoallergenic: false,
   furLength: 'wire',
   noiseLevel: 3,
@@ -525,14 +525,14 @@ export const dogsAC = [
   grooming: 1,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 3,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_family', 'outdoor_life']
+  suitableFor: ['active_families', 'outdoor_life']
 },
 {
   id: 'braco-hungaro',
@@ -545,14 +545,14 @@ export const dogsAC = [
   grooming: 1,
   training: 5,
   type: 'dog',
-  goodWith: ['family', 'children', 'dogs'],
+  goodWith: ['families', 'children', 'dogs'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 2,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 2,
-  suitableFor: ['active_family', 'sport', 'hunting']
+  suitableFor: ['active_families', 'sport', 'hunting']
 },{
   id: 'braco-hungaro-pelo-duro',
   name: 'Braco húngaro de pelo duro',
@@ -564,14 +564,14 @@ export const dogsAC = [
   grooming: 3,
   training: 5,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'wire',
   noiseLevel: 2,
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['hunting', 'active_owner']
+  suitableFor: ['hunting', 'active_owners']
 },
 {
   id: 'breton',
@@ -584,14 +584,14 @@ export const dogsAC = [
   grooming: 2,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'children'],
+  goodWith: ['families', 'children'],
   hypoallergenic: false,
   furLength: 'medium',
   noiseLevel: 3,
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_family', 'hunting']
+  suitableFor: ['active_families', 'hunting']
 },
 {
   id: 'buhund-noruego',
@@ -604,7 +604,7 @@ export const dogsAC = [
   grooming: 2,
   training: 4,
   type: 'dog',
-  goodWith: ['family', 'dogs'],
+  goodWith: ['families', 'dogs'],
   hypoallergenic: false,
   furLength: 'double',
   noiseLevel: 3,
@@ -631,7 +631,7 @@ export const dogsAC = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_owner', 'guarding']
+  suitableFor: ['active_owners', 'guarding']
 },
 {
   id: 'bull-terrier-miniatura',
@@ -651,7 +651,7 @@ export const dogsAC = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['apartment', 'active_owner']
+  suitableFor: ['apartment', 'active_owners']
 },
 {
   id: 'bulldog',
@@ -664,7 +664,7 @@ export const dogsAC = [
   grooming: 2,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'children', 'cats'],
+  goodWith: ['families', 'children', 'cats'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 2,
@@ -684,7 +684,7 @@ export const dogsAC = [
   grooming: 1,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'children', 'dogs'],
+  goodWith: ['families', 'children', 'dogs'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 2,
@@ -704,7 +704,7 @@ export const dogsAC = [
   grooming: 2,
   training: 3,
   type: 'dog',
-  goodWith: ['adults', 'family'],
+  goodWith: ['adults', 'families'],
   hypoallergenic: false,
   furLength: 'short',
   noiseLevel: 2,
@@ -730,7 +730,7 @@ export const dogsAC = [
   healthIssues: 2,
   costLevel: 2,
   independenceLevel: 4,
-  suitableFor: ['apartment', 'active_family']
+  suitableFor: ['apartment', 'active_families']
 },
 {
   id: 'caniche-enano',
@@ -750,7 +750,7 @@ export const dogsAC = [
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['family', 'training', 'apartment']
+  suitableFor: ['families', 'training', 'apartment']
 },
 {
   id: 'caniche-grande',
@@ -763,14 +763,14 @@ export const dogsAC = [
   grooming: 5,
   training: 5,
   type: 'dog',
-  goodWith: ['family', 'children', 'cats'],
+  goodWith: ['families', 'children', 'cats'],
   hypoallergenic: true,
   furLength: 'curly',
   noiseLevel: 2,
   healthIssues: 3,
   costLevel: 4,
   independenceLevel: 3,
-  suitableFor: ['training', 'sports', 'active_family']
+  suitableFor: ['training', 'sports', 'active_families']
 },
 {
   id: 'caniche-toy',
@@ -783,7 +783,7 @@ export const dogsAC = [
   grooming: 5,
   training: 5,
   type: 'dog',
-  goodWith: ['family', 'elderly', 'dogs'],
+  goodWith: ['families', 'elderly', 'dogs'],
   hypoallergenic: true,
   furLength: 'curly',
   noiseLevel: 2,
@@ -810,7 +810,7 @@ export const dogsAC = [
   healthIssues: 4,
   costLevel: 3,
   independenceLevel: 2,
-  suitableFor: ['apartment', 'family', 'companion']
+  suitableFor: ['apartment', 'families', 'companion']
 },{
   id: 'cavalier-king-charles-spaniel',
   name: 'Cavalier King Charles Spaniel',
@@ -829,7 +829,7 @@ export const dogsAC = [
   healthIssues: 4,
   costLevel: 4,
   independenceLevel: 2,
-  suitableFor: ['family', 'companion', 'apartment']
+  suitableFor: ['families', 'companion', 'apartment']
 },
 {
   id: 'cazador-de-alces-noruego',
@@ -842,14 +842,14 @@ export const dogsAC = [
   grooming: 3,
   training: 3,
   type: 'dog',
-  goodWith: ['family', 'experienced_owner'],
+  goodWith: ['families', 'experienced_owner'],
   hypoallergenic: false,
   furLength: 'double',
   noiseLevel: 3,
   healthIssues: 2,
   costLevel: 3,
   independenceLevel: 4,
-  suitableFor: ['cold_climate', 'guarding', 'active_owner']
+  suitableFor: ['cold_climate', 'guarding', 'active_owners']
 },
 {
   id: 'chihuahua-pelo-largo',
@@ -948,7 +948,7 @@ export const dogsAC = [
   healthIssues: 4,
   costLevel: 3,
   independenceLevel: 2,
-  suitableFor: ['family', 'calm_home']
+  suitableFor: ['families', 'calm_home']
 },
 {
   id: 'cobrador-de-nueva-escocia',
@@ -968,7 +968,7 @@ export const dogsAC = [
   healthIssues: 3,
   costLevel: 3,
   independenceLevel: 3,
-  suitableFor: ['active_family', 'water_sports']
+  suitableFor: ['active_families', 'water_sports']
 }
 ];
 export default dogsAC;
