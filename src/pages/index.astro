@@ -392,22 +392,40 @@ console.log(`📊 ESTADÍSTICAS FINALES:`, stats);
     <section class="py-16 px-0 md:px-24 bg-white">
       <Container size="xl">
         
-        {/* 📋 HEADER DE SECCIÓN */}
-        <div class="flex items-center justify-between mb-8">
-          <div class="flex items-center gap-4">
-            <h2 class="text-3xl font-bold text-gray-900">Más populares</h2>
-            <div class="flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
-              <span>👀</span>
-              <span>Ordenado por lecturas</span>
-            </div>
-            <div class="text-sm text-gray-500">
-              {stats.totalViews.toLocaleString()} views totales
-            </div>
-          </div>
-          <Button href="/articulos" variant="outline" size="sm" class="border-green-500 text-green-600 hover:bg-green-50">
-            Ver todos
-          </Button>
-        </div>
+        <!-- 📋 HEADER DE SECCIÓN REORGANIZADO Y RESPONSIVE -->
+<div class="mb-8">
+  <!-- Título principal -->
+  <div class="mb-4">
+    <h2 class="text-3xl font-bold text-gray-900">Más populares</h2>
+  </div>
+  
+  <!-- Subtítulos y botón - Layout responsive -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+    
+    <!-- Información de ordenamiento -->
+    <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+      <div class="flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium w-fit">
+        <span>👀</span>
+        <span>Ordenado por lecturas</span>
+      </div>
+      <div class="text-sm text-gray-500">
+        {stats.totalViews.toLocaleString()} views totales
+      </div>
+    </div>
+    
+    <!-- Botón Ver todos -->
+    <div class="flex-shrink-0">
+      <Button 
+        href="/articulos" 
+        variant="outline" 
+        size="sm" 
+        class="border-green-500 text-green-600 hover:bg-green-50 w-full sm:w-auto"
+      >
+        Ver todos
+      </Button>
+    </div>
+  </div>
+</div>
 
         {/* 📱 GRID DE ARTÍCULOS */}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
