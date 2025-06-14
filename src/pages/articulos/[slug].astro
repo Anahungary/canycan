@@ -126,25 +126,42 @@ const popularArticles: PopularArticle[] = (popularArticlesRaw || [])
 
 console.log(`🔥 POPULARES OBTENIDOS: ${popularArticles.length} desde Supabase`);
 
-// 🔗 OBTENER ARTÍCULOS RELACIONADOS - SOLO DESDE SUPABASE (SIN FALLBACKS)
+// 🔗 OBTENER ARTÍCULOS RELACIONADOS - COMBINAR CMS + SUPABASE
 console.log(`🔗 Obteniendo relacionados para categoría: ${articulo.data.category}`);
+
+// 1. Obtener datos de Supabase (para views)
 const relatedArticlesRaw = await ArticlesDB.getArticlesByCategory(
   articulo.data.category || 'general', 
   5
 );
+
+// 2. Cargar artículos del CMS (para imágenes)
+const allCMSArticles = await getCollection('articulos');
+const publishedCMSArticles = allCMSArticles.filter(a => a.data.status === 'published');
+
+// 3. Combinar datos CMS + Supabase
 const relatedArticles: RelatedArticle[] = (relatedArticlesRaw || [])
   .filter((article: any) => article.slug !== articulo.slug) // Excluir artículo actual
   .slice(0, 2)
-  .map((article: any, index: number) => ({
-    id: (index + 1).toString(),
-    title: article.title,
-    slug: article.slug,
-    image: article.image || '/images/articles/default.jpg',
-    readingTime: article.reading_time || 5,
-    views: article.views || 0
-  }));
+  .map((supabaseArticle: any, index: number) => {
+    // Buscar artículo correspondiente en CMS para obtener la imagen
+    const cmsArticle = publishedCMSArticles.find(cms => cms.slug === supabaseArticle.slug);
+    
+    return {
+      id: (index + 1).toString(),
+      title: supabaseArticle.title,
+      slug: supabaseArticle.slug,
+      image: cmsArticle?.data?.image || '/images/articles/default.jpg', // ← IMAGEN DEL CMS
+      readingTime: supabaseArticle.reading_time || 5,
+      views: supabaseArticle.views || 0
+    };
+  });
 
-console.log(`🔗 RELACIONADOS OBTENIDOS: ${relatedArticles.length} desde Supabase`);
+console.log(`🔗 RELACIONADOS OBTENIDOS: ${relatedArticles.length} desde CMS+Supabase`);
+// Log para verificar imágenes
+relatedArticles.forEach(article => {
+  console.log(`📸 ${article.slug}: ${article.image}`);
+});
 
 // 📋 PREPARAR DATOS PARA EL LAYOUT
 const articleData = {
