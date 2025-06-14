@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Supabase - Artículos</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-good { background: #48bb78; }
+        .status-warning { background: #ed8936; }
+        .status-error { background: #f56565; }
+        .status-unknown { background: #a0aec0; }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            border-left: 4px solid #667eea;
+        }
+        
+        .config-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+            transition: transform 0.2s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+        
+        .log-container {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .articles-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        
+        .article-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f7fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .article-item:last-child {
+            border-bottom: none;
+        }
+        
+        .emoji {
+            font-size: 1.2rem;
+            margin-right: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .config-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Diagnóstico Supabase</h1>
+            <p>Herramienta para diagnosticar y reparar problemas de sincronización de artículos</p>
+        </div>
+
+        <!-- Configuración -->
+        <div class="card">
+            <h3>⚙️ Configuración de Supabase</h3>
+            <div class="config-section">
+                <div>
+                    <div class="input-group">
+                        <label>URL de Supabase:</label>
+                        <input type="text" id="supabaseUrl" placeholder="https://tu-proyecto.supabase.co">
+                    </div>
+                    <div class="input-group">
+                        <label>Anon Key:</label>
+                        <input type="password" id="supabaseKey" placeholder="eyJhbGciOiJIUzI1NiIs...">
+                    </div>
+                </div>
+                <div>
+                    <div class="input-group">
+                        <label>Estado de Conexión:</label>
+                        <div id="connectionStatus">
+                            <span class="status-indicator status-unknown"></span>
+                            No configurado
+                        </div>
+                    </div>
+                    <button class="btn" onclick="testConnection()">🔗 Probar Conexión</button>
+                    <button class="btn btn-success" onclick="saveConfig()">💾 Guardar Config</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="card">
+            <h3>📊 Estado Actual</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalArticles">-</div>
+                    <div class="stat-label">Artículos Totales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalViews">-</div>
+                    <div class="stat-label">Views Totales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="problematicArticles">-</div>
+                    <div class="stat-label">Artículos Problemáticos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="rpcStatus">-</div>
+                    <div class="stat-label">Estado RPC</div>
+                </div>
+            </div>
+            <button class="btn" onclick="checkStatus()">🔍 Verificar Estado</button>
+            <button class="btn" onclick="testRPCFunctions()">🧪 Test Funciones RPC</button>
+        </div>
+
+        <!-- Herramientas de Reparación -->
+        <div class="card">
+            <h3>🛠️ Herramientas de Reparación</h3>
+            <div style="margin-bottom: 20px;">
+                <button class="btn" onclick="syncArticlesDirect()">📄 Sincronizar con Método Directo</button>
+                <button class="btn btn-success" onclick="createRPCFunctions()">⚡ Crear Funciones RPC</button>
+                <button class="btn btn-danger" onclick="cleanDatabase()">🧹 Limpiar Base de Datos</button>
+            </div>
+            
+            <h4>📝 Artículos de Ejemplo para Sincronizar:</h4>
+            <div id="sampleArticles">
+                <div class="article-item">
+                    <span>🐕 ¿Por qué mi perro ladra a otros perros?</span>
+                    <span>reactividada</span>
+                </div>
+                <div class="article-item">
+                    <span>🏠 Consejos para la primera noche en casa</span>
+                    <span>primera-noche-casa</span>
+                </div>
+                <div class="article-item">
+                    <span>🍽️ Alimentación para cachorros</span>
+                    <span>alimentacion-cachorros</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs -->
+        <div class="card">
+            <h3>📋 Logs de Diagnóstico</h3>
+            <div class="log-container" id="logContainer">
+                🚀 Herramienta de diagnóstico iniciada...
+                💡 Configura tu URL y clave de Supabase arriba para comenzar.
+            </div>
+            <button class="btn" onclick="clearLogs()">🧹 Limpiar Logs</button>
+        </div>
+    </div>
+
+    <script>
+        let supabaseClient = null;
+        
+        // Configuración guardada en localStorage
+        function loadSavedConfig() {
+            const url = localStorage.getItem('supabase_url');
+            const key = localStorage.getItem('supabase_key');
+            
+            if (url) document.getElementById('supabaseUrl').value = url;
+            if (key) document.getElementById('supabaseKey').value = key;
+            
+            if (url && key) {
+                initSupabase(url, key);
+            }
+        }
+        
+        function saveConfig() {
+            const url = document.getElementById('supabaseUrl').value;
+            const key = document.getElementById('supabaseKey').value;
+            
+            if (!url || !key) {
+                log('❌ URL y clave son requeridos', 'error');
+                return;
+            }
+            
+            localStorage.setItem('supabase_url', url);
+            localStorage.setItem('supabase_key', key);
+            
+            initSupabase(url, key);
+            log('✅ Configuración guardada', 'success');
+        }
+        
+        function initSupabase(url, key) {
+            try {
+                supabaseClient = supabase.createClient(url, key);
+                updateConnectionStatus('🟢 Configurado', 'good');
+                log('✅ Cliente Supabase inicializado', 'success');
+            } catch (error) {
+                updateConnectionStatus('🔴 Error', 'error');
+                log(`❌ Error inicializando Supabase: ${error.message}`, 'error');
+            }
+        }
+        
+        function updateConnectionStatus(text, status) {
+            const statusEl = document.getElementById('connectionStatus');
+            statusEl.innerHTML = `<span class="status-indicator status-${status}"></span>${text}`;
+        }
+        
+        async function testConnection() {
+            if (!supabaseClient) {
+                log('❌ Configura Supabase primero', 'error');
+                return;
+            }
+            
+            log('🔗 Probando conexión...', 'info');
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('articles')
+                    .select('count(*)', { count: 'exact' })
+                    .limit(1);
+                
+                if (error) {
+                    updateConnectionStatus('🔴 Error de conexión', 'error');
+                    log(`❌ Error de conexión: ${error.message}`, 'error');
+                } else {
+                    updateConnectionStatus('🟢 Conectado', 'good');
+                    log('✅ Conexión exitosa a Supabase', 'success');
+                }
+            } catch (error) {
+                updateConnectionStatus('🔴 Error crítico', 'error');
+                log(`❌ Error crítico: ${error.message}`, 'error');
+            }
+        }
+        
+        async function checkStatus() {
+            if (!supabaseClient) {
+                log('❌ Configura Supabase primero', 'error');
+                return;
+            }
+            
+            log('📊 Verificando estado actual...', 'info');
+            
+            try {
+                // Obtener todos los artículos
+                const { data: articles, error: articlesError } = await supabaseClient
+                    .from('articles')
+                    .select('*');
+                
+                if (articlesError) {
+                    log(`❌ Error obteniendo artículos: ${articlesError.message}`, 'error');
+                    return;
+                }
+                
+                const total = articles.length;
+                const totalViews = articles.reduce((sum, a) => sum + (a.views || 0), 0);
+                const problematic = articles.filter(a => 
+                    !a.title || a.title.startsWith('Artículo: ') || a.title === a.slug
+                ).length;
+                
+                // Actualizar estadísticas
+                document.getElementById('totalArticles').textContent = total;
+                document.getElementById('totalViews').textContent = totalViews;
+                document.getElementById('problematicArticles').textContent = problematic;
+                
+                log(`📊 Estado: ${total} artículos, ${totalViews} views, ${problematic} problemáticos`, 'info');
+                
+                // Mostrar muestras
+                if (articles.length > 0) {
+                    log('📄 Muestra de artículos:', 'info');
+                    articles.slice(0, 5).forEach(article => {
+                        log(`  - ${article.slug}: "${article.title}" (${article.views || 0} views)`, 'info');
+                    });
+                }
+                
+            } catch (error) {
+                log(`❌ Error verificando estado: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testRPCFunctions() {
+            if (!supabaseClient) {
+                log('❌ Configura Supabase primero', 'error');
+                return;
+            }
+            
+            log('🧪 Probando funciones RPC...', 'info');
+            
+            // Probar sync_article_from_cms
+            try {
+                const { data, error } = await supabaseClient.rpc('sync_article_from_cms', {
+                    slug_param: 'test-rpc',
+                    title_param: 'Test RPC Function',
+                    category_param: 'test',
+                    author_param: 'Test',
+                    reading_time_param: 5
+                });
+                
+                if (error) {
+                    log(`❌ RPC sync_article_from_cms falla: ${error.message}`, 'error');
+                    document.getElementById('rpcStatus').textContent = '❌';
+                } else {
+                    log('✅ RPC sync_article_from_cms funciona', 'success');
+                    document.getElementById('rpcStatus').textContent = '✅';
+                }
+            } catch (error) {
+                log(`❌ Error probando RPC: ${error.message}`, 'error');
+                document.getElementById('rpcStatus').textContent = '❌';
+            }
+        }
+        
+        async function syncArticlesDirect() {
+            if (!supabaseClient) {
+                log('❌ Configura Supabase primero', 'error');
+                return;
+            }
+            
+            log('📄 Sincronizando artículos con método directo...', 'info');
+            
+            const sampleArticles = [
+                {
+                    slug: 'reactividada',
+                    title: '¿Por qué mi perro ladra a otros perros?',
+                    category: 'comportamiento',
+                    author: 'Dr. Veterinario',
+                    reading_time: 7
+                },
+                {
+                    slug: 'primera-noche-casa',
+                    title: 'Consejos para la primera noche en casa',
+                    category: 'cachorros',
+                    author: 'Entrenador Canino',
+                    reading_time: 5
+                },
+                {
+                    slug: 'alimentacion-cachorros',
+                    title: 'Alimentación para cachorros: Guía completa',
+                    category: 'alimentacion',
+                    author: 'Nutricionista Canino',
+                    reading_time: 8
+                }
+            ];
+            
+            let successCount = 0;
+            let errorCount = 0;
+            
+            for (const article of sampleArticles) {
+                try {
+                    log(`🔄 Sincronizando: ${article.title}`, 'info');
+                    
+                    // Intentar con upsert directo
+                    const { data, error } = await supabaseClient
+                        .from('articles')
+                        .upsert({
+                            slug: article.slug,
+                            title: article.title,
+                            category: article.category,
+                            author: article.author,
+                            reading_time: article.reading_time,
+                            views: 0,
+                            likes: 0,
+                            shares: 0,
+                            trending: false,
+                            featured: false
+                        }, {
+                            onConflict: 'slug'
+                        });
+                    
+                    if (error) {
+                        log(`❌ Error sincronizando ${article.slug}: ${error.message}`, 'error');
+                        errorCount++;
+                    } else {
+                        log(`✅ Sincronizado: ${article.title}`, 'success');
+                        successCount++;
+                    }
+                    
+                } catch (error) {
+                    log(`❌ Error crítico en ${article.slug}: ${error.message}`, 'error');
+                    errorCount++;
+                }
+            }
+            
+            log(`📊 Sincronización completada: ${successCount} exitosos, ${errorCount} errores`, 'info');
+        }
+        
+        async function createRPCFunctions() {
+            log('⚡ Las funciones RPC se deben crear en el Dashboard de Supabase:', 'info');
+            log('1. Ve a tu proyecto en https://app.supabase.com', 'info');
+            log('2. Navega a Database > Functions', 'info');
+            log('3. Crea una función llamada "sync_article_from_cms" con este SQL:', 'info');
+            
+            const sqlFunction = `
+CREATE OR REPLACE FUNCTION sync_article_from_cms(
+  slug_param TEXT,
+  title_param TEXT,
+  category_param TEXT DEFAULT NULL,
+  author_param TEXT DEFAULT NULL,
+  reading_time_param INTEGER DEFAULT 5
+)
+RETURNS VOID
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  INSERT INTO articles (slug, title, category, author, reading_time, views, likes, shares, trending, featured)
+  VALUES (slug_param, title_param, category_param, author_param, reading_time_param, 0, 0, 0, false, false)
+  ON CONFLICT (slug) 
+  DO UPDATE SET
+    title = EXCLUDED.title,
+    category = EXCLUDED.category,
+    author = EXCLUDED.author,
+    reading_time = EXCLUDED.reading_time,
+    updated_at = NOW();
+END;
+$$;`;
+            
+            log(sqlFunction, 'code');
+        }
+        
+        async function cleanDatabase() {
+            if (!supabaseClient) {
+                log('❌ Configura Supabase primero', 'error');
+                return;
+            }
+            
+            if (!confirm('⚠️ ¿Estás seguro de que quieres eliminar TODOS los artículos?')) {
+                return;
+            }
+            
+            log('🧹 Limpiando base de datos...', 'warning');
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('articles')
+                    .delete()
+                    .neq('id', '00000000-0000-0000-0000-000000000000'); // Eliminar todos
+                
+                if (error) {
+                    log(`❌ Error limpiando: ${error.message}`, 'error');
+                } else {
+                    log('✅ Base de datos limpiada', 'success');
+                    checkStatus(); // Actualizar estadísticas
+                }
+            } catch (error) {
+                log(`❌ Error crítico limpiando: ${error.message}`, 'error');
+            }
+        }
+        
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const prefix = {
+                'info': '💬',
+                'success': '✅',
+                'error': '❌',
+                'warning': '⚠️',
+                'code': '📝'
+            }[type] || '💬';
+            
+            logContainer.textContent += `\n[${timestamp}] ${prefix} ${message}`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        function clearLogs() {
+            document.getElementById('logContainer').textContent = '🚀 Logs limpiados...';
+        }
+        
+        // Cargar configuración al iniciar
+        loadSavedConfig();
+    </script>
+</body>
+</html>

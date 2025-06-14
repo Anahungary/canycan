@@ -1,0 +1,191 @@
+---
+// src/components/layout/TrendingSidebar.astro
+import { ArticlesDB } from '../lib/supabase.js';
+
+// 🔧 TIPOS PARA TYPESCRIPT
+interface Article {
+  slug: string;
+  title: string;
+  category?: string;
+  author?: string;
+  reading_time?: number;
+  readingTime?: number;
+  views?: number;
+  trending?: boolean;
+  featured?: boolean;
+  type?: 'trending' | 'popular';
+}
+
+interface Props {
+  excludeSlug?: string;
+  limit?: number;
+  variant?: 'trending' | 'popular' | 'mixed';
+  showViews?: boolean;
+  className?: string;
+}
+
+const { 
+  excludeSlug = null,
+  limit = 5,
+  variant = 'trending',
+  showViews = true,
+  className = ''
+} = Astro.props;
+
+// 🔥 CARGAR ARTÍCULOS DESDE SUPABASE
+let sidebarArticles: Article[] = [];
+let title = '';
+let icon = '';
+
+try {
+  if (variant === 'popular') {
+    const articles = await ArticlesDB.getPopularArticles(excludeSlug ? limit + 1 : limit);
+    sidebarArticles = excludeSlug 
+      ? articles.filter((article: any) => article.slug !== excludeSlug).slice(0, limit)
+      : articles.slice(0, limit);
+    title = 'Más populares';
+    icon = '👑';
+    
+  } else {
+    // trending (default)
+    const articles = await ArticlesDB.getTrendingArticles(excludeSlug ? limit + 1 : limit);
+    sidebarArticles = excludeSlug 
+      ? articles.filter((article: any) => article.slug !== excludeSlug).slice(0, limit)
+      : articles.slice(0, limit);
+    title = 'Trending';
+    icon = '🔥';
+  }
+
+  console.log(`${icon} ${title}: ${sidebarArticles.length} artículos cargados`);
+  
+} catch (error) {
+  console.error(`❌ Error cargando ${variant}:`, error);
+  sidebarArticles = [];
+}
+
+// 🎨 FUNCIONES UTILITARIAS
+function getCategoryColor(category: string): string {
+  const colors: Record<string, string> = {
+    'razas': 'bg-green-100 text-green-800',
+    'comportamiento': 'bg-blue-100 text-blue-800',
+    'alimentación': 'bg-orange-100 text-orange-800',
+    'entrenamiento': 'bg-purple-100 text-purple-800',
+    'salud': 'bg-red-100 text-red-800',
+    'cuidado': 'bg-pink-100 text-pink-800',
+    'adopcion': 'bg-yellow-100 text-yellow-800',
+    'nuevos-duenos': 'bg-indigo-100 text-indigo-800'
+  };
+  return colors[category?.toLowerCase()] || 'bg-gray-100 text-gray-800';
+}
+
+function formatViews(count: number): string {
+  if (!count || count < 1) return '0';
+  if (count < 1000) return count.toString();
+  if (count < 1000000) return (count / 1000).toFixed(1) + 'K';
+  return (count / 1000000).toFixed(1) + 'M';
+}
+
+function getReadingTime(article: Article): number {
+  return article.reading_time || article.readingTime || 5;
+}
+
+function getArticleTitle(article: Article): string {
+  return article.title || 'Artículo sin título';
+}
+---
+
+{sidebarArticles.length > 0 && (
+  <div class={`bg-white rounded-xl border border-gray-200 p-6 shadow-sm ${className}`}>
+    
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">{icon}</span>
+        <h2 class="text-lg font-bold text-gray-900">{title}</h2>
+        <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full font-medium">
+          {sidebarArticles.length}
+        </span>
+      </div>
+      <a href="/articulos" class="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
+        Ver todo
+      </a>
+    </div>
+    
+    <div class="space-y-4">
+      {sidebarArticles.map((article, index) => (
+        <div class="group" data-article-slug={article.slug}>
+          <a href={`/articulos/${article.slug}`} class="block">
+            <article class="flex items-start space-x-3 py-3 px-2 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+              
+              <div class={`
+                flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm
+                ${index === 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' : 
+                  index === 1 ? 'bg-gradient-to-br from-gray-400 to-gray-600' :
+                  index === 2 ? 'bg-gradient-to-br from-orange-400 to-orange-600' :
+                  'bg-gradient-to-br from-green-400 to-green-600'}
+              `}>
+                {index + 1}
+              </div>
+              
+              <div class="flex-1 min-w-0">
+                <h3 class="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-green-600 transition-colors duration-200 mb-2">
+                  {getArticleTitle(article)}
+                </h3>
+                
+                <div class="flex items-center flex-wrap gap-2 text-xs text-gray-500">
+                  <span class={`px-2 py-0.5 rounded-full font-medium ${getCategoryColor(article.category || '')}`}>
+                    {article.category || 'General'}
+                  </span>
+                  
+                  <span class="text-gray-300">•</span>
+                  
+                  <span class="flex items-center gap-1">
+                    <span>⏱️</span>
+                    <span>{getReadingTime(article)}m</span>
+                  </span>
+                  
+                  {showViews && (article.views ?? 0) > 0 && (
+                    <>
+                      <span class="text-gray-300">•</span>
+                      <span class="flex items-center gap-1 text-green-600 font-semibold">
+                        <span>👀</span>
+                        <span>{formatViews(article.views ?? 0)}</span>
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </article>
+          </a>
+          
+          {index < sidebarArticles.length - 1 && (
+            <div class="border-t border-gray-100 mt-3"></div>
+          )}
+        </div>
+      ))}
+    </div>
+    
+    <div class="mt-6 pt-4 border-t border-gray-100">
+      <a 
+        href="/articulos" 
+        class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-medium hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-sm hover:shadow-md"
+      >
+        <span>Ver todos los artículos</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+)}
+
+{sidebarArticles.length === 0 && (
+  <div class={`bg-gray-50 rounded-xl border-2 border-gray-200 border-dashed p-8 text-center ${className}`}>
+    <div class="text-4xl mb-3">📰</div>
+    <h3 class="text-sm font-medium text-gray-900 mb-1">
+      No hay {title.toLowerCase()} disponibles
+    </h3>
+    <p class="text-xs text-gray-600">
+      Vuelve pronto para ver nuevo contenido.
+    </p>
+  </div>
+)}

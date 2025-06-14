@@ -1,0 +1,399 @@
+---
+// src/pages/articulos/admin-sync.astro - ERRORES TYPESCRIPT CORREGIDOS
+---
+
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Balto - Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div class="container mx-auto px-4 py-8 max-w-6xl">
+    
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">🛠️ Panel de Administración Balto</h1>
+      <p class="text-gray-600">Sincronización y monitoreo de artículos con Supabase</p>
+    </div>
+
+    <!-- Status Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-blue-500">
+        <div class="flex items-center">
+          <span class="text-2xl mr-3">🔗</span>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Conexión</p>
+            <p id="connection-status" class="text-lg font-semibold text-gray-900">Verificando...</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-green-500">
+        <div class="flex items-center">
+          <span class="text-2xl mr-3">📰</span>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Artículos</p>
+            <p id="articles-count" class="text-lg font-semibold text-gray-900">0</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-purple-500">
+        <div class="flex items-center">
+          <span class="text-2xl mr-3">👀</span>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Views Totales</p>
+            <p id="total-views" class="text-lg font-semibold text-gray-900">0</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm p-4 border-l-4 border-yellow-500">
+        <div class="flex items-center">
+          <span class="text-2xl mr-3">⏰</span>
+          <div>
+            <p class="text-sm font-medium text-gray-500">Última Sync</p>
+            <p id="last-sync" class="text-lg font-semibold text-gray-900">Nunca</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">🚀 Acciones</h2>
+      
+      <div class="flex flex-wrap gap-3 mb-4">
+        <button 
+          id="test-connection"
+          class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+        >
+          <span>🔍</span>
+          <span>Test Conexión</span>
+        </button>
+
+        <button 
+          id="sync-articles"
+          class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+        >
+          <span>🔄</span>
+          <span>Sincronizar Artículos</span>
+        </button>
+
+        <button 
+          id="test-views"
+          class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+        >
+          <span>👀</span>
+          <span>Test Views</span>
+        </button>
+
+        <button 
+          id="refresh-stats"
+          class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+        >
+          <span>📊</span>
+          <span>Refresh Stats</span>
+        </button>
+      </div>
+
+      <!-- Progress -->
+      <div id="progress-container" class="hidden mb-4">
+        <div class="bg-gray-200 rounded-full h-3">
+          <div id="progress-bar" class="bg-green-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+        <p id="progress-text" class="text-sm text-gray-600 mt-2">Preparando...</p>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- Console Log -->
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-bold text-gray-900">📟 Log Console</h3>
+          <button 
+            id="clear-log"
+            class="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded"
+          >
+            Limpiar
+          </button>
+        </div>
+        <div 
+          id="log-container" 
+          class="bg-gray-900 text-green-400 p-4 rounded-lg h-80 overflow-y-auto font-mono text-sm"
+        >
+          <div class="text-gray-500">// Balto Admin Console iniciado</div>
+        </div>
+      </div>
+
+      <!-- Articles List -->
+      <div class="bg-white rounded-lg shadow-sm p-6">
+        <h3 class="text-lg font-bold text-gray-900 mb-4">📋 Estado de Artículos</h3>
+        <div 
+          id="articles-list" 
+          class="h-80 overflow-y-auto space-y-2"
+        >
+          <div class="text-gray-500 text-center py-8">
+            Ejecuta "Sincronizar Artículos" para ver la lista
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ✅ TIPOS CORREGIDOS - Interfaces TypeScript
+    interface SyncResult {
+      slug: string;
+      status: 'success' | 'error' | 'created' | 'updated';
+      error?: string;
+      views?: number;
+    }
+
+    interface SyncResponse {
+      success: boolean;
+      message: string;
+      stats: {
+        total: number;
+        synced: number;
+        errors: number;
+      };
+      results: SyncResult[];
+    }
+
+    interface ApiResponse {
+      success: boolean;
+      message: string;
+      views?: number;
+      created?: boolean;
+    }
+
+    // ✅ TIPOS CORREGIDOS - Utilidades con tipos explícitos
+    const log = (message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info'): void => {
+      const timestamp = new Date().toLocaleTimeString();
+      const colors: Record<string, string> = {
+        info: 'text-green-400',
+        success: 'text-blue-400', 
+        error: 'text-red-400',
+        warning: 'text-yellow-400'
+      };
+      
+      const container = document.getElementById('log-container');
+      if (!container) return;
+      
+      const line = document.createElement('div');
+      line.className = colors[type] || 'text-green-400';
+      line.textContent = `[${timestamp}] ${message}`;
+      container.appendChild(line);
+      container.scrollTop = container.scrollHeight;
+    };
+
+    const showProgress = (show: boolean, text: string = ''): void => {
+      const container = document.getElementById('progress-container');
+      const textEl = document.getElementById('progress-text');
+      
+      if (!container || !textEl) return;
+      
+      if (show) {
+        container.classList.remove('hidden');
+        textEl.textContent = text;
+      } else {
+        container.classList.add('hidden');
+      }
+    };
+
+    const updateProgress = (percent: number, text: string = ''): void => {
+      const bar = document.getElementById('progress-bar') as HTMLElement | null;
+      const textEl = document.getElementById('progress-text');
+      
+      if (bar) bar.style.width = `${percent}%`;
+      if (text && textEl) textEl.textContent = text;
+    };
+
+    const updateStatus = (field: string, value: string, color: string = 'text-gray-900'): void => {
+      const element = document.getElementById(field);
+      if (element) {
+        element.textContent = value;
+        element.className = `text-lg font-semibold ${color}`;
+      }
+    };
+
+    // ✅ EVENTOS CORREGIDOS - Event Listeners con null checks
+    const clearLogBtn = document.getElementById('clear-log');
+    if (clearLogBtn) {
+      clearLogBtn.addEventListener('click', () => {
+        const container = document.getElementById('log-container');
+        if (container) {
+          container.innerHTML = '<div class="text-gray-500">// Console limpiado</div>';
+        }
+      });
+    }
+
+    const testConnectionBtn = document.getElementById('test-connection');
+    if (testConnectionBtn) {
+      testConnectionBtn.addEventListener('click', async () => {
+        log('🔍 Probando conexión con Supabase...');
+        updateStatus('connection-status', 'Probando...', 'text-yellow-600');
+        
+        try {
+          const response = await fetch('/.netlify/functions/article-view', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug: 'connection-test' })
+          });
+          
+          const result: ApiResponse = await response.json();
+          
+          if (result.success) {
+            log('✅ Conexión exitosa con Supabase', 'success');
+            updateStatus('connection-status', '✅ Conectado', 'text-green-600');
+          } else {
+            log(`❌ Error de conexión: ${result.message}`, 'error');
+            updateStatus('connection-status', '❌ Error', 'text-red-600');
+          }
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+          log(`❌ Error de red: ${errorMessage}`, 'error');
+          updateStatus('connection-status', '❌ Sin conexión', 'text-red-600');
+        }
+      });
+    }
+
+    const syncArticlesBtn = document.getElementById('sync-articles');
+    if (syncArticlesBtn) {
+      syncArticlesBtn.addEventListener('click', async () => {
+        log('🔄 Iniciando sincronización de artículos...');
+        showProgress(true, 'Preparando sincronización...');
+        
+        const syncButton = document.getElementById('sync-articles') as HTMLButtonElement | null;
+        if (syncButton) {
+          syncButton.disabled = true;
+          syncButton.textContent = 'Sincronizando...';
+        }
+        
+        try {
+          updateProgress(25, 'Conectando con servidor...');
+          
+          const response = await fetch('/.netlify/functions/sync-articles', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          
+          updateProgress(50, 'Procesando respuesta...');
+          const result: SyncResponse = await response.json();
+          
+          updateProgress(75, 'Analizando resultados...');
+          
+          if (result.success) {
+            updateProgress(100, 'Sincronización completada');
+            log(`✅ Sincronización exitosa: ${result.stats.synced}/${result.stats.total} artículos`, 'success');
+            
+            // Actualizar stats
+            updateStatus('articles-count', result.stats.synced.toString());
+            updateStatus('last-sync', new Date().toLocaleTimeString());
+            
+            // Mostrar lista de artículos
+            const articlesList = document.getElementById('articles-list');
+            if (articlesList) {
+              articlesList.innerHTML = '';
+              
+              result.results.forEach((item: SyncResult) => {
+                const div = document.createElement('div');
+                div.className = `p-3 rounded border-l-4 ${item.status === 'error' ? 'border-red-500 bg-red-50' : 'border-green-500 bg-green-50'}`;
+                
+                const statusIcon = item.status === 'error' ? '❌' : 
+                                  item.status === 'created' ? '🆕' : '✅';
+                
+                div.innerHTML = `
+                  <div class="flex items-center justify-between">
+                    <span class="font-mono text-sm">${item.slug}</span>
+                    <span>${statusIcon}</span>
+                  </div>
+                  ${item.views !== undefined ? `<div class="text-xs text-gray-500">Views: ${item.views}</div>` : ''}
+                  ${item.error ? `<div class="text-xs text-red-600">${item.error}</div>` : ''}
+                `;
+                
+                articlesList.appendChild(div);
+                
+                // Log individual
+                if (item.status === 'error') {
+                  log(`  ❌ ${item.slug}: ${item.error || 'Error desconocido'}`, 'error');
+                } else {
+                  log(`  ✅ ${item.slug} (${item.status})`, 'success');
+                }
+              });
+            }
+            
+          } else {
+            log(`❌ Error en sincronización: ${result.message}`, 'error');
+          }
+          
+          setTimeout(() => showProgress(false), 2000);
+          
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+          log(`❌ Error de red: ${errorMessage}`, 'error');
+          showProgress(false);
+        } finally {
+          if (syncButton) {
+            syncButton.disabled = false;
+            syncButton.innerHTML = '<span>🔄</span><span>Sincronizar Artículos</span>';
+          }
+        }
+      });
+    }
+
+    const testViewsBtn = document.getElementById('test-views');
+    if (testViewsBtn) {
+      testViewsBtn.addEventListener('click', async () => {
+        log('👀 Probando sistema de views...');
+        
+        const testSlugs = ['test-1', 'test-2', 'reactividada'];
+        
+        for (const slug of testSlugs) {
+          try {
+            const response = await fetch('/.netlify/functions/article-view', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ slug })
+            });
+            
+            const result: ApiResponse = await response.json();
+            
+            if (result.success) {
+              log(`  ✅ ${slug}: ${result.views || 0} views`, 'success');
+            } else {
+              log(`  ❌ ${slug}: ${result.message}`, 'error');
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+          } catch (error) {
+            log(`  ❌ ${slug}: Error de conexión`, 'error');
+          }
+        }
+      });
+    }
+
+    const refreshStatsBtn = document.getElementById('refresh-stats');
+    if (refreshStatsBtn) {
+      refreshStatsBtn.addEventListener('click', () => {
+        log('📊 Función de estadísticas - En desarrollo', 'warning');
+      });
+    }
+
+    // Auto-test connection on load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const testBtn = document.getElementById('test-connection') as HTMLButtonElement | null;
+        if (testBtn) testBtn.click();
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

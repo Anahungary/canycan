@@ -1,8 +1,8 @@
-/* empty css                                 */
-import { c as createComponent, r as renderComponent, a as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BYXCEbbA.mjs';
+/* empty css                                      */
+import { c as createComponent, r as renderComponent, a as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_D02iGaEB.mjs';
 import 'kleur/colors';
-import { $ as $$BaseLayout, a as $$Container } from '../chunks/Container_BIbJk0Bg.mjs';
-import { $ as $$Button } from '../chunks/Button_DiQu0Jvt.mjs';
+import { $ as $$BaseLayout, a as $$Container } from '../chunks/Container_DjUMO5lw.mjs';
+import { $ as $$Button } from '../chunks/Button_CImbW17Y.mjs';
 import { jsxs, jsx, Fragment } from 'react/jsx-runtime';
 import { useState, useEffect, useMemo } from 'react';
 import { c as calculateCompatibilityScore, i as identifyStrengths, a as identifyChallenges } from '../chunks/breedMatcher_D0ea6ER8.mjs';

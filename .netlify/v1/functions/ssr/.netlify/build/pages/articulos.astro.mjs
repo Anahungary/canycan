@@ -1,28 +1,15 @@
-/* empty css                                 */
-import { c as createComponent, r as renderComponent, a as renderTemplate, m as maybeRenderHead, d as addAttribute } from '../chunks/astro/server_BYXCEbbA.mjs';
+/* empty css                                      */
+import { c as createComponent, r as renderComponent, a as renderTemplate, m as maybeRenderHead, f as addAttribute } from '../chunks/astro/server_D02iGaEB.mjs';
 import 'kleur/colors';
-import { getCollection } from '../chunks/_astro_content_p4FGYWmy.mjs';
-import { $ as $$BaseLayout, a as $$Container } from '../chunks/Container_BIbJk0Bg.mjs';
-import { $ as $$Button } from '../chunks/Button_DiQu0Jvt.mjs';
-import { b as $$Card, $ as $$Badge, a as $$ArticleList } from '../chunks/Card_DX0aPP0J.mjs';
+import { getCollection } from '../chunks/_astro_content_Yp6Qe3RC.mjs';
+import { $ as $$BaseLayout, a as $$Container } from '../chunks/Container_DjUMO5lw.mjs';
+import { $ as $$Button } from '../chunks/Button_CImbW17Y.mjs';
+import { b as $$Card, $ as $$Badge, a as $$ArticleList } from '../chunks/Card_DSew77Z6.mjs';
 import '@astrojs/internal-helpers/path';
 import '@astrojs/internal-helpers/remote';
-import { $ as $$Image } from '../chunks/_astro_assets_Cc6zF1xQ.mjs';
-import { $ as $$Newsletter } from '../chunks/Newsletter_DZtf81gC.mjs';
+import { $ as $$Image } from '../chunks/_astro_assets_Dwwpu0V7.mjs';
+import { $ as $$Newsletter } from '../chunks/Newsletter_BbkxrVfi.mjs';
 export { renderers } from '../renderers.mjs';
-
-function generateMarketingViews(articleSlug, isPopular = false) {
-  const hash = articleSlug.split("").reduce((a, b) => {
-    a = (a << 5) - a + b.charCodeAt(0);
-    return a & a;
-  }, 0);
-  const seed = Math.abs(hash);
-  if (isPopular) {
-    return 200 + seed % 1300;
-  } else {
-    return 50 + seed % 250;
-  }
-}
 
 const $$Index = createComponent(async ($$result, $$props, $$slots) => {
   function getAuthorAvatar(authorName) {
@@ -69,8 +56,7 @@ const $$Index = createComponent(async ($$result, $$props, $$slots) => {
   const totalPages = Math.ceil(allArticles.length / ARTICLES_PER_PAGE);
   const firstPageArticles = allArticles.slice(0, ARTICLES_PER_PAGE);
   const featuredArticle = firstPageArticles.map((article) => ({
-    ...article,
-    marketingViews: generateMarketingViews(article.slug, ["entrenamiento", "alimentacion", "salud", "cachorros"].includes(article.data?.category?.toLowerCase()))
+    ...article
   })).sort((a, b) => b.marketingViews - a.marketingViews)[0] || null;
   const otherArticles = firstPageArticles.slice(1);
   console.log(`\u{1F4CA} Index - Total art\xEDculos: ${allArticles.length}, Por p\xE1gina: ${ARTICLES_PER_PAGE}, Total p\xE1ginas: ${totalPages}`);

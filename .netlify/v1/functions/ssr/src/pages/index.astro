@@ -1,149 +1,312 @@
 ---
-// src/pages/index.astro - VERSIÓN SIMPLE: SOLO VERDE Y AMARILLO
+// src/pages/index.astro - VERSIÓN CORREGIDA PARA CARGAR DESDE SUPABASE POR VIEWS
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Container from '../components/ui/Container.astro';
 import Button from '../components/ui/Button.astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Newsletter from '../components/common/Newsletter.astro';
+import { ArticlesDB } from '../lib/supabase.js';
 
 
-// 🔍 CARGAR SOLO ARTÍCULOS REALES DEL CMS
-let allArticles: any[] = [];
-try {
-  allArticles = await getCollection('articulos');
-  allArticles = allArticles
-    .filter((article: any) => article.data.status === 'published')
-    .sort((a: any, b: any) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
-} catch (error) {
-  console.log('No se pudieron cargar los artículos:', error);
-  allArticles = [];
+// 🔧 INTERFACES DE TIPOS
+interface TrendingArticle {
+  slug: string;
+  title: string;
+  category?: string;
+  reading_time?: number;
+  views?: number;
 }
 
-// 📰 USAR PRIMER ARTÍCULO REAL COMO HERO (SI EXISTE)
-const heroArticle = allArticles[0] || null;
+interface SidebarData {
+  trending: TrendingArticle[];
+  popular: TrendingArticle[];
+}
 
-// 📈 TRENDING: SIGUIENTES ARTÍCULOS REALES
-const trendingArticles = allArticles.slice(1, 5);
+// 📊 CONFIGURACIÓN
+const ARTICLES_PER_PAGE = 9;
 
-// Funciones utilitarias
-const formatDate = (date: string | Date) => {
-  return new Date(date).toLocaleDateString('es-ES', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
+console.log('🚀 HOMEPAGE - Cargando artículos ordenados por VIEWS desde Supabase...');
+
+// 🔍 PASO 1: CARGAR ARTÍCULOS DEL CMS (para combinar datos)
+let cmsArticles: any[] = [];
+try {
+  cmsArticles = await getCollection('articulos');
+  cmsArticles = cmsArticles.filter((article: any) => article.data.status === 'published');
+  console.log(`📰 CMS: ${cmsArticles.length} artículos cargados`);
+} catch (error) {
+  console.log('⚠️ No se pudieron cargar artículos del CMS:', error);
+  cmsArticles = [];
+}
+
+// 🔄 PASO 2: OBTENER ARTÍCULOS DESDE SUPABASE ORDENADOS POR VIEWS
+let articlesWithViews: any[] = [];
+let sidebarData: SidebarData = { trending: [], popular: [] };
+
+try {
+  console.log('📊 Obteniendo artículos desde Supabase ordenados por views...');
+  
+  // Obtener artículos ordenados por views desde Supabase
+  const supabaseArticles = await ArticlesDB.getAllArticlesWithStats();
+  console.log(`📊 Supabase: ${supabaseArticles.length} artículos obtenidos`);
+
+  // Combinar datos CMS + Supabase
+  articlesWithViews = supabaseArticles.map(supabaseArticle => {
+    // Buscar artículo correspondiente en CMS
+    const cmsArticle = cmsArticles.find(cms => cms.slug === supabaseArticle.slug);
+    
+    if (cmsArticle) {
+      // Artículo existe en ambos: CMS + Supabase
+      return {
+        ...cmsArticle,
+        supabaseData: {
+          views: supabaseArticle.views || 0,
+          likes: supabaseArticle.likes || 0,
+          shares: supabaseArticle.shares || 0,
+          trending: supabaseArticle.trending || false,
+          featured: supabaseArticle.featured || false,
+          category: supabaseArticle.category,
+          author: supabaseArticle.author,
+          title: supabaseArticle.title
+        },
+        // Usar views de Supabase como principal
+        dynamicViews: supabaseArticle.views || 0,
+        displayTitle: cmsArticle.data?.title || supabaseArticle.title,
+        displayCategory: cmsArticle.data?.category || supabaseArticle.category,
+        displayAuthor: cmsArticle.data?.author || supabaseArticle.author,
+        displayImage: cmsArticle.data?.image || '/images/articles/default.jpg',
+        displayDescription: cmsArticle.data?.description || `Artículo sobre ${supabaseArticle.category || 'mascotas'}`,
+        displayDate: cmsArticle.data?.date || new Date(supabaseArticle.created_at || Date.now()),
+        displayReadingTime: cmsArticle.data?.readingTime || supabaseArticle.reading_time || 5
+      };
+    } else {
+      // Solo existe en Supabase
+      return {
+        slug: supabaseArticle.slug,
+        data: {
+          title: supabaseArticle.title,
+          category: supabaseArticle.category,
+          author: supabaseArticle.author,
+          date: new Date(supabaseArticle.created_at || Date.now()),
+          readingTime: supabaseArticle.reading_time || 5,
+          image: '/images/articles/default.jpg',
+          description: `Artículo sobre ${supabaseArticle.category || 'mascotas'}`,
+          status: 'published'
+        },
+        supabaseData: {
+          views: supabaseArticle.views || 0,
+          likes: supabaseArticle.likes || 0,
+          shares: supabaseArticle.shares || 0,
+          trending: supabaseArticle.trending || false,
+          featured: supabaseArticle.featured || false
+        },
+        dynamicViews: supabaseArticle.views || 0,
+        displayTitle: supabaseArticle.title,
+        displayCategory: supabaseArticle.category,
+        displayAuthor: supabaseArticle.author,
+        displayImage: '/images/articles/default.jpg',
+        displayDescription: `Artículo sobre ${supabaseArticle.category || 'mascotas'}`,
+        displayDate: new Date(supabaseArticle.created_at || Date.now()),
+        displayReadingTime: supabaseArticle.reading_time || 5
+      };
+    }
   });
-};
 
-const getTimeAgo = (date: string | Date) => {
+  // 📊 LOS ARTÍCULOS YA VIENEN ORDENADOS POR VIEWS DESDE SUPABASE
+  console.log(`✅ ${articlesWithViews.length} artículos combinados y ordenados por views`);
+  
+  // Log de los primeros 3 para verificar
+  articlesWithViews.slice(0, 3).forEach((article, index) => {
+    console.log(`📊 #${index + 1}: "${article.displayTitle}" - ${article.dynamicViews} views`);
+  });
+
+  // 🔥 OBTENER DATOS PARA SIDEBAR
+  try {
+    const [trending, popular] = await Promise.all([
+      ArticlesDB.getTrendingArticles(5),
+      ArticlesDB.getPopularArticles(5)
+    ]);
+    
+    sidebarData = { trending, popular };
+    console.log(`🔥 Sidebar: ${trending.length} trending, ${popular.length} popular`);
+  } catch (sidebarError) {
+    console.log('⚠️ Error cargando sidebar:', sidebarError);
+  }
+
+} catch (error) {
+  console.error('❌ Error cargando desde Supabase:', error);
+  
+  // 🔄 FALLBACK: Usar solo artículos del CMS
+  articlesWithViews = cmsArticles.slice(0, ARTICLES_PER_PAGE).map((article, index) => ({
+    ...article,
+    supabaseData: { views: 0, likes: 0, shares: 0 },
+    dynamicViews: Math.max(0, 100 - (index * 10)), // Fallback views decrecientes
+    displayTitle: article.data?.title || 'Artículo sin título',
+    displayCategory: article.data?.category || 'general',
+    displayAuthor: article.data?.author || 'Editor Balto',
+    displayImage: article.data?.image || '/images/articles/default.jpg',
+    displayDescription: article.data?.description || '',
+    displayDate: article.data?.date || new Date(),
+    displayReadingTime: article.data?.readingTime || 5
+  }));
+  
+  console.log(`⚠️ Usando fallback: ${articlesWithViews.length} artículos del CMS`);
+}
+
+// 🎯 ARTÍCULO DESTACADO (EL MÁS VISTO)
+const heroArticle = articlesWithViews.length > 0 ? articlesWithViews[0] : null;
+const remainingArticles = articlesWithViews.slice(1, ARTICLES_PER_PAGE);
+
+console.log(`🌟 Artículo destacado: "${heroArticle?.displayTitle}" (${heroArticle?.dynamicViews || 0} views)`);
+console.log(`📱 Artículos restantes: ${remainingArticles.length}`);
+
+// 🎨 FUNCIONES UTILITARIAS
+function getCategoryColor(category: string) {
+  const colors: Record<string, string> = {
+    'razas': 'bg-green-100 text-green-800 border-green-200',
+    'comportamiento': 'bg-blue-100 text-blue-800 border-blue-200',
+    'alimentación': 'bg-orange-100 text-orange-800 border-orange-200',
+    'alimentacion': 'bg-orange-100 text-orange-800 border-orange-200',
+    'entrenamiento': 'bg-purple-100 text-purple-800 border-purple-200',
+    'salud': 'bg-red-100 text-red-800 border-red-200',
+    'cuidado': 'bg-pink-100 text-pink-800 border-pink-200',
+    'adopcion': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    'nuevos-duenos': 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    'general': 'bg-gray-100 text-gray-800 border-gray-200'
+  };
+  return colors[category?.toLowerCase()] || colors['general'];
+}
+
+function formatViews(count: number): string {
+  if (!count || count < 1) return '0';
+  if (count < 1000) return count.toString();
+  if (count < 1000000) return (count / 1000).toFixed(1) + 'K';
+  return (count / 1000000).toFixed(1) + 'M';
+}
+
+function formatDate(date: string | Date): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return d.toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
+function getTimeAgo(date: string | Date): string {
   const now = new Date();
-  const articleDate = new Date(date);
+  const articleDate = typeof date === 'string' ? new Date(date) : date;
   const diffInHours = Math.floor((now.getTime() - articleDate.getTime()) / (1000 * 60 * 60));
   
   if (diffInHours < 1) return 'Hace unos minutos';
   if (diffInHours < 24) return `Hace ${diffInHours} horas`;
   if (diffInHours < 48) return 'Ayer';
   return formatDate(date);
+}
+
+// 📊 ESTADÍSTICAS PARA MOSTRAR
+const stats = {
+  total: articlesWithViews.length,
+  totalViews: articlesWithViews.reduce((sum, a) => sum + (a.dynamicViews || 0), 0),
+  avgViews: articlesWithViews.length > 0 ? Math.round(articlesWithViews.reduce((sum, a) => sum + (a.dynamicViews || 0), 0) / articlesWithViews.length) : 0,
+  categories: [...new Set(articlesWithViews.map(a => a.displayCategory).filter(Boolean))].length
 };
 
-// 🎨 SOLO VERDE Y AMARILLO PARA DESTACAR
-const getCategoryColor = (category: string) => {
-  const colors: Record<string, string> = {
-    'razas': 'bg-green-100 text-green-800 border-green-200',
-    'comportamiento': 'bg-gray-100 text-gray-800 border-gray-200',
-    'alimentación': 'bg-green-100 text-green-800 border-green-200',
-    'entrenamiento': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    'salud': 'bg-gray-100 text-gray-800 border-gray-200',
-    'cuidado': 'bg-gray-100 text-gray-800 border-gray-200',
-    'adopcion': 'bg-green-100 text-green-800 border-green-200',
-    'nuevos-duenos': 'bg-yellow-100 text-yellow-800 border-yellow-200'
-  };
-  return colors[category?.toLowerCase()] || 'bg-gray-100 text-gray-800 border-gray-200';
-};
+console.log(`📊 ESTADÍSTICAS FINALES:`, stats);
 ---
 
 <BaseLayout
-  title="Balto - La revista digital líder en mascotas"
-  description="Noticias, análisis y guías sobre perros y gatos. Encuentra tu raza ideal, aprende técnicas de entrenamiento y mantente al día con las últimas tendencias."
+  title="Balto - Artículos más populares sobre mascotas"
+  description="Descubre los artículos más leídos sobre cuidado de mascotas. Contenido ordenado por popularidad real de nuestros lectores."
   bodyClass="homepage-modern"
 >
 
-  {/* 🎯 HERO SECTION CON ARTÍCULO DESTACADO - DISEÑO DE /ARTICULOS */}
+  {/* 🎯 HERO SECTION CON ARTÍCULO MÁS VISTO */}
   {heroArticle && (
     <section class="bg-gradient-to-br from-green-700 to-green-500 py-12 md:px-24 px-0">
       <Container size="xl">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          {/* ARTÍCULO DESTACADO PRINCIPAL - USANDO DISEÑO DE /ARTICULOS */}
+          {/* 🌟 ARTÍCULO DESTACADO PRINCIPAL */}
           <div class="lg:col-span-8">
             <div class="mb-6">
-              
+              {/* Badge de "Más Leído" */}
+              <div class="inline-flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold mb-4">
+                <span>🔥</span>
+                <span>ARTÍCULO MÁS LEÍDO</span>
+                <span class="bg-white text-red-500 px-2 py-0.5 rounded-full text-xs font-bold">
+                  👀 {formatViews(heroArticle.dynamicViews)}
+                </span>
+              </div>
               
               <a href={`/articulos/${heroArticle.slug}`} class="block">
                 <article class="bg-white rounded-2xl overflow-hidden shadow-xl border-2 border-green-200 hover:shadow-2xl hover:border-green-300 transition-all duration-300">
                   
-                  {/* IMAGEN GRANDE ARRIBA */}
+                  {/* IMAGEN DESTACADA */}
                   <div class="relative h-64 sm:h-80 md:h-96 overflow-hidden">
                     <Image 
-                      src={heroArticle.data?.image || '/images/articles/default.jpg'} 
-                      alt={heroArticle.data?.title || 'Artículo destacado sobre cuidado de mascotas'}
+                      src={heroArticle.displayImage} 
+                      alt={heroArticle.displayTitle}
                       width={800}
                       height={400}
-                      class="w-full h-full object-cover"
+                      class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     />
                     
-                    {/* Badge de destacado */}
+                    {/* Overlay con categoría */}
                     <div class="absolute top-4 left-4">
-                      <span class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900 px-4 py-2 rounded-full text-xs font-bold shadow-lg">
-                        ⭐ DESTACADO
+                      <span class={`px-3 py-1 rounded-full text-sm font-bold border-2 ${getCategoryColor(heroArticle.displayCategory)}`}>
+                        {heroArticle.displayCategory || 'General'}
                       </span>
                     </div>
+                    
+                    {/* Badge de trending */}
+                    {heroArticle.supabaseData?.trending && (
+                      <div class="absolute top-4 right-4">
+                        <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                          🔥 Trending
+                        </span>
+                      </div>
+                    )}
                   </div>
                   
-                  {/* INFORMACIÓN ABAJO - RESPONSIVE */}
-                  <div class="p-6 sm:p-8">
-                    {/* Badge de categoría */}
-                    <div class="mb-4">
-                      <span class={`inline-block px-3 py-1 rounded-full bg-green-500 text-white text-xs font-bold ${getCategoryColor(heroArticle.data?.category || 'general')}`}>
-                        {heroArticle.data?.category || 'General'}
+                  {/* CONTENIDO */}
+                  <div class="p-8">
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4 line-clamp-3">
+                      {heroArticle.displayTitle}
+                    </h1>
+                    
+                    {heroArticle.displayDescription && (
+                      <p class="text-gray-600 text-lg mb-6 line-clamp-3">
+                        {heroArticle.displayDescription}
+                      </p>
+                    )}
+                    
+                    {/* METADATOS */}
+                    <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
+                      <span class="flex items-center gap-2">
+                        <span>👤</span>
+                        <span class="font-medium">{heroArticle.displayAuthor}</span>
+                      </span>
+                      <span class="flex items-center gap-2">
+                        <span>📅</span>
+                        <span>{getTimeAgo(heroArticle.displayDate)}</span>
+                      </span>
+                      <span class="flex items-center gap-2">
+                        <span>⏱️</span>
+                        <span>{heroArticle.displayReadingTime} min lectura</span>
+                      </span>
+                      <span class="flex items-center gap-2 text-green-600 font-semibold">
+                        <span>👀</span>
+                        <span>{formatViews(heroArticle.dynamicViews)} lecturas</span>
                       </span>
                     </div>
                     
-                    {/* Título */}
-                    <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight hover:text-green-600 transition-colors">
-                      {heroArticle.data?.title || 'Título del artículo'}
-                    </h3>
-                    
-                    {/* Descripción */}
-                    <p class="text-gray-600 mb-6 text-sm sm:text-base lg:text-lg leading-relaxed line-clamp-3">
-                      {heroArticle.data?.description || 'Descripción del artículo'}
-                    </p>
-                    
-                    {/* Meta información y botón */}
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                      {/* Meta información */}
-                      <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500">
-                        <span class="flex items-center gap-1">
-                          <span>👤</span>
-                          <span>{heroArticle.data?.author || 'Editor Balto'}</span>
-                        </span>
-                        <span class="flex items-center gap-1">
-                          <span>📅</span>
-                          <span>{heroArticle.data?.date ? getTimeAgo(heroArticle.data.date) : 'Reciente'}</span>
-                        </span>
-                        <span class="flex items-center gap-1">
-                          <span>⏱️</span>
-                          <span>{heroArticle.data?.readingTime || 5} min lectura</span>
-                        </span>
-                      </div>
-                      
-                      {/* Botón de acción */}
-                      <div class="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-lg font-bold transition-colors duration-200 shadow-lg text-sm sm:text-base">
-                        <span>Leer artículo</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                      </div>
+                    {/* BOTÓN DE ACCIÓN */}
+                    <div class="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg font-bold transition-colors duration-200 shadow-lg hover:from-green-600 hover:to-green-700">
+                      <span>Leer artículo completo</span>
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                      </svg>
                     </div>
                   </div>
                 </article>
@@ -151,228 +314,260 @@ const getCategoryColor = (category: string) => {
             </div>
           </div>
 
-          {/* SIDEBAR CON ARTÍCULOS TRENDING */}
-          {trendingArticles.length > 0 && (
-            <div class="lg:col-span-4">
-              <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          {/* 🔥 SIDEBAR CON TRENDING */}
+          <div class="lg:col-span-4">
+            {sidebarData.trending.length > 0 && (
+              <div class="bg-white rounded-xl border border-greem-500 p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-6">
-                  <img src="/images/perro3.svg" alt="Destacado" class="w-20" />
-                  <h2 class="text-lg font-bold text-gray-900">Artículos destacados</h2>
-                  <a href="/articulos" class="text-sm text-green-600 font-medium">Ver todo</a>
+                  <div class="flex items-center gap-3">
+                    <span class="text-2xl">🔥</span>
+                    <h2 class="text-lg font-bold text-gray-900">Trending</h2>
+                    <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full font-medium">
+                      {sidebarData.trending.length}
+                    </span>
+                  </div>
+                  <a href="/articulos" class="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
+                    Ver todo
+                  </a>
                 </div>
                 
                 <div class="space-y-4">
-                  {trendingArticles.map((article, index) => (
-                    <>
+                  {sidebarData.trending.slice(0, 5).map((article, index) => (
+                    <div class="group">
                       <a href={`/articulos/${article.slug}`} class="block">
-                        <article class="flex items-start space-x-3 py-2 rounded-lg">
-                          <div class={`flex-shrink-0 w-8 h-8 ${index === 0 ? 'bg-yellow-400' : 'bg-green-500'} rounded-lg flex items-center justify-center text-white font-bold text-sm`}>
+                        <article class="flex items-start space-x-3 py-3 px-2 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                          <div class={`
+                            flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm
+                            ${index === 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' : 
+                              index === 1 ? 'bg-gradient-to-br from-gray-400 to-gray-600' :
+                              index === 2 ? 'bg-gradient-to-br from-orange-400 to-orange-600' :
+                              'bg-gradient-to-br from-green-400 to-green-600'}
+                          `}>
                             {index + 1}
                           </div>
+                          
                           <div class="flex-1 min-w-0">
-                            <h3 class="text-sm font-semibold text-gray-900 line-clamp-2">
-                              {article.data.title}
+                            <h3 class="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-green-600 transition-colors duration-200 mb-2">
+                              {article.title}
                             </h3>
-                            <div class="flex items-center space-x-2 mt-1 text-xs text-gray-500">
-                              <span class={`px-2 py-0.5 rounded-full ${getCategoryColor(article.data.category)}`}>
-                                {article.data.category}
+                            
+                            <div class="flex items-center flex-wrap gap-2 text-xs text-gray-500">
+                              <span class={`px-2 py-0.5 rounded-full font-medium ${getCategoryColor(article.category || '')}`}>
+                                {article.category || 'General'}
                               </span>
-                              <span>•</span>
-                              <span>{article.data.readingTime || 5}m</span>
+                              
+                              <span class="text-green-500">•</span>
+                              
+                              <span class="flex items-center gap-1">
+                                <span>⏱️</span>
+                                <span>{article.reading_time || 5}m</span>
+                              </span>
+                              
+                              <span class="text-gray-300">•</span>
+                              <span class="flex items-center gap-1 text-green-600 font-semibold">
+                                <span>👀</span>
+                                <span>{formatViews(article.views || 0)}</span>
+                              </span>
                             </div>
                           </div>
                         </article>
                       </a>
                       
-                      {index < trendingArticles.length - 1 && (
-                        <div class="border-t border-gray-200 my-3"></div>
+                      {index < sidebarData.trending.length - 1 && (
+                        <div class="border-t-2 border-gray-100 mt-3"></div>
                       )}
-                    </>
+                    </div>
                   ))}
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </Container>
     </section>
   )}
 
-  {/* 📰 ARTÍCULOS RECIENTES */}
-  {allArticles.length > 0 && (
+  {/* 📰 SECCIÓN DE ARTÍCULOS MÁS POPULARES */}
+  {remainingArticles.length > 0 && (
     <section class="py-16 px-0 md:px-24 bg-white">
       <Container size="xl">
+        
+        {/* 📋 HEADER DE SECCIÓN */}
         <div class="flex items-center justify-between mb-8">
-          <h2 class="text-3xl font-bold text-gray-900">Últimas noticias</h2>
-          <Button href="/articulos" variant="outline" size="sm" class="border-green-500 text-green-600">
-            Ver todo
+          <div class="flex items-center gap-4">
+            <h2 class="text-3xl font-bold text-gray-900">Más populares</h2>
+            <div class="flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+              <span>👀</span>
+              <span>Ordenado por lecturas</span>
+            </div>
+            <div class="text-sm text-gray-500">
+              {stats.totalViews.toLocaleString()} views totales
+            </div>
+          </div>
+          <Button href="/articulos" variant="outline" size="sm" class="border-green-500 text-green-600 hover:bg-green-50">
+            Ver todos
           </Button>
         </div>
 
+        {/* 📱 GRID DE ARTÍCULOS */}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {allArticles.slice(heroArticle ? 1 : 0, 10).map((article) => (
-            <a href={`/articulos/${article.slug}`} class="block">
-              <article class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-200">
-                <div class="aspect-[16/10] relative overflow-hidden">
+          {remainingArticles.map((article, index) => (
+            <a href={`/articulos/${article.slug}`} class="group" data-article-index={index}>
+              <article class="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-green-200 transition-all duration-300 overflow-hidden">
+                
+                {/* 🖼️ IMAGEN */}
+                <div class="relative h-48 overflow-hidden">
                   <Image 
-                    src={article.data.image || '/images/articles/default.jpg'} 
-                    alt={article.data.title}
+                    src={article.displayImage}
+                    alt={article.displayTitle}
                     width={400}
-                    height={250}
-                    class="w-full h-full object-cover"
+                    height={240}
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
-                  <div class="absolute top-3 left-3">
-                    <span class={`px-2 py-1 rounded-full text-xs font-semibold ${getCategoryColor(article.data.category)}`}>
-                      {article.data.category}
+                  
+                  {/* Rankings y badges */}
+                  <div class="absolute top-3 left-3 right-3 flex justify-between items-start">
+                    {/* Ranking badge */}
+                    <span class={`
+                      w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm
+                      ${index + 1 === 1 ? 'bg-yellow-500' : 
+                        index + 1 === 2 ? 'bg-gray-400' :
+                        index + 1 === 3 ? 'bg-orange-400' :
+                        'bg-green-500'}
+                    `}>
+                      #{index + 2}
+                    </span>
+                    
+                    {/* Views badge */}
+                    <span class="bg-black/70 text-white px-2 py-1 rounded-full text-xs font-medium">
+                      👀 {formatViews(article.dynamicViews)}
+                    </span>
+                  </div>
+                  
+                  {/* Categoría */}
+                  <div class="absolute bottom-3 left-3">
+                    <span class={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(article.displayCategory)}`}>
+                      {article.displayCategory || 'General'}
                     </span>
                   </div>
                 </div>
                 
+                {/* 📝 CONTENIDO */}
                 <div class="p-5">
-                  <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
-                    {article.data.title}
+                  <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-green-600 transition-colors">
+                    {article.displayTitle}
                   </h3>
                   
-                  <p class="text-gray-600 text-sm mb-3 line-clamp-2">
-                    {article.data.description}
-                  </p>
+                  {article.displayDescription && (
+                    <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                      {article.displayDescription}
+                    </p>
+                  )}
                   
+                  {/* METADATOS */}
                   <div class="flex items-center justify-between text-xs text-gray-500">
-                    <div class="flex items-center space-x-2">
-                      <span class="font-medium">{article.data.author || 'Editor'}</span>
-                      <span>•</span>
-                      <span>{getTimeAgo(article.data.date)}</span>
+                    <div class="flex items-center gap-3">
+                      <span class="flex items-center gap-1">
+                        <span>👤</span>
+                        <span class="truncate max-w-20">{article.displayAuthor}</span>
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <span>⏱️</span>
+                        <span>{article.displayReadingTime}m</span>
+                      </span>
                     </div>
-                    <span>{article.data.readingTime || 5}m</span>
+                    
+                    <span class="flex items-center gap-1 text-green-600 font-semibold">
+                      <span>👀</span>
+                      <span>{formatViews(article.dynamicViews)}</span>
+                    </span>
                   </div>
                 </div>
               </article>
             </a>
           ))}
         </div>
-      </Container>
-    </section>
-  )}
 
-  {/* 📝 MENSAJE SI NO HAY ARTÍCULOS */}
-  {allArticles.length === 0 && (
-    <section class="py-16 bg-green-50">
-      <Container size="lg">
-        <div class="text-center max-w-2xl mx-auto">
-          <div class="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <span class="text-4xl">📝</span>
-          </div>
-          <h2 class="text-2xl font-bold text-gray-900 mb-4">
-            ¡Bienvenido a Balto!
-          </h2>
-          <p class="text-gray-600 mb-8">
-            Aún no hay artículos publicados. Comienza creando contenido increíble para los amantes de las mascotas.
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button href="/admin/" variant="primary" size="lg" class="bg-green-600 hover:bg-green-700 text-white">
-              📝 Crear primer artículo
-            </Button>
-            <Button href="/comparador-razas" variant="outline" size="lg" class="border-yellow-500 text-yellow-600">
-              🔍 Explorar comparador
-            </Button>
-          </div>
+        {/* 🔗 BOTÓN PARA VER MÁS */}
+        <div class="text-center mt-12">
+          <Button 
+            href="/articulos" 
+            variant="primary" 
+            size="lg"
+            class="bg-gradient-to-r text-white from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+          >
+            <span>Ver todos los artículos</span>
+            
+          </Button>
         </div>
       </Container>
     </section>
   )}
 
-  {/* 🎯 SECCIÓN COMPARADOR CON VERDE PRINCIPAL */}
-  <section class="py-16 px-0 md:px-24 bg-gradient-to-br from-green-500 to-green-600 text-white">
+  {/* 📊 SECCIÓN DE ESTADÍSTICAS 
+  <section class="py-16 px-0 md:px-24 bg-gray-50">
     <Container size="xl">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div>
-          <h2 class="text-3xl lg:text-4xl font-bold mb-6">
-            Encuentra tu mascota ideal
-          </h2>
-          <p class="text-lg text-green-100 mb-8">
-            Nuestro algoritmo inteligente analiza tu estilo de vida y te recomienda 
-            las razas más compatibles. Muchas familias ya encontraron su compañero perfecto.
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4">
-            <Button href="/tu-raza-ideal" variant="secondary" size="lg" class="bg-yellow-400 text-yellow-900 hover:bg-yellow-500">
-              🎯 Test personalizado
-            </Button>
-            <Button href="/comparador-razas" variant="outline" size="lg" class="border-white text-white hover:bg-white/10">
-              🔍 Comparar razas
-            </Button>
-          </div>
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Estadísticas de lectura</h2>
+        <p class="text-gray-600">Datos en tiempo real de nuestros lectores</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl p-6 text-center shadow-sm">
+          <div class="text-3xl font-bold text-green-600 mb-2">{stats.total}</div>
+          <div class="text-gray-600">Artículos totales</div>
         </div>
         
-        <div class="grid grid-cols-2 gap-4">
-          <div class="bg-white/10 rounded-xl p-6 text-center">
-            <div class="text-3xl font-bold mb-2">50+</div>
-            <div class="text-sm text-green-100">Razas analizadas</div>
-          </div>
-          <div class="bg-yellow-400/20 rounded-xl p-6 text-center">
-            <div class="text-3xl font-bold mb-2">95%</div>
-            <div class="text-sm text-green-100">Satisfacción</div>
-          </div>
-          <div class="col-span-2 bg-white/10 rounded-xl p-6 text-center">
-            <div class="text-sm text-green-100">Familias ayudadas</div>
-          </div>
+        <div class="bg-white rounded-xl p-6 text-center shadow-sm">
+          <div class="text-3xl font-bold text-blue-600 mb-2">{stats.totalViews.toLocaleString()}</div>
+          <div class="text-gray-600">Views totales</div>
+        </div>
+        
+        <div class="bg-white rounded-xl p-6 text-center shadow-sm">
+          <div class="text-3xl font-bold text-purple-600 mb-2">{stats.avgViews}</div>
+          <div class="text-gray-600">Promedio de views</div>
+        </div>
+        
+        <div class="bg-white rounded-xl p-6 text-center shadow-sm">
+          <div class="text-3xl font-bold text-orange-600 mb-2">{stats.categories}</div>
+          <div class="text-gray-600">Categorías</div>
         </div>
       </div>
     </Container>
+  </section>*/}
+
+  {/* 📰 NEWSLETTER SECCIÓN */}
+  <section class="py-16 px-0 md:px-24 bg-gradient-to-br from-green-50 to-emerald-50">
+    <Container size="xl">
+      <Newsletter 
+        variant="homepage"
+        title="No te pierdas los artículos más populares"
+        description="Recibe cada semana un resumen de los artículos más leídos y las últimas novedades sobre cuidado de mascotas."
+      />
+    </Container>
   </section>
 
- {/* 📧 NEWSLETTER */}
-<section class="py-16 bg-yellow-50">
-  <Container size="lg">
-    <div class="max-w-3xl mx-auto text-center">
-      <Newsletter variant="homepage" />
-
-    </div>
-  </Container>
-</section>
 </BaseLayout>
 
-<style>
-  /* 📐 ESTILOS SIMPLES Y LIMPIOS */
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* Transiciones suaves pero simples */
-  a, button {
-    transition: all 0.2s ease;
-  }
-
-  /* Focus accesible */
-  button:focus-visible,
-  a:focus-visible,
-  input:focus-visible {
-    outline: 2px solid #eab308;
-    outline-offset: 2px;
-  }
-
-  /* Scroll suave */
-  html {
-    scroll-behavior: smooth;
-  }
-
-  /* Mejoras responsive */
-  @media (max-width: 768px) {
-    .text-3xl {
-      font-size: 1.875rem;
-    }
+<script>
+  document.addEventListener('click', function(e: Event) {
+    const target = e.target as HTMLElement;
+    if (!target) return;
     
-    .text-4xl {
-      font-size: 2.25rem;
+    const link = target.closest('a[href*="/articulos/"]') as HTMLAnchorElement;
+    if (link) {
+      const href = link.getAttribute('href');
+      const slug = href?.split('/').pop();
+      
+      if (slug) {
+        setTimeout(() => {
+          fetch('/.netlify/functions/article-view', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug })
+          }).catch(() => {});
+        }, 100);
+      }
     }
-  }
-</style>
+  });
+</script>

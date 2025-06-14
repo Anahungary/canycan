@@ -1,7 +1,7 @@
-/* empty css                                    */
-import { b as createAstro, c as createComponent, r as renderComponent, a as renderTemplate } from '../../chunks/astro/server_BYXCEbbA.mjs';
+/* empty css                                         */
+import { e as createAstro, c as createComponent, r as renderComponent, a as renderTemplate } from '../../chunks/astro/server_D02iGaEB.mjs';
 import 'kleur/colors';
-import { $ as $$CategoryLayout } from '../../chunks/CategoryLayout_I3m1DxIi.mjs';
+import { $ as $$CategoryLayout } from '../../chunks/CategoryLayout_BEiJO_3Y.mjs';
 export { renderers } from '../../renderers.mjs';
 
 const $$Astro = createAstro("https://Balto.com");

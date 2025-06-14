@@ -1,7 +1,7 @@
-/* empty css                                 */
-import { c as createComponent, r as renderComponent, a as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BYXCEbbA.mjs';
+/* empty css                                      */
+import { c as createComponent, r as renderComponent, a as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_D02iGaEB.mjs';
 import 'kleur/colors';
-import { $ as $$BaseLayout, a as $$Container } from '../chunks/Container_BIbJk0Bg.mjs';
+import { $ as $$BaseLayout, a as $$Container } from '../chunks/Container_DjUMO5lw.mjs';
 import { jsxs, jsx, Fragment } from 'react/jsx-runtime';
 import React, { useState, useEffect } from 'react';
 import { b as breedsData } from '../chunks/index_NJrSibqZ.mjs';
@@ -1846,7 +1846,7 @@ const BreedMatchQuiz = () => {
                   }
                 },
                 disabled: !isSelectedForComparison(breed.id) && selectedForComparison.length >= 3,
-                className: `w-full px-3 py-1 rounded text-xs font-medium transition-colors ${isSelectedForComparison(breed.id) ? "bg-red-500 hover:bg-red-600 text-white" : selectedForComparison.length >= 3 ? "bg-gray-300 text-green-500 cursor-not-allowed" : "bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white"}`,
+                className: `w-full px-3 py-1 rounded text-xs font-medium transition-colors ${isSelectedForComparison(breed.id) ? "bg-red-500 hover:bg-red-600 text-white" : selectedForComparison.length >= 3 ? "bg-gray-300 text-white cursor-not-allowed" : "bg-green-500 hover:bg-green-800 text-white"}`,
                 children: isSelectedForComparison(breed.id) ? "Quitar" : selectedForComparison.length >= 3 ? "Máximo 3" : "Comparar"
               }
             )
@@ -1880,8 +1880,8 @@ const BreedMatchQuiz = () => {
         ] })
       ] }),
       showComparator && selectedForComparison.length > 0 && renderComparisonAnalysis(),
-      /* @__PURE__ */ jsxs("div", { className: "mt-8 bg-gradient-to-r from-[#C8D6B9] to-[#B8CBA9] rounded-lg p-6 text-center", children: [
-        /* @__PURE__ */ jsx("h4", { className: "text-xl font-bold text-[#5A7251] mb-2", children: "🔍 ¿Quieres comparar tus recomendaciones?" }),
+      /* @__PURE__ */ jsxs("div", { className: "mt-8 bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-center", children: [
+        /* @__PURE__ */ jsx("h4", { className: "text-xl font-bold text-green-900 mb-2", children: "🔍 ¿Quieres comparar tus recomendaciones?" }),
         /* @__PURE__ */ jsx("p", { className: "text-[#5A7251] mb-4", children: "Compara tu raza colombiana vs la ideal global para tomar la mejor decisión" }),
         /* @__PURE__ */ jsx(
           "button",

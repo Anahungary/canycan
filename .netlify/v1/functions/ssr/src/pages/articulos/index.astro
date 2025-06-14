@@ -9,7 +9,7 @@ import ArticleList from '../../components/blog/ArticleList.astro';
 import Card from '../../components/ui/Card.astro';
 import { Image } from 'astro:assets';
 import Newsletter from '../../components/common/Newsletter.astro';  // ← AGREGAR ESTA LÍNEA
-import { generateMarketingViews } from '../../utils/viewsMarketing.ts';
+import { DynamicViews } from '../../utils/viewsDynamic.ts';
 
 
 
@@ -81,7 +81,6 @@ const firstPageArticles = allArticles.slice(0, ARTICLES_PER_PAGE);
 const featuredArticle = firstPageArticles
   .map(article => ({
     ...article,
-    marketingViews: generateMarketingViews(article.slug, ['entrenamiento', 'alimentacion', 'salud', 'cachorros'].includes(article.data?.category?.toLowerCase()))
   }))
   .sort((a, b) => b.marketingViews - a.marketingViews)[0] || null;
 // ✅ ARTÍCULOS RESTANTES PARA LA GRILLA (8 artículos después del destacado)

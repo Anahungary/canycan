@@ -1,0 +1,343 @@
+---
+// src/components/ArticleGrid.astro - Grilla especializada para views dinámicas
+import { Image } from 'astro:assets';
+import Badge from './ui/Badge.astro';
+import Button from './ui/Button.astro';
+
+interface Article {
+  id?: string;
+  slug: string;
+  title: string;
+  excerpt?: string;
+  description?: string;
+  image?: string;
+  author?: {
+    name: string;
+    avatar?: string;
+  } | string;
+  date: string | Date;
+  readingTime?: number;
+  category?: string;
+  categories?: string[];
+  views?: number;
+  dynamicViews?: number; // ← Para views dinámicas
+  trending?: boolean;
+  featured?: boolean;
+  data?: any; // Para compatibilidad con estructuras del CMS
+}
+
+interface Props {
+  articles: Article[];
+  title?: string;
+  description?: string;
+  columns?: 1 | 2 | 3 | 4;
+  showViews?: boolean;
+  showViewsLabel?: boolean;
+  viewsKey?: 'views' | 'dynamicViews';
+  layout?: 'grid' | 'masonry' | 'compact';
+  showMeta?: boolean;
+  showExcerpt?: boolean;
+  sortByViews?: boolean;
+  maxArticles?: number;
+  emptyMessage?: string;
+}
+
+const { 
+  articles = [],
+  title,
+  description,
+  columns = 3,
+  showViews = true,
+  showViewsLabel = true,
+  viewsKey = 'dynamicViews',
+  layout = 'grid',
+  showMeta = true,
+  showExcerpt = true,
+  sortByViews = false,
+  maxArticles,
+  emptyMessage = 'No hay artículos disponibles'
+} = Astro.props;
+
+// 🔧 PROCESAMIENTO DE ARTÍCULOS
+let processedArticles = [...articles];
+
+// Limitar cantidad si se especifica
+if (maxArticles) {
+  processedArticles = processedArticles.slice(0, maxArticles);
+}
+
+// Ordenar por views si se solicita
+if (sortByViews) {
+  processedArticles.sort((a, b) => {
+    const viewsA = a[viewsKey] || a.views || 0;
+    const viewsB = b[viewsKey] || b.views || 0;
+    return viewsB - viewsA;
+  });
+}
+
+// 🎨 CONFIGURACIÓN DE ESTILOS
+const gridClasses = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-1 sm:grid-cols-2',
+  3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+  4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+};
+
+// 🔧 FUNCIONES UTILITARIAS
+function getArticleViews(article: Article): number {
+  return article[viewsKey] || article.views || 0;
+}
+
+function formatViews(count: number): string {
+  if (count < 1000) return count.toString();
+  if (count < 1000000) return (count / 1000).toFixed(1) + 'K';
+  return (count / 1000000).toFixed(1) + 'M';
+}
+
+function getAuthorName(author: any): string {
+  if (typeof author === 'string') return author;
+  if (author?.name) return author.name;
+  return 'Editor Balto';
+}
+
+function getArticleDate(date: string | Date): Date {
+  return typeof date === 'string' ? new Date(date) : date;
+}
+
+function formatDate(date: string | Date): string {
+  const articleDate = getArticleDate(date);
+  const now = new Date();
+  const diffInHours = Math.floor((now.getTime() - articleDate.getTime()) / (1000 * 60 * 60));
+  
+  if (diffInHours < 24) return `hace ${diffInHours}h`;
+  if (diffInHours < 24 * 7) return `hace ${Math.floor(diffInHours / 24)}d`;
+  return articleDate.toLocaleDateString('es-ES', {
+    day: 'numeric',
+    month: 'short'
+  });
+}
+
+function getCategoryColor(category: string): string {
+  const colors: Record<string, string> = {
+    'entrenamiento': 'bg-blue-100 text-blue-800',
+    'alimentacion': 'bg-green-100 text-green-800',
+    'salud': 'bg-red-100 text-red-800',
+    'cachorros': 'bg-yellow-100 text-yellow-800',
+    'cuidados': 'bg-purple-100 text-purple-800',
+    'comportamiento': 'bg-indigo-100 text-indigo-800',
+    'general': 'bg-gray-100 text-gray-800'
+  };
+  return colors[category?.toLowerCase()] || colors['general'];
+}
+
+function getArticleCategory(article: Article): string {
+  // Priorizar data.category si existe (estructura del CMS)
+  if (article.data?.category) return article.data.category;
+  if (article.category) return article.category;
+  if (article.categories?.length) return article.categories[0];
+  return 'General';
+}
+
+function getArticleTitle(article: Article): string {
+  return article.data?.title || article.title || 'Sin título';
+}
+
+function getArticleExcerpt(article: Article): string {
+  return article.data?.description || article.excerpt || article.description || '';
+}
+
+function getArticleImage(article: Article): string {
+  return article.data?.image || article.image || '/images/articles/default.jpg';
+}
+---
+
+<div class="article-grid">
+  {/* Encabezado opcional */}
+  {(title || description) && (
+    <div class="mb-8">
+      {title && (
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">{title}</h2>
+      )}
+      {description && (
+        <p class="text-gray-600">{description}</p>
+      )}
+    </div>
+  )}
+  
+  {/* Grid de artículos */}
+  {processedArticles.length > 0 ? (
+    <div class={`grid gap-6 ${gridClasses[columns]} ${layout === 'masonry' ? 'masonry' : ''}`}>
+      {processedArticles.map((article, index) => {
+        const views = getArticleViews(article);
+        const category = getArticleCategory(article);
+        const isHighViews = views > 500; // Para destacar artículos populares
+        
+        return (
+          <a 
+            href={`/articulos/${article.slug}`} 
+            class="group block"
+          >
+            <article class={`
+              bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 
+              hover:shadow-xl hover:border-green-200 transition-all duration-300 
+              group-hover:scale-[1.02] h-full flex flex-col
+              ${layout === 'compact' ? 'compact-card' : ''}
+            `}>
+              
+              {/* Imagen */}
+              <div class={`relative overflow-hidden ${layout === 'compact' ? 'h-32' : 'h-48'}`}>
+                <Image 
+                  src={getArticleImage(article)}
+                  alt={getArticleTitle(article)}
+                  width={400}
+                  height={layout === 'compact' ? 160 : 240}
+                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+                
+                {/* Badges superpuestos */}
+                <div class="absolute top-3 left-3 right-3 flex justify-between items-start">
+                  <div class="flex flex-col gap-1">
+                    {/* Badge de categoría */}
+                    <span class={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(category)}`}>
+                      {category}
+                    </span>
+                    {/* Badge trending */}
+                    {article.trending && (
+                      <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        🔥 Trending
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* Views badge */}
+                  {showViews && views > 0 && (
+                    <span class={`
+                      px-2 py-1 rounded-full text-xs font-medium
+                      ${isHighViews 
+                        ? 'bg-red-500 text-white' 
+                        : 'bg-black/70 text-white'
+                      }
+                    `}>
+                      👀 {formatViews(views)}
+                    </span>
+                  )}
+                </div>
+                
+                {/* Ranking badge para artículos populares */}
+                {sortByViews && index < 3 && (
+                  <div class="absolute bottom-3 left-3">
+                    <span class={`
+                      w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm
+                      ${index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-gray-400' : 'bg-orange-400'}
+                    `}>
+                      {index + 1}
+                    </span>
+                  </div>
+                )}
+              </div>
+              
+              {/* Contenido */}
+              <div class={`${layout === 'compact' ? 'p-4' : 'p-5'} flex-1 flex flex-col`}>
+                
+                {/* Título */}
+                <h3 class={`
+                  font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors
+                  ${layout === 'compact' ? 'text-sm line-clamp-2' : 'text-base line-clamp-3'}
+                `}>
+                  {getArticleTitle(article)}
+                </h3>
+                
+                {/* Excerpt */}
+                {showExcerpt && layout !== 'compact' && (
+                  <p class="text-gray-600 text-sm mb-4 line-clamp-3 flex-1">
+                    {getArticleExcerpt(article)}
+                  </p>
+                )}
+                
+                {/* Meta información */}
+                {showMeta && (
+                  <div class="flex items-center justify-between text-xs text-gray-500 mt-auto">
+                    <div class="flex items-center gap-3">
+                      <span class="flex items-center gap-1">
+                        <span>👤</span>
+                        <span class="truncate max-w-20">{getAuthorName(article.author || article.data?.author)}</span>
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <span>📅</span>
+                        <span>{formatDate(article.date || article.data?.date)}</span>
+                      </span>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                      <span class="flex items-center gap-1">
+                        <span>⏱️</span>
+                        <span>{article.readingTime || article.data?.readingTime || 5}m</span>
+                      </span>
+                      {showViews && showViewsLabel && views > 0 && (
+                        <span class="flex items-center gap-1 text-green-600 font-medium">
+                          <span>👀</span>
+                          <span>{formatViews(views)}</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </article>
+          </a>
+        );
+      })}
+    </div>
+  ) : (
+    /* Estado vacío */
+    <div class="text-center py-12 bg-gray-50 rounded-xl border-2 border-gray-200 border-dashed">
+      <div class="text-6xl mb-4">📰</div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">
+        {emptyMessage}
+      </h3>
+      <p class="text-gray-600">
+        Vuelve pronto para ver nuevo contenido.
+      </p>
+    </div>
+  )}
+</div>
+
+<style>
+  /* Estilos adicionales para layout masonry */
+  .masonry {
+    column-count: 1;
+    column-gap: 1.5rem;
+  }
+  
+  @media (min-width: 640px) {
+    .masonry {
+      column-count: 2;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .masonry {
+      column-count: 3;
+    }
+  }
+  
+  .masonry article {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Transiciones suaves */
+  .article-grid a {
+    text-decoration: none;
+  }
+  
+  /* Responsive para compact layout */
+  .compact-card {
+    min-height: auto;
+  }
+  
+  /* Efectos hover */
+  .group:hover .group-hover\:scale-110 {
+    transform: scale(1.1);
+  }
+</style>

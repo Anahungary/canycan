@@ -767,8 +767,8 @@ if (showLeadCapture && quizCompleted) {
                         isSelectedForComparison(breed.id)
                           ? 'bg-red-500 hover:bg-red-600 text-white'
                           : selectedForComparison.length >= 3
-                            ? 'bg-gray-300 text-green-500 cursor-not-allowed'
-                            : 'bg-[#AFC2D5] hover:bg-[#9DB3C6] text-white'
+                            ? 'bg-gray-300 text-white cursor-not-allowed'
+                            : 'bg-green-500 hover:bg-green-800 text-white'
                       }`}
                     >
                       {isSelectedForComparison(breed.id) ? 'Quitar' : 
@@ -808,8 +808,8 @@ if (showLeadCapture && quizCompleted) {
         {showComparator && selectedForComparison.length > 0 && renderComparisonAnalysis()}
         
         {/* Botón para comparar recomendadas */}
-        <div className="mt-8 bg-gradient-to-r from-[#C8D6B9] to-[#B8CBA9] rounded-lg p-6 text-center">
-          <h4 className="text-xl font-bold text-[#5A7251] mb-2">
+        <div className="mt-8 bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-center">
+          <h4 className="text-xl font-bold text-green-900 mb-2">
             🔍 ¿Quieres comparar tus recomendaciones?
           </h4>
           <p className="text-[#5A7251] mb-4">

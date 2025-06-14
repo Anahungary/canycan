@@ -1,0 +1,345 @@
+// utils/viewsDynamic.ts - SISTEMA DE VISTAS DINÁMICAS CON TYPES CORRECTOS
+import { ArticlesDB } from '../lib/supabase.js';
+import type { CollectionEntry } from 'astro:content';
+
+// 🔧 TYPES E INTERFACES
+type ArticuloEntry = CollectionEntry<'articulos'>;
+
+interface ArticleStats {
+  views: number;
+  likes: number;
+  shares: number;
+  trending?: boolean;
+  featured?: boolean;
+}
+
+interface PopularArticle {
+  slug: string;
+  title: string;
+  category: string;
+  views: number;
+  reading_time: number;
+  trending: boolean;
+}
+
+interface TrendingArticle {
+  slug: string;
+  title: string;
+  category: string;
+  recent_views: number;
+  total_views: number;
+}
+
+interface FallbackArticle {
+  title: string;
+  slug: string;
+  category: string;
+  readingTime: number;
+}
+
+interface ArticleForSync {
+  slug: string;
+  title: string;
+  category?: string;
+  author?: string;
+  readingTime: number;
+}
+
+interface CacheEntry {
+  views: number;
+  timestamp: number;
+  isFallback?: boolean;
+}
+
+// Cache en memoria para reducir consultas
+const viewsCache = new Map<string, CacheEntry>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+export class DynamicViews {
+  
+  /**
+   * Obtener vistas reales o generar fallback
+   */
+  static async getArticleViews(
+    slug: string, 
+    category: string | null = null, 
+    fallbackOnly: boolean = false
+  ): Promise<number> {
+    // Si solo queremos fallback (para desarrollo)
+    if (fallbackOnly) {
+      return this.generateFallbackViews(slug, category);
+    }
+
+    // Verificar cache
+    const cacheKey = `views_${slug}`;
+    const cached = viewsCache.get(cacheKey);
+    
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      console.log(`📊 Usando views desde cache: ${slug} = ${cached.views}`);
+      return cached.views;
+    }
+
+    try {
+      // Intentar obtener vistas reales de Supabase
+      const stats: ArticleStats = await ArticlesDB.getArticleStats(slug);
+      
+      if (stats && stats.views >= 0) {
+        // Guardar en cache
+        viewsCache.set(cacheKey, {
+          views: stats.views,
+          timestamp: Date.now()
+        });
+        
+        console.log(`📊✅ Views reales obtenidas: ${slug} = ${stats.views}`);
+        return stats.views;
+      } else {
+        throw new Error('No hay datos en Supabase');
+      }
+      
+    } catch (error) {
+      console.log(`📊⚠️ Supabase no disponible para ${slug}, usando fallback`);
+      
+      // Usar fallback si Supabase no está disponible
+      const fallbackViews = this.generateFallbackViews(slug, category);
+      
+      // Guardar fallback en cache (con menos duración)
+      viewsCache.set(cacheKey, {
+        views: fallbackViews,
+        timestamp: Date.now(),
+        isFallback: true
+      });
+      
+      return fallbackViews;
+    }
+  }
+
+  /**
+   * Generar vistas de fallback con estrategia de marketing
+   */
+  static generateFallbackViews(slug: string, category: string | null = null): number {
+    const hash = slug.split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+    
+    const seed = Math.abs(hash);
+    const popularCategories = ['entrenamiento', 'alimentacion', 'salud', 'cachorros'];
+    const isPopular = Boolean(category && popularCategories.includes(category.toLowerCase()));
+    
+    if (isPopular) {
+      return 200 + (seed % 1300); // 200-1500 views
+    } else {
+      return 50 + (seed % 250); // 50-300 views
+    }
+  }
+
+  /**
+   * Obtener artículos populares dinámicamente
+   */
+  static async getPopularArticles(
+    limit: number = 5, 
+    fallbackArticles: FallbackArticle[] = []
+  ): Promise<PopularArticle[]> {
+    try {
+      const popularFromDB: PopularArticle[] = await ArticlesDB.getPopularArticles(limit);
+      
+      if (popularFromDB && popularFromDB.length > 0) {
+        console.log(`🔥✅ ${popularFromDB.length} artículos populares desde Supabase`);
+        return popularFromDB.map((article: PopularArticle) => ({
+          title: article.title,
+          slug: article.slug,
+          category: article.category || 'General',
+          views: article.views,
+          reading_time: article.reading_time || 5,
+          trending: article.trending
+        }));
+      } else {
+        throw new Error('No hay datos populares en Supabase');
+      }
+      
+    } catch (error) {
+      console.log('🔥⚠️ Usando artículos populares fallback');
+      
+      // Usar fallback con vistas simuladas
+      return fallbackArticles.slice(0, limit).map((article: FallbackArticle) => ({
+        title: article.title,
+        slug: article.slug,
+        category: article.category || 'General',
+        views: this.generateFallbackViews(article.slug, article.category),
+        reading_time: article.readingTime || 5,
+        trending: Math.random() > 0.7 // 30% chance de ser trending
+      })).sort((a: PopularArticle, b: PopularArticle) => b.views - a.views);
+    }
+  }
+
+  /**
+   * Obtener artículos trending dinámicamente
+   */
+  static async getTrendingArticles(
+    limit: number = 5, 
+    fallbackArticles: FallbackArticle[] = []
+  ): Promise<TrendingArticle[]> {
+    try {
+      const trendingFromDB: TrendingArticle[] = await ArticlesDB.getTrendingArticles(limit);
+      
+      if (trendingFromDB && trendingFromDB.length > 0) {
+        console.log(`📈✅ ${trendingFromDB.length} artículos trending desde Supabase`);
+        return trendingFromDB.map((article: TrendingArticle) => ({
+          title: article.title,
+          slug: article.slug,
+          category: article.category || 'General',
+          total_views: article.total_views,
+          recent_views: article.recent_views
+        }));
+      } else {
+        throw new Error('No hay datos trending en Supabase');
+      }
+      
+    } catch (error) {
+      console.log('📈⚠️ Usando artículos trending fallback');
+      
+      // Simular trending con los más "populares" del fallback
+      return fallbackArticles.slice(0, limit).map((article: FallbackArticle) => ({
+        title: article.title,
+        slug: article.slug,
+        category: article.category || 'General',
+        total_views: this.generateFallbackViews(article.slug, article.category),
+        recent_views: Math.floor(Math.random() * 100), // Views recientes simuladas
+      })).sort((a: TrendingArticle, b: TrendingArticle) => b.total_views - a.total_views);
+    }
+  }
+
+  /**
+   * Incrementar vista (solo Supabase)
+   */
+  static async incrementView(slug: string): Promise<boolean> {
+    try {
+      await ArticlesDB.incrementViews(slug);
+      
+      // Limpiar cache para este artículo
+      viewsCache.delete(`views_${slug}`);
+      
+      console.log(`📊➕ Vista incrementada para: ${slug}`);
+      return true;
+    } catch (error) {
+      console.error(`❌ Error incrementando vista para ${slug}:`, error);
+      return false;
+    }
+  }
+
+  /**
+   * Sincronizar artículos con Supabase
+   */
+  static async syncArticles(articlesFromCMS: ArticuloEntry[]): Promise<number> {
+    console.log(`🔄 Iniciando sincronización de ${articlesFromCMS.length} artículos...`);
+    
+    let syncedCount = 0;
+    
+    for (const article of articlesFromCMS) {
+      try {
+        const articleForSync: ArticleForSync = {
+          slug: article.slug,
+          title: article.data.title,
+          category: article.data.category,
+          author: article.data.author,
+          readingTime: article.data.readingTime || 5
+        };
+
+        const success = await ArticlesDB.syncArticleFromCMS(articleForSync);
+        
+        if (success) {
+          syncedCount++;
+        }
+      } catch (error) {
+        console.error(`❌ Error sincronizando ${article.slug}:`, error);
+      }
+    }
+    
+    console.log(`✅ Sincronizados ${syncedCount}/${articlesFromCMS.length} artículos`);
+    return syncedCount;
+  }
+
+  /**
+   * Limpiar cache (util para desarrollo)
+   */
+  static clearCache(): void {
+    viewsCache.clear();
+    console.log('🧹 Cache de views limpiado');
+  }
+}
+
+// 🎯 FUNCIONES DE COMPATIBILIDAD (para reemplazar fácilmente las existentes)
+
+/**
+ * Para usar en ArticleLayout.astro - reemplaza getDisplayViews
+ */
+export async function getDisplayViews(
+  views: number | undefined, 
+  articleSlug: string, 
+  category: string | null = null
+): Promise<number> {
+  // Si ya tiene views definidas y son altas, mantenerlas (datos manuales)
+  if (views && views >= 100) {
+    return views;
+  }
+  
+  // Obtener views dinámicas
+  return await DynamicViews.getArticleViews(articleSlug, category);
+}
+
+/**
+ * Para usar en páginas de índice - reemplaza generateMarketingViews
+ */
+export async function getDynamicViews(
+  articleSlug: string, 
+  isPopular: boolean = false, 
+  category: string | null = null
+): Promise<number> {
+  return await DynamicViews.getArticleViews(articleSlug, category);
+}
+
+/**
+ * Client-side: Incrementar vista cuando se ve un artículo
+ */
+export function trackArticleView(slug: string): void {
+  // Solo trackear en el cliente
+  if (typeof window === 'undefined') return;
+  
+  // Evitar múltiples tracks en la misma sesión
+  const viewedKey = `viewed_${slug}`;
+  if (sessionStorage.getItem(viewedKey)) {
+    return;
+  }
+  
+  // Marcar como visto
+  sessionStorage.setItem(viewedKey, 'true');
+  
+  // Enviar a la API
+  fetch('/api/article-view', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ slug })
+  }).catch(error => {
+    console.error('Error tracking view:', error);
+  });
+}
+
+// 🎯 SCRIPT PARA INCLUIR EN PÁGINAS DE ARTÍCULOS
+export const articleViewTracker = `
+<script>
+  // Trackear vista después de 3 segundos (lectura real)
+  setTimeout(() => {
+    const slug = window.location.pathname.split('/').pop();
+    if (slug && !sessionStorage.getItem('viewed_' + slug)) {
+      sessionStorage.setItem('viewed_' + slug, 'true');
+      fetch('/api/article-view', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug })
+      });
+    }
+  }, 3000);
+</script>
+`;

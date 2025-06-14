@@ -1,41 +1,78 @@
 ---
-// src/pages/articulos/[slug].astro - VERSIÓN COMPATIBLE CON TU TAGS.TS
+// src/pages/articulos/[slug].astro - COMPLETAMENTE DINÁMICO DESDE CMS
 import { getCollection, type CollectionEntry } from 'astro:content';
 import ArticleLayout from '../../layouts/ArticleLayout.astro';
-import { generateTagSlug } from '../../utils/tags.ts';
+import { ArticlesDB } from '../../lib/supabase.js';
 
-
+// 🔧 TIPOS TYPESCRIPT
 type ArticuloEntry = CollectionEntry<'articulos'>;
+
+interface PopularArticle {
+  title: string;
+  slug: string;
+  readingTime: number;
+  category: string;
+  views: number;
+}
+
+interface RelatedArticle {
+  id: string;
+  title: string;
+  image: string;
+  readingTime: number;
+  views: number;
+  slug: string;
+}
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const articulos = await getCollection('articulos');
+  console.log('🚀 INICIANDO getStaticPaths() - Carga dinámica desde CMS');
   
-  // Filtrar solo artículos publicados
+  // 📰 CARGAR TODOS LOS ARTÍCULOS DINÁMICAMENTE DESDE EL CMS
+  const articulos = await getCollection('articulos');
   const publishedArticles = articulos.filter((article: ArticuloEntry) => 
     article.data.status === 'published'
   );
 
-  console.log(`📰 Generando ${publishedArticles.length} artículos para Balto`);
-  
-  return publishedArticles.map((articulo: ArticuloEntry) => {
-    // 🔧 VALIDACIÓN SIMPLE USANDO TU FUNCIÓN EXISTENTE
-    if (import.meta.env.DEV) {
-      // Solo en desarrollo, verificar que el slug sea válido
-      if (!articulo.slug || articulo.slug.length < 3) {
-        console.warn(`⚠️ Slug problemático: ${articulo.slug}`);
-        // Sugerir slug usando tu función existente
-        const suggestedSlug = generateTagSlug(articulo.data.title);
-        console.log(`💡 Slug sugerido: ${suggestedSlug}`);
-      }
-    }
+  console.log(`📰 ENCONTRADOS: ${publishedArticles.length} artículos publicados en CMS`);
 
-    return {
-      params: { slug: articulo.slug },
-      props: { articulo }
-    };
-  });
+  // 🔄 SINCRONIZACIÓN AUTOMÁTICA - TODOS LOS ARTÍCULOS DEL CMS → SUPABASE
+  console.log('🔄 SINCRONIZANDO automáticamente TODOS los artículos del CMS...');
+  
+  let syncedCount = 0;
+  for (const article of publishedArticles) {
+    try {
+      const success = await ArticlesDB.syncArticleFromCMS({
+        slug: article.slug,
+        title: article.data.title,
+        category: article.data.category || 'general',
+        author: article.data.author || 'Editor Balto',
+        readingTime: article.data.readingTime || 5,
+        image: article.data.image || '/images/articles/default.jpg'
+      });
+      
+      if (success) {
+        syncedCount++;
+        console.log(`✅ Sincronizado: ${article.slug}`);
+      } else {
+        console.log(`❌ Error sincronizando: ${article.slug}`);
+      }
+    } catch (error) {
+      console.error(`❌ Error sincronizando ${article.slug}:`, error);
+    }
+  }
+  
+  console.log(`🎯 SINCRONIZACIÓN COMPLETADA: ${syncedCount}/${publishedArticles.length} artículos`);
+  
+  return publishedArticles.map((articulo: ArticuloEntry) => ({
+    params: { slug: articulo.slug },
+    props: { articulo }
+  }));
+}
+
+interface Props {
+  articulo: ArticuloEntry;
 }
 
 const { articulo } = Astro.props;
@@ -46,118 +83,133 @@ if (!articulo) {
 
 const { Content } = await articulo.render();
 
+// 📊 FUNCIÓN PARA OBTENER VIEWS REALES DE SUPABASE
+async function getSupabaseViews(slug: string): Promise<number> {
+  try {
+    const stats = await ArticlesDB.getArticleStats(slug);
+    const views = stats?.views || 0;
+    console.log(`📊 Views ${slug}: ${views}`);
+    return views;
+  } catch (error) {
+    console.log(`📊❌ Error obteniendo views para ${slug}:`, error);
+    return 0;
+  }
+}
+
+// 🔧 FUNCIÓN PARA AVATAR DEL AUTOR
 function getAuthorAvatar(authorName: string): string {
-  // Normalizar el nombre removiendo acentos y espacios extra
-  const normalizedName = authorName?.trim().toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, ''); // Remueve acentos
-  
   const authorAvatars: Record<string, string> = {
-    // Versiones con acentos
     'Ana María Prieto': '/images/ana-p2.webp',
     'Manuel Alejandro Bedoya': '/images/manuel-p1.webp',
     'Equipo Editorial Balto': '/images/baltologo.svg',
-    
   };
   
-  // Primero intentar con el nombre original
-  if (authorAvatars[authorName]) {
-    console.log(`✅ Avatar encontrado para: "${authorName}"`);
-    return authorAvatars[authorName];
-  }
-  
-  // Luego intentar con el nombre normalizado
-  if (authorAvatars[normalizedName]) {
-    console.log(`✅ Avatar encontrado (normalizado) para: "${authorName}" → "${normalizedName}"`);
-    return authorAvatars[normalizedName];
-  }
-  
-  // Debug: mostrar qué nombre está llegando
-  console.log(`❌ No se encontró avatar para: "${authorName}" (normalizado: "${normalizedName}")`);
-  console.log('📝 Nombres disponibles:', Object.keys(authorAvatars));
-  
-  return '/images/authors/default.jpg';
+  return authorAvatars[authorName] || authorAvatars['Equipo Editorial Balto'];
 }
 
+// 📊 OBTENER VIEWS DEL ARTÍCULO ACTUAL
+const articleViews = await getSupabaseViews(articulo.slug);
 
-// 🔥 CARGAR ARTÍCULOS REALES DEL CMS PARA EL SIDEBAR - CON TIPOS CORRECTOS
-let allArticles: ArticuloEntry[] = [];
-try {
-  allArticles = await getCollection('articulos');
-  allArticles = allArticles.filter((art: ArticuloEntry) => art.data.status === 'published');
-} catch (error) {
-  console.log('ℹ️ No se pudieron cargar artículos para sidebar');
-  allArticles = [];
-}
-
-// 📈 GENERAR ARTÍCULOS POPULARES REALES (ordenados por fecha)
-const popularArticles = allArticles
-  .filter((art: ArticuloEntry) => art.slug !== articulo.slug)
-  .sort((a: ArticuloEntry, b: ArticuloEntry) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
-  .slice(0, 5)
-  .map((art: ArticuloEntry) => ({
-    title: art.data.title,
-    slug: art.slug,
-    readingTime: art.data.readingTime || 5,
-    category: art.data.category || 'General'
-  }));
-
-// 📰 GENERAR ARTÍCULOS RELACIONADOS (misma categoría)
-const relatedArticles = allArticles
-  .filter((art: ArticuloEntry) => 
-    art.slug !== articulo.slug && 
-    art.data.category === articulo.data.category
-  )
+// 🔥 OBTENER ARTÍCULOS POPULARES - SOLO DESDE SUPABASE (SIN FALLBACKS)
+console.log('🔥 Obteniendo artículos populares desde Supabase...');
+const popularArticlesRaw = await ArticlesDB.getPopularArticles(5);
+const popularArticles: PopularArticle[] = (popularArticlesRaw || [])
+  .filter((article: any) => article.slug !== articulo.slug) // Excluir artículo actual
   .slice(0, 3)
-  .map((art: ArticuloEntry) => ({
-    id: art.slug,
-    title: art.data.title,
-    image: art.data.image || '/images/articles/default.jpg',
-    readingTime: art.data.readingTime || 5
+  .map((article: any) => ({
+    title: article.title,
+    slug: article.slug,
+    readingTime: article.reading_time || 5,
+    category: article.category || 'general',
+    views: article.views || 0
   }));
 
-// 🎯 GENERAR BREADCRUMBS DINÁMICOS PARA BALTO
-const breadcrumbItems = [
-  { label: 'Inicio', href: '/', icon: '🏠' },
-  { label: 'Artículos', href: '/articulos', icon: '📰' }
-];
+console.log(`🔥 POPULARES OBTENIDOS: ${popularArticles.length} desde Supabase`);
 
-// Agregar categoría si existe
-if (articulo.data.category) {
-  breadcrumbItems.push({
-    label: articulo.data.category.charAt(0).toUpperCase() + articulo.data.category.slice(1),
-    href: `/categorias/${articulo.data.category}`,
-    icon: '📂'
-  });
-}
+// 🔗 OBTENER ARTÍCULOS RELACIONADOS - SOLO DESDE SUPABASE (SIN FALLBACKS)
+console.log(`🔗 Obteniendo relacionados para categoría: ${articulo.data.category}`);
+const relatedArticlesRaw = await ArticlesDB.getArticlesByCategory(
+  articulo.data.category || 'general', 
+  5
+);
+const relatedArticles: RelatedArticle[] = (relatedArticlesRaw || [])
+  .filter((article: any) => article.slug !== articulo.slug) // Excluir artículo actual
+  .slice(0, 2)
+  .map((article: any, index: number) => ({
+    id: (index + 1).toString(),
+    title: article.title,
+    slug: article.slug,
+    image: article.image || '/images/articles/default.jpg',
+    readingTime: article.reading_time || 5,
+    views: article.views || 0
+  }));
 
-// Preparar datos para TU LAYOUT ORIGINAL con todos los estilos
+console.log(`🔗 RELACIONADOS OBTENIDOS: ${relatedArticles.length} desde Supabase`);
+
+// 📋 PREPARAR DATOS PARA EL LAYOUT
 const articleData = {
   title: articulo.data.title,
   description: articulo.data.description,
   author: {
-    name: articulo.data.author,
-    avatar: getAuthorAvatar(articulo.data.author || 'Editor Balto'), // ← CAMBIO AQUÍ
-    bio: articulo.data.authorBio || 'Especialista en cuidado y bienestar de mascotas'
+    name: articulo.data.author || 'Editor Balto',
+    bio: articulo.data.author === 'Ana María Prieto' 
+      ? 'Especialista en cuidado y bienestar de mascotas'
+      : articulo.data.author === 'Manuel Alejandro Bedoya'
+      ? 'Entrenador certificado en comportamiento canino'  
+      : 'Especialista en cuidado y bienestar de mascotas',
+    avatar: getAuthorAvatar(articulo.data.author || 'Editor Balto')
   },
   date: articulo.data.date.toISOString(),
   readingTime: articulo.data.readingTime || 5,
-  categories: articulo.data.tags || [articulo.data.category],
+  categories: articulo.data.tags || [articulo.data.category].filter(Boolean),
+  category: articulo.data.category,
   image: articulo.data.image,
-  views: articulo.data.views || 0,
-  showTableOfContents: true,
+  views: articleViews,
   popularArticles: popularArticles,
   relatedArticles: relatedArticles
-};
+} as const;
 
-// 🎯 LOG PARA DEBUGGING (solo en desarrollo)
-if (import.meta.env.DEV) {
-  console.log(`🎯 Renderizando artículo: ${articulo.data.title}`);
-  console.log(`📊 Artículos relacionados: ${relatedArticles.length}`);
-  console.log(`🔥 Artículos populares: ${popularArticles.length}`);
-}
+// 🎯 LOGS FINALES
+console.log(`📰 ARTÍCULO: ${articulo.data.title}`);
+console.log(`📊 VIEWS: ${articleViews}`);
+console.log(`🔥 POPULARES: ${popularArticles.length} (${popularArticles.map(a => `${a.title}:${a.views}`).join(', ')})`);
+console.log(`🔗 RELACIONADOS: ${relatedArticles.length} (${relatedArticles.map(a => `${a.title}:${a.views}`).join(', ')})`);
 ---
 
-<ArticleLayout {...articleData}>
+<ArticleLayout 
+  title={articleData.title}
+  description={articleData.description}
+  author={articleData.author}
+  date={articleData.date}
+  readingTime={articleData.readingTime}
+  categories={articleData.categories}
+  category={articleData.category}
+  image={articleData.image}
+  views={articleData.views}
+  popularArticles={articleData.popularArticles}
+  relatedArticles={articleData.relatedArticles}
+>
   <Content />
 </ArticleLayout>
+
+<!-- 📊 TRACKING DE VISTAS -->
+<script define:vars={{ slug: articulo.slug }}>
+  console.log('📊 Tracking iniciado para:', slug);
+  
+  setTimeout(() => {
+    if (!sessionStorage.getItem(`viewed_${slug}`)) {
+      sessionStorage.setItem(`viewed_${slug}`, 'true');
+      
+      fetch('/.netlify/functions/article-view', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug })
+      }).then(response => response.json())
+      .then(data => {
+        console.log('📊✅ Vista registrada:', data);
+      }).catch(error => {
+        console.log('📊❌ Error tracking:', error);
+      });
+    }
+  }, 3000);
+</script>

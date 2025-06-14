@@ -74,8 +74,7 @@ function getMarketingViews(articleSlug: string, category?: string, originalViews
 }
 
 const articleSlug = currentUrl.split('/').pop() || '';
-const displayViews = getMarketingViews(articleSlug, category, views);
-
+const displayViews = views || 0;
 // 🔧 FUNCIÓN PARA OBTENER LA CATEGORÍA PRINCIPAL REAL
 function getRealCategory(): string | null {
   const realCategoryNames = [
@@ -277,9 +276,9 @@ if (breadcrumb.length === 0) {
                   month: 'long', 
                   day: 'numeric' 
                 })}</p>
-                <p class="text-sm text-gray-500">
-  👁️ {displayViews.toLocaleString()} visualizaciones
-</p>
+                <p class="text-sm text-gray-500" data-view-counter>
+                  👁️ {displayViews.toLocaleString()} visualizaciones
+                </p>
 
 {displayViews > 400 && (
   <p class="text-xs text-orange-600 font-medium mt-1">
@@ -459,6 +458,7 @@ if (breadcrumb.length === 0) {
               <!-- Newsletter form integrado -->
                <Newsletter />
               
+            </div>
           </div>
         </div>
       </div>
@@ -471,8 +471,60 @@ if (breadcrumb.length === 0) {
   </div>
 
   <!-- Script para funcionalidades -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
+ <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    
+    // 📊 AUTO-TRACKING DE VIEWS (AGREGAR ESTO)
+    function initViewTracker() {
+      try {
+        const currentPath = window.location.pathname;
+        const slug = currentPath.split('/').pop();
+        
+        if (!slug) return;
+        
+        const viewedKey = `viewed_${slug}`;
+        const alreadyViewed = sessionStorage.getItem(viewedKey);
+        
+        if (alreadyViewed) {
+          console.log(`👁️ Artículo "${slug}" ya fue visto en esta sesión`);
+          return;
+        }
+        
+        console.log('⏱️ Esperando 3 segundos para confirmar lectura...');
+        setTimeout(async () => {
+          try {
+            const response = await fetch('/.netlify/functions/article-view', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ slug: slug })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              console.log(`✅ Vista trackeada: "${result.title}" - ${result.views} views`);
+              sessionStorage.setItem(viewedKey, 'true');
+              
+              // Actualizar contador si existe
+              const viewCounter = document.querySelector('[data-view-counter]');
+              if (viewCounter) {
+                const formatted = result.views.toLocaleString();
+                viewCounter.textContent = `👁️ ${formatted} visualizaciones`;
+              }
+            }
+          } catch (error) {
+            console.error('❌ Error enviando vista:', error);
+          }
+        }, 3000);
+        
+      } catch (error) {
+        console.error('❌ Error inicializando view tracker:', error);
+      }
+    }
+    
+    // Inicializar tracking
+    initViewTracker();
+    // FIN AUTO-TRACKING
       
       // Progress bar de lectura
       function updateProgress(): void {
@@ -597,6 +649,8 @@ if (breadcrumb.length === 0) {
 </BaseLayout>
 
 <style>
+  /* ===== ESTILOS CORREGIDOS SIN DUPLICACIÓN DE NÚMEROS ===== */
+  
   /* Estilos premium para el artículo */
   .article-content {
     @apply prose prose-lg max-w-none;
@@ -626,8 +680,35 @@ if (breadcrumb.length === 0) {
     @apply border-l-4 border-green-500 bg-green-50 p-6 my-8 rounded-r-xl italic;
   }
   
-  .article-content ul, .article-content ol {
+  /* 🔧 LISTAS MEJORADAS - QUITANDO LA DUPLICACIÓN */
+  .article-content ul {
     @apply my-6 space-y-2;
+  }
+  
+  .article-content ol {
+    @apply my-8;
+    /* QUITAR la numeración automática de prose */
+    list-style: none !important;
+    padding-left: 0 !important;
+    counter-reset: item;
+  }
+  
+  .article-content ol li {
+    @apply text-gray-700 leading-relaxed mb-4;
+    /* QUITAR el número automático y agregar padding para el personalizado */
+    position: relative;
+    padding-left: 3rem !important;
+    counter-increment: item;
+    font-size: 1.1rem;
+  }
+  
+  /* Números personalizados en círculos verdes */
+  .article-content ol li::before {
+    content: counter(item);
+    @apply absolute w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm;
+    left: 0;
+    top: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
   
   .article-content li {
@@ -668,6 +749,15 @@ if (breadcrumb.length === 0) {
     
     .article-subtitle {
       @apply text-lg;
+    }
+    
+    /* Números más pequeños en móvil */
+    .article-content ol li::before {
+      @apply w-7 h-7 text-xs;
+    }
+    
+    .article-content ol li {
+      padding-left: 2.5rem !important;
     }
   }
   

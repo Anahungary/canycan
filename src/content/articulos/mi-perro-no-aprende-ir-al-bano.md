@@ -130,9 +130,9 @@ Aprendí a leer las señales:
 - Olfatear el piso en círculos
 - Caminar inquieto de un lado a otro
 - Jadear sin razón aparente
-- Dirigirse a su "spot" favorito para accidentes
+- Dirigirse a su el ultimo lugar que hizo sus necesidades o a su espacio favorito donde siempre comete estos accidentes
 
-**Mi respuesta:** Cargarlo inmediatamente al empapador.
+**Mi respuesta:** Cargarlo inmediatamente al baño social ó para los lectores el lugar designado donde orinar o hacer popó.
 
 ## Errores que cometí (para que no los repitas)
 
@@ -146,7 +146,7 @@ Aprendí a leer las señales:
 
 ### ❌ Error #3: Premios aburridos
 **Lo que usaba:** Croquetas normales
-**Lo que funcionó:** Premios que la volvían loca de felicidad
+**Lo que funcionó:** Premios que lo volvían loco de felicidad
 
 ### ❌ Error #4: Castigos y drama
 **Lo que hacía:** Gritar, regañar, hacer drama
@@ -158,7 +158,7 @@ Aprendí a leer las señales:
 
 Busca ayuda si después de los 8-9 meses:
 - Sigue teniendo más de 2-3 accidentes por semana
-- Nunca usa el empapador o área designada
+- Nunca usa el área designada
 - Retrocede en el progreso
 
 ### Posibles problemas médicos

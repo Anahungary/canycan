@@ -1,7 +1,7 @@
-/* empty css                                 */
-import { c as createComponent, r as renderComponent, a as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BYXCEbbA.mjs';
+/* empty css                                      */
+import { c as createComponent, r as renderComponent, a as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_D02iGaEB.mjs';
 import 'kleur/colors';
-import { $ as $$BaseLayout, a as $$Container } from '../chunks/Container_BIbJk0Bg.mjs';
+import { $ as $$BaseLayout, a as $$Container } from '../chunks/Container_DjUMO5lw.mjs';
 export { renderers } from '../renderers.mjs';
 
 const $$SobreNosotros = createComponent(($$result, $$props, $$slots) => {
@@ -17,19 +17,19 @@ Desde consejos de alimentación hasta guías de entrenamiento, pasando por infor
               detallada sobre razas, queremos ser esa fuente confiable de información sobre mascotas 
               que a nosotros nos hubiera gustado tener cuando empezamos con Río.
 </p> </div> <div class="text-center"> <div class="bg-white rounded-lg p-6 shadow-lg"> <div class="text-6xl mb-4">🐕🐱</div> <h3 class="text-xl font-bold text-gray-900 mb-2">Información Confiable</h3> <p class="text-gray-600">Basada en evidencia veterinaria y experiencia práctica</p> </div> </div> </div> </section> <!-- Historia Real --> <section class="mb-12"> <h2 class="text-3xl font-bold mb-6 text-gray-900">Nuestra Historia</h2> <div class="prose prose-lg max-w-none text-gray-600"> <p class="mb-4">
-Balto nació en 2023 por <strong>Río</strong>, nuestro compañero peludo que nos cambió la vida. 
+Balto nació en 2025 por <strong>Río</strong>, nuestro compañero peludo que llego en el 2023 y nos cambió la vida. 
             Como papás de Río, Ana María y Manuel descubrimos que tener un perro va mucho más allá 
             de solo "tener una mascota".
 </p> <p class="mb-4">
 Río nos hizo replantear completamente la manera de disfrutar un perro y nos mostró 
             la verdadera responsabilidad que conlleva. Nos dimos cuenta de todo el conocimiento 
             que realmente necesitas tener: cómo educarlo correctamente, cómo alimentarlo bien, 
-            y cómo convivir con él de manera que ambos sean felices.
+            y cómo convivir con él de manera que Río y nosotros pudieramos ser felices.
 </p> <p class="mb-4">
 Cada día con Río ha sido una lección. Desde cómo entrenarlo (¡y cómo él nos entrenó a nosotros!) 
             hasta entender sus necesidades reales, no las que creíamos que tenía. Nos dimos cuenta 
             de que mucha información disponible era genérica o no aplicaba a nuestra realidad 
-            como papás primerizos en Colombia.
+            como papás primerizos.
 </p> <p>
 Por eso creamos Balto: para compartir todo lo que hemos aprendido en este hermoso 
             camino con otros papás y mamás perrunos. Cada artículo viene de nuestra experiencia 
