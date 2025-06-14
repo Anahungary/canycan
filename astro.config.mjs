@@ -14,7 +14,7 @@ export default defineConfig({
     tailwind()
   ],
   
-  site: 'https://Balto.com',
+  site: 'https://baltosabe.netlify.app/',
   
   output: 'server',
   adapter: netlify(),
