@@ -23,7 +23,7 @@ articleType: "Article"
 
 **Esta guía te llevará paso a paso por los cuatro pilares fundamentales del bienestar canino**: nutrición óptima, ejercicio adecuado, salud preventiva y bienestar emocional. Al final, tendrás las herramientas necesarias para que tu mejor amigo no solo viva más años, sino que viva mejor.
 
-![Perro feliz corriendo en un campo verde](/images/articulos/perro-feliz-corriendo.webp)
+![Perro feliz corriendo en un campo verde](/images/articulos/perro-jugando.webp)
 
 *Un perro que disfruta de bienestar integral muestra alegría natural en cada actividad*
 
