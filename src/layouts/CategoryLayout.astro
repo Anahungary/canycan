@@ -1,95 +1,70 @@
 ---
+// src/layouts/CategoryLayout.astro - VERSIÓN CON TILDES EN NOMBRES
 import BaseLayout from './BaseLayout.astro';
 import Container from '../components/ui/Container.astro';
 import Button from '../components/ui/Button.astro';
-import Badge from '../components/ui/Badge.astro';
-import ArticleList from '../components/blog/ArticleList.astro';
 import Card from '../components/ui/Card.astro';
-import { Image } from 'astro:assets';
+import ArticleList from '../components/blog/ArticleList.astro';
 import Newsletter from '../components/common/Newsletter.astro';
+// ✅ IMPORTAR LA FUNCIÓN DE NORMALIZACIÓN
+import { generateTagSlug } from '../utils/tags.ts';
 
 interface Props {
   title: string;
   description: string;
-  image?: string;
   category: string;
   articles: any[];
   featuredArticle?: any;
 }
 
-const { 
-  title, 
-  description, 
-  image = '/images/categories/default.jpg',
-  category,
-  articles = [],
-  featuredArticle
-} = Astro.props;
+const { title, description, category, articles, featuredArticle } = Astro.props;
 
-// 🔧 FUNCIÓN PARA AVATARES REALES DE AUTORES
-function getAuthorAvatar(authorName: string): string {
-  const authorAvatars: Record<string, string> = {
-    'Ana María Prieto': '/images/ana-p2.webp',
-    'Manuel Alejandro Bedoya': '/images/manuel-p1.webp',
-    'Equipo Editorial Balto': '/images/baltologo.svg',
-    'Editor Balto': '/images/baltologo.svg'
-  };
-  
-  return authorAvatars[authorName] || '/images/baltologo.svg';
-}
+// 🔧 DETERMINAR ARTÍCULO DESTACADO
+const displayFeaturedArticle = featuredArticle && articles.length > 4 ? featuredArticle : null;
 
-// Funciones utilitarias
-const formatDate = (date: string | Date) => {
-  return new Date(date).toLocaleDateString('es-ES', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
-  });
-};
-
-const getTimeAgo = (date: string | Date) => {
-  const now = new Date();
-  const articleDate = new Date(date);
-  const diffInHours = Math.floor((now.getTime() - articleDate.getTime()) / (1000 * 60 * 60));
-  
-  if (diffInHours < 24) {
-    return `hace ${diffInHours}h`;
-  } else if (diffInHours < 24 * 7) {
-    return `hace ${Math.floor(diffInHours / 24)}d`;
-  } else {
-    return formatDate(date);
-  }
-};
-
-// Artículo destacado (el más reciente si no se especifica)
-const displayFeaturedArticle = featuredArticle || articles[0];
-
-// Artículos restantes para la grilla
-const otherArticles = displayFeaturedArticle 
-  ? articles.filter(a => a.id !== displayFeaturedArticle.id).slice(0, 8)
+// 📚 ARTÍCULOS PARA LA LISTA (excluir destacado si existe)
+const displayArticles = displayFeaturedArticle ? 
+  articles.filter(a => a.id !== displayFeaturedArticle.id).slice(0, 8)
   : articles.slice(1, 9);
 
-// 🏷️ EXTRAER TEMAS POPULARES DE LOS ARTÍCULOS
+// 🏷️ EXTRAER TEMAS POPULARES - MANTENIENDO NOMBRES ORIGINALES CON TILDES
 const getAllTagsFromArticles = (articles: any[]) => {
-  const allTags: string[] = [];
+  // 🔧 MAPA PARA ACUMULAR: slug -> {originalName, count}
+  const tagMap = new Map<string, {originalName: string, count: number}>();
   
   articles.forEach(article => {
     if (article.categories && Array.isArray(article.categories)) {
-      allTags.push(...article.categories);
+      article.categories.forEach((tag: string) => {
+        if (tag && typeof tag === 'string') {
+          const originalName = tag.trim(); // ✅ MANTENER CON TILDES: "alimentación"
+          const slug = generateTagSlug(tag); // ✅ NORMALIZAR: "alimentacion"
+          
+          if (slug && slug !== 'unknown') {
+            if (tagMap.has(slug)) {
+              // Si ya existe, incrementar contador
+              tagMap.get(slug)!.count += 1;
+            } else {
+              // Si es nuevo, crear entrada
+              tagMap.set(slug, {
+                originalName: originalName,
+                count: 1
+              });
+            }
+          }
+        }
+      });
     }
   });
   
-  // Contar frecuencia y obtener los más populares
-  const tagCounts = allTags.reduce((acc, tag) => {
-    const normalizedTag = tag.toLowerCase().trim();
-    acc[normalizedTag] = (acc[normalizedTag] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-  
-  return Object.entries(tagCounts)
-    .sort(([,a], [,b]) => b - a)
+  // 🔄 CONVERTIR MAP A ARRAY Y ORDENAR POR POPULARIDAD
+  return Array.from(tagMap.entries())
+    .sort(([,a], [,b]) => b.count - a.count)
     .slice(0, 8)
-    .map(([tag, count]) => tag.charAt(0).toUpperCase() + tag.slice(1));
+    .map(([slug, data]) => ({
+      slug: slug,                    // ✅ "alimentacion" (para URL)
+      name: data.originalName,       // ✅ "alimentación" (para mostrar)
+      count: data.count
+    }));
 };
 
 const popularTags = getAllTagsFromArticles(articles);
@@ -126,14 +101,18 @@ const getCategoryIcon = (category: string) => {
           {description}
         </p>
         
-        {/* Temas populares como badges en el hero */}
+        {/* ✅ TEMAS POPULARES - Nombres bonitos con tildes, URLs limpias */}
         {popularTags.length > 0 && (
           <div class="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
             {popularTags.slice(0, 6).map(tag => (
-              <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 text-white transition-all duration-200">
+              <a 
+                href={`/tag/${tag.slug}`}
+                class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white bg-opacity-20 hover:bg-opacity-30 text-white transition-all duration-200 hover:scale-105"
+                title={`Ver artículos sobre ${tag.name}`}
+              >
                 <span class="mr-2">{getCategoryIcon(category)}</span>
-                {tag}
-              </span>
+                {tag.name} {/* ✅ MOSTRAR CON TILDES */}
+              </a>
             ))}
           </div>
         )}
@@ -159,53 +138,47 @@ const getCategoryIcon = (category: string) => {
               <div class="flex-1 h-px bg-gradient-to-r from-yellow-200 to-transparent"></div>
             </div>
             
-            <Card class="overflow-hidden hover:shadow-xl transition-shadow duration-200">
-              <div class="grid grid-cols-1 md:grid-cols-5 gap-0">
-                <div class="md:col-span-2">
-                  <Image 
-                    src={displayFeaturedArticle.image || '/images/articles/default.jpg'} 
-                    alt={displayFeaturedArticle.title || 'Artículo destacado'}
-                    width={400}
-                    height={250}
-                    class="w-full h-48 md:h-full object-cover"
-                  />
+            <Card class="overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+              <div class="grid md:grid-cols-2 gap-0">
+                <div class="aspect-video md:aspect-auto bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                  {displayFeaturedArticle.image ? (
+                    <img 
+                      src={displayFeaturedArticle.image} 
+                      alt={displayFeaturedArticle.title}
+                      class="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div class="text-6xl">{getCategoryIcon(category)}</div>
+                  )}
                 </div>
-                <div class="md:col-span-3 p-6">
-                  <div class="flex items-center gap-2 mb-3">
-                    <Badge variant="secondary" size="sm">
-                      {category}
-                    </Badge>
-                    <span class="text-sm text-gray-500">
-                      {getTimeAgo(displayFeaturedArticle.date)}
+                <div class="p-8">
+                  <div class="flex items-center gap-2 mb-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      ⭐ Destacado
                     </span>
+                    <span class="text-sm text-gray-500">{displayFeaturedArticle.readingTime} min lectura</span>
                   </div>
-                  
-                  <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
-                    <a href={`/articulos/${displayFeaturedArticle.id}`} class="hover:text-green-600 transition-colors">
-                      {displayFeaturedArticle.title}
-                    </a>
+                  <h3 class="text-2xl font-bold text-gray-900 mb-4 leading-tight">
+                    {displayFeaturedArticle.title}
                   </h3>
-                  
-                  <p class="text-gray-600 mb-4 line-clamp-2">
+                  <p class="text-gray-600 mb-6 leading-relaxed line-clamp-3">
                     {displayFeaturedArticle.excerpt}
                   </p>
-                  
                   <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                      <Image 
-                        src={getAuthorAvatar(displayFeaturedArticle.author?.name || 'Editor Balto')}
-                        alt={displayFeaturedArticle.author?.name || 'Editor Balto'}
-                        width={32}
-                        height={32}
-                        class="w-8 h-8 rounded-full object-cover"
+                    <div class="flex items-center gap-3">
+                      <img 
+                        src={displayFeaturedArticle.author?.avatar || '/images/authors/default.jpg'} 
+                        alt={displayFeaturedArticle.author?.name}
+                        class="w-8 h-8 rounded-full"
                       />
-                      <span class="text-sm text-gray-600">
-                        {displayFeaturedArticle.author?.name || 'Editor Balto'}
-                      </span>
+                      <div>
+                        <p class="text-sm font-medium text-gray-900">{displayFeaturedArticle.author?.name}</p>
+                        <p class="text-xs text-gray-500">{displayFeaturedArticle.date}</p>
+                      </div>
                     </div>
                     <Button 
-                      href={`/articulos/${displayFeaturedArticle.id}`} 
-                      variant="primary" 
+                      href={`/articulos/${displayFeaturedArticle.id}/`}
+                      variant="primary"
                       size="sm"
                     >
                       Leer más
@@ -217,103 +190,63 @@ const getCategoryIcon = (category: string) => {
           </section>
         )}
         
-        {/* 📰 ARTÍCULOS RECIENTES */}
-        <section class="mb-12">
+        {/* 📋 LISTA DE ARTÍCULOS */}
+        <section>
           <div class="flex items-center gap-3 mb-8">
-            <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
-              <span class="text-white text-sm">📚</span>
+            <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+              <span class="text-white text-sm">{getCategoryIcon(category)}</span>
             </div>
-            <h2 class="text-2xl font-bold text-gray-900">Más artículos de {category}</h2>
-            <div class="flex-1 h-px bg-gradient-to-r from-green-200 to-transparent"></div>
+            <h2 class="text-2xl font-bold text-gray-900">
+              {displayFeaturedArticle ? 'Más Artículos' : 'Todos los Artículos'}
+            </h2>
+            <div class="flex-1 h-px bg-gradient-to-r from-blue-200 to-transparent"></div>
+            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+              {displayArticles.length} artículos
+            </span>
           </div>
           
-          {otherArticles.length > 0 ? (
-            <ArticleList 
-              articles={otherArticles.map(article => ({
-                id: article.id,
-                title: article.title || 'Título del artículo',
-                excerpt: article.excerpt || 'Descripción del artículo',
-                image: article.image || '/images/articles/default.jpg',
-                author: {
-                  name: article.author?.name || 'Editor Balto',
-                  avatar: getAuthorAvatar(article.author?.name || 'Editor Balto')
-                },
-                date: article.date,
-                readingTime: article.readingTime || 5,
-                categories: article.categories || [],
-                featured: false
-              }))} 
-              layout="grid" 
-              columns={2}
-            />
-          ) : (
-            <div class="bg-gradient-to-br from-green-50 to-yellow-50 rounded-lg p-8 text-center border-2 border-green-200">
-              <span class="text-4xl mb-4 block">📝</span>
-              <h3 class="text-lg font-medium text-gray-900 mb-2">
-                No hay más artículos de {category}
-              </h3>
-              <p class="text-gray-600 mb-4">
-                Vuelve pronto para ver nuevo contenido.
-              </p>
-            </div>
-          )}
+          <ArticleList
+            articles={displayArticles}
+            layout="grid"
+            columns={2}
+          />
         </section>
-        
-        {/* 🔗 ENLACE A VER TODOS */}
-        {articles.length > 9 && (
-          <div class="mt-12 text-center">
-            <div class="inline-flex items-center gap-4">
-              <span class="text-gray-600 font-medium">
-                Mostrando {Math.min(9, articles.length)} de {articles.length} artículos
-              </span>
-              <a 
-                href={`/${category}`}
-                class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-              >
-                <span>Ver todos los artículos</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
-          </div>
-        )}
       </div>
       
-      {/* 📍 SIDEBAR - COLUMNA LATERAL */}
+      {/* 📱 SIDEBAR */}
       <div class="lg:col-span-4">
-        <div class="sticky top-[140px] space-y-8">
+        <div class="space-y-8 lg:sticky lg:top-8">
           
           {/* 📊 ESTADÍSTICAS */}
-          <Card class="p-8 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+          <Card class="p-8 bg-gradient-to-br from-blue-50 to-purple-50 border-blue-100">
             <div class="flex items-center gap-3 mb-6">
-              <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+              <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                 <span class="text-white text-sm">📊</span>
               </div>
               <h3 class="text-xl font-bold text-gray-900">Estadísticas</h3>
             </div>
             
             <div class="grid grid-cols-2 gap-4">
-              <div class="text-center">
-                <div class="text-2xl font-bold text-green-600">{stats.total}</div>
+              <div class="text-center p-4 bg-white rounded-lg border border-blue-200">
+                <div class="text-2xl font-bold text-blue-600">{stats.total}</div>
                 <div class="text-sm text-gray-600">Artículos</div>
               </div>
-              <div class="text-center">
-                <div class="text-2xl font-bold text-blue-600">{stats.categories}</div>
+              <div class="text-center p-4 bg-white rounded-lg border border-purple-200">
+                <div class="text-2xl font-bold text-purple-600">{stats.categories}</div>
                 <div class="text-sm text-gray-600">Temas</div>
               </div>
-              <div class="text-center">
-                <div class="text-2xl font-bold text-purple-600">{stats.authors}</div>
+              <div class="text-center p-4 bg-white rounded-lg border border-green-200">
+                <div class="text-2xl font-bold text-green-600">{stats.authors}</div>
                 <div class="text-sm text-gray-600">Autores</div>
               </div>
-              <div class="text-center">
+              <div class="text-center p-4 bg-white rounded-lg border border-orange-200">
                 <div class="text-2xl font-bold text-orange-600">{stats.readingTime}</div>
-                <div class="text-sm text-gray-600">Min. promedio</div>
+                <div class="text-sm text-gray-600">Min promedio</div>
               </div>
             </div>
           </Card>
           
-          {/* 🔥 TEMAS POPULARES */}
+          {/* 🔥 TEMAS POPULARES - SIDEBAR con nombres bonitos */}
           {popularTags.length > 0 && (
             <Card class="p-8">
               <div class="flex items-center gap-3 mb-6">
@@ -326,10 +259,12 @@ const getCategoryIcon = (category: string) => {
               <div class="flex flex-wrap gap-2">
                 {popularTags.map(tag => (
                   <a 
-                    href={`/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
-                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 hover:from-orange-200 hover:to-red-200 transition-all duration-200"
+                    href={`/tag/${tag.slug}`}
+                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 hover:from-orange-200 hover:to-red-200 transition-all duration-200 hover:scale-105"
+                    title={`${tag.count} artículos sobre ${tag.name}`}
                   >
-                    {tag}
+                    {tag.name} {/* ✅ MOSTRAR CON TILDES */}
+                    <span class="ml-1 text-orange-600 font-bold">({tag.count})</span>
                   </a>
                 ))}
               </div>
@@ -344,6 +279,7 @@ const getCategoryIcon = (category: string) => {
     </div>
   </Container>
 </BaseLayout>
+
 <style>
   .line-clamp-2 {
     display: -webkit-box;

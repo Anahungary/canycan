@@ -5,10 +5,21 @@ import CategoryLayout from '../../layouts/CategoryLayout.astro';
 const todosLosArticulos = await getCollection('articulos');
 const todasLasCategorias = await getCollection('categorias');
 
+function getAuthorAvatar(authorName: string): string {
+  const authorAvatars: Record<string, string> = {
+    'Ana María Prieto': '/images/ana-p2.webp',
+    'Manuel Alejandro Bedoya': '/images/manuel-p1.webp',
+    'Equipo Editorial Balto': '/images/baltologo.svg',
+    'Editor Balto': '/images/baltologo.svg'
+  };
+  
+  return authorAvatars[authorName] || '/images/baltologo.svg';
+}
+
 const articles = todosLosArticulos
   .filter(articulo => {
     const categoria = articulo.data.category;
-    const etiquetas = articulo.data.tags || [];
+    const etiquetas = articulo.data.tags || []
     
     return categoria === 'cuidado' || 
            etiquetas.includes('cuidado') ||
@@ -25,23 +36,23 @@ const articles = todosLosArticulos
     date: articulo.data.date.toISOString().split('T')[0],
     author: {
       name: articulo.data.author || 'Editor Balto',
-      avatar: '/images/authors/default.jpg'
+      avatar: getAuthorAvatar(articulo.data?.author || 'Editor Balto')
     },
     readingTime: articulo.data.readingTime || 5,
     categories: [articulo.data.category, ...(articulo.data.tags || [])].filter(Boolean)
   }));
 
-const categoriaCuidado = todasLasCategorias.find(cat => cat.slug === 'cuidado');
+const categoriaEntrenamiento = todasLasCategorias.find(cat => cat.slug === 'entrenamiento');
 const featuredArticle = articles.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
-const title = categoriaCuidado?.data.name || "💚 Cuidado y Bienestar";
-const description = categoriaCuidado?.data.description || "Todo lo que necesitas saber para mantener a tu mascota limpia, sana y feliz";
+const title = categoriaEntrenamiento?.data.name || "🎯 Entrenamiento";
+const description = categoriaEntrenamiento?.data.description || "Guías completas para entrenar a tu mascota con técnicas efectivas y refuerzo positivo";
 ---
 
 <CategoryLayout
   title={title}
   description={description}
-  category="cuidado"
+  category="entrenamiento"
   articles={articles}
   featuredArticle={featuredArticle}
 />

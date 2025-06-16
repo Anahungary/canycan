@@ -9,6 +9,7 @@ import Card from '../../components/ui/Card.astro';
 import Breadcrumb from '../../components/common/Breadcrumb.astro';
 import Newsletter from '../../components/common/Newsletter.astro';
 
+
 // 🔧 IMPORTAR UTILIDADES CORREGIDAS
 import {
  generateTagSlug,
@@ -164,10 +165,27 @@ function getAuthorAvatar(authorName: string): string {
    }));
 
    // Generar nombre amigable del slug
-   const tagName = tagSlug
-     .split('-')
-     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-     .join(' ');
+   let tagName = tagSlug
+  .split('-')
+  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
+
+// Buscar el nombre original con tildes
+const foundTag = allArticles.find(article => {
+  const allTagsInArticle = [
+    article.data.category,
+    ...(article.data.tags || [])
+  ].filter(Boolean);
+  return allTagsInArticle.find(tag => generateTagSlug(tag) === tagSlug);
+});
+
+if (foundTag) {
+  const originalTag = [foundTag.data.category, ...(foundTag.data.tags || [])]
+    .find(tag => generateTagSlug(tag) === tagSlug);
+  if (originalTag) {
+    tagName = originalTag;
+  }
+}
 
    const tagInfo: TagInfo = {
      slug: tagSlug,
@@ -271,7 +289,7 @@ function getPopularTagsFromArticles(articles: any[], limit: number = 8) {
   
   // Contar frecuencia de cada tag
   const tagCounts = allTags.reduce((acc, tag) => {
-    const normalizedTag = tag.toLowerCase().trim();
+    const normalizedTag = generateTagSlug(tag);
     acc[normalizedTag] = (acc[normalizedTag] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
@@ -282,7 +300,7 @@ function getPopularTagsFromArticles(articles: any[], limit: number = 8) {
     .slice(0, limit)
     .map(([tag, count]) => ({
       name: tag.charAt(0).toUpperCase() + tag.slice(1),
-      slug: tag.toLowerCase().replace(/\s+/g, '-'),
+      slug: generateTagSlug(tag),
       count: count
     }));
 }

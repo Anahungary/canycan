@@ -44,6 +44,17 @@ interface TagInfo {
   featured?: boolean;
 }
 
+function getAuthorAvatar(authorName: string): string {
+  const authorAvatars: Record<string, string> = {
+    'Ana María Prieto': '/images/ana-p2.webp',
+    'Manuel Alejandro Bedoya': '/images/manuel-p1.webp',
+    'Equipo Editorial Balto': '/images/baltologo.svg',
+    'Editor Balto': '/images/baltologo.svg'
+  };
+  
+  return authorAvatars[authorName] || '/images/baltologo.svg';
+}
+
 export async function getStaticPaths() {
   let allArticles: any[] = [];
   let allTags: any[] = [];
@@ -102,7 +113,7 @@ export async function getStaticPaths() {
         new Date().toISOString().split('T')[0],
       author: {
         name: article.data?.author || 'Editor Balto',
-        avatar: '/images/authors/default.jpg'
+        avatar: getAuthorAvatar(article.data?.author || 'Editor Balto')
       },
       readingTime: article.data?.readingTime || 5,
       categories: [article.data?.category, ...(article.data?.tags || [])].filter(Boolean)
@@ -150,17 +161,33 @@ export async function getStaticPaths() {
           new Date().toISOString().split('T')[0],
         author: {
           name: article.data?.author || 'Editor Balto',
-          avatar: '/images/authors/default.jpg'
+          avatar: getAuthorAvatar(article.data?.author || 'Editor Balto')
         },
         readingTime: article.data?.readingTime || 5,
         categories: [article.data?.category, ...(article.data?.tags || [])].filter(Boolean)
       }));
 
       // Generar nombre amigable del slug
-      const tagName = tagSlug
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+      let originalTagName = tagSlug
+  .split('-')
+  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(' ');
+
+// Intentar encontrar el nombre original con tildes de los artículos
+const foundOriginalName = allArticles.find(article => {
+  const tags = [...(article.data.tags || []), article.data.category].filter(Boolean);
+  return tags.find(tag => generateTagSlug(tag) === tagSlug);
+});
+
+if (foundOriginalName) {
+  const originalTag = [...(foundOriginalName.data.tags || []), foundOriginalName.data.category]
+    .find(tag => generateTagSlug(tag) === tagSlug);
+  if (originalTag) {
+    originalTagName = originalTag; // ✅ Mantiene "Nutrición" con tilde
+  }
+}
+
+const tagName = originalTagName;
 
       const tagInfo: TagInfo = {
         slug: tagSlug,

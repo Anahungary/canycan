@@ -25,7 +25,7 @@ const articles = todosLosArticulos
     date: articulo.data.date.toISOString().split('T')[0],
     author: {
       name: articulo.data.author || 'Editor Balto',
-      avatar: '/images/authors/default.jpg'
+      avatar: getAuthorAvatar(article.data?.author || 'Editor Balto')
     },
     readingTime: articulo.data.readingTime || 5,
     categories: [articulo.data.category, ...(articulo.data.tags || [])].filter(Boolean)

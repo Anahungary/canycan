@@ -8,6 +8,8 @@ import Badge from '../../../components/ui/Badge.astro';
 import ArticleList from '../../../components/blog/ArticleList.astro';
 import Card from '../../../components/ui/Card.astro';
 import { Image } from 'astro:assets';
+import { generateTagSlug } from '../../../utils/tags.ts';
+
 
 // ✅ AGREGAR PRERENDER - ESTO ERA LO QUE FALTABA
 export const prerender = true;
@@ -152,7 +154,7 @@ function getPopularTagsFromArticles(articles: any[], limit: number = 8) {
     .slice(0, limit)
     .map(([tag, count]) => ({
       name: tag.charAt(0).toUpperCase() + tag.slice(1),
-      slug: tag.toLowerCase().replace(/\s+/g, '-'),
+      slug: generateTagSlug(tag),
       count: count
     }));
 }

@@ -10,6 +10,7 @@ import Card from '../../components/ui/Card.astro';
 import { Image } from 'astro:assets';
 import Newsletter from '../../components/common/Newsletter.astro';  // ← AGREGAR ESTA LÍNEA
 import { DynamicViews } from '../../utils/viewsDynamic.ts';
+import { generateTagSlug } from '../../utils/tags.ts';
 
 
 
@@ -38,23 +39,26 @@ function getPopularTagsFromArticles(articles: any[], limit: number = 8) {
     }
   });
   
-  // Contar frecuencia de cada tag
+  // ✅ MANTENER NOMBRE ORIGINAL + SLUG SEPARADOS
   const tagCounts = allTags.reduce((acc, tag) => {
-    const normalizedTag = tag.toLowerCase().trim();
-    acc[normalizedTag] = (acc[normalizedTag] || 0) + 1;
+    const slug = generateTagSlug(tag);
+    if (!acc[slug]) {
+      acc[slug] = { originalName: tag, count: 0 }; // ✅ MANTIENE "Nutrición"
+    }
+    acc[slug].count += 1;
     return acc;
-  }, {} as Record<string, number>);
+  }, {} as Record<string, { originalName: string, count: number }>);
   
-  // Ordenar por frecuencia y tomar los más populares
   return Object.entries(tagCounts)
-    .sort(([,a], [,b]) => b - a)
+    .sort(([,a], [,b]) => b.count - a.count)
     .slice(0, limit)
-    .map(([tag, count]) => ({
-      name: tag.charAt(0).toUpperCase() + tag.slice(1), // Capitalizar
-      slug: tag.toLowerCase().replace(/\s+/g, '-'),
-      count: count
+    .map(([slug, data]) => ({
+      name: data.originalName, // ✅ "Nutrición" (CON TILDE)
+      slug: slug,              // ✅ "nutricion" (SIN TILDE)
+      count: data.count
     }));
 }
+
 
 // 🔍 CARGAR ARTÍCULOS REALES DEL CMS
 let allArticles: any[] = [];
@@ -386,11 +390,11 @@ const description = "Descubre artículos especializados sobre entrenamiento, ali
               <div class="flex flex-wrap gap-2">
                 {popularTags.map(tag => (
                   <a 
-                   href={`/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`}
-                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 hover:from-orange-200 hover:to-red-200 transition-all duration-200"
-                  >
-                    {tag}
-                  </a>
+  href={`/tag/${generateTagSlug(tag)}`}
+  class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 hover:from-orange-200 hover:to-red-200 transition-all duration-200"
+>
+  {tag}
+</a>
                 ))}
               </div>
             </Card>
