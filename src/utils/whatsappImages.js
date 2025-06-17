@@ -236,7 +236,7 @@ export function generateWhatsAppMetaTags(data, siteUrl) {
   return {
     // OpenGraph básico
     'og:type': type,
-    'og:site_name': 'Balto',
+    'og:site_name': 'Kajú',
     'og:url': absoluteUrl,
     'og:title': title,
     'og:description': description,
@@ -246,16 +246,16 @@ export function generateWhatsAppMetaTags(data, siteUrl) {
     'og:image:width': WHATSAPP_IMAGE_CONFIG.OPTIMAL_WIDTH.toString(),
     'og:image:height': WHATSAPP_IMAGE_CONFIG.OPTIMAL_HEIGHT.toString(),
     'og:image:type': 'image/jpeg',
-    'og:image:alt': `${title} - Balto`,
+    'og:image:alt': `${title} - Kajú`,
     'og:locale': 'es_ES',
     
     // Twitter Cards
     'twitter:card': 'summary_large_image',
-    'twitter:site': '@Balto',
+    'twitter:site': '@Kajú',
     'twitter:title': title,
     'twitter:description': description,
     'twitter:image': optimizedImage,
-    'twitter:image:alt': `${title} - Balto`,
+    'twitter:image:alt': `${title} - Kajú`,
     
     // Adicionales para mejor compatibilidad
     'article:publisher': siteUrl,

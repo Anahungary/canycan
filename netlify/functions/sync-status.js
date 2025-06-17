@@ -206,7 +206,7 @@ async function cleanGenericTitles(supabase, headers) {
       'connection-test': {
         title: 'Prueba de Conexión al Sistema',
         category: 'general',
-        author: 'Editor Balto'
+        author: 'Editor Kajú'
       }
       // Agregar más según sea necesario
     };

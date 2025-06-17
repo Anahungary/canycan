@@ -3,7 +3,7 @@ title: "¿Por qué mi perro ladra a otros perros? Soluciones fáciles para perro
 description: "Tu perro ladra como loco cuando ve otros perros? Descubre qué hacer cuando tu peludo se pone agresivo con los perros del barrio y cómo solucionarlo de una vez por todas."
 date: 2025-05-30T10:00:00.000Z
 author: "Manuel Alejandro Bedoya"
-authorBio: "Papá de Río, administrador de Balto que se esmera en amaestrar a su perro y comparte sus experiencias reales de entrenamiento amateur."
+authorBio: "Papá de Río, administrador de Kajú que se esmera en amaestrar a su perro y comparte sus experiencias reales de entrenamiento amateur."
 tags: ["perros-reactivos", "comportamiento", "perros-agresivos", "entrenamiento"]
 category: "comportamiento"
 featured: true

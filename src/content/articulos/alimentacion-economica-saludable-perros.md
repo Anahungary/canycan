@@ -2,8 +2,8 @@
 title: "Alimentación económica y saludable para perros y gatos: Guía completa para Latinoamérica 2025"
 description: "Descubre cómo alimentar a tus perros y gatos de forma saludable y económica en Latinoamérica. Recetas caseras, ingredientes accesibles y cantidades exactas para que tus mascotas tengan una vida plena sin arruinar tu presupuesto."
 date: 2025-05-30T10:00:00.000Z
-author: "Equipo Editorial Balto"
-authorBio: "El equipo de Balto investiga y verifica información con fuentes confiables para brindarte contenido útil y real sobre el cuidado de mascotas."
+author: "Equipo Editorial Kajú"
+authorBio: "El equipo de Kajú investiga y verifica información con fuentes confiables para brindarte contenido útil y real sobre el cuidado de mascotas."
 tags: ["nutricion-economica", "alimentacion-casera", "perros", "latinoamerica"]
 category: "nutricion"
 featured: true

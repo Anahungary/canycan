@@ -24,8 +24,8 @@ const articles = todosLosArticulos
     image: articulo.data.image || '/images/articles/default.jpg',
     date: articulo.data.date.toISOString().split('T')[0],
     author: {
-      name: articulo.data.author || 'Editor Balto',
-      avatar: getAuthorAvatar(article.data?.author || 'Editor Balto')
+      name: articulo.data.author || 'Editor Kajú',
+      avatar: getAuthorAvatar(article.data?.author || 'Editor Kajú')
     },
     readingTime: articulo.data.readingTime || 5,
     categories: [articulo.data.category, ...(articulo.data.tags || [])].filter(Boolean)

@@ -1,5 +1,5 @@
 // public/scripts/netlify-identity.js
-// Configuración de Netlify Identity para Balto
+// Configuración de Netlify Identity para Kajú
 
 (function() {
   'use strict';

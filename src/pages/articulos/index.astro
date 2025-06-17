@@ -146,7 +146,7 @@ const getTimeAgo = (date: string | Date) => {
   }
 };
 
-const title = "Balto - La revista digital de mascotas";
+const title = "Kajú - La revista digital de mascotas";
 const description = "Descubre artículos especializados sobre entrenamiento, alimentación, salud y comportamiento de perros y gatos. Consejos de expertos para mejorar la vida de tu mascota.";
 ---
 
@@ -228,14 +228,14 @@ const description = "Descubre artículos especializados sobre entrenamiento, ali
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                       <Image 
-                        src={getAuthorAvatar(featuredArticle.data?.author || 'Editor Balto')}
-                        alt={featuredArticle.data?.author || 'Editor Balto'}
+                        src={getAuthorAvatar(featuredArticle.data?.author || 'Editor Kajú')}
+                        alt={featuredArticle.data?.author || 'Editor Kajú'}
                         width={32}
                         height={32}
                         class="w-8 h-8 rounded-full object-cover"
                       />
                       <span class="text-sm text-gray-600">
-                        {featuredArticle.data?.author || 'Editor Balto'}
+                        {featuredArticle.data?.author || 'Editor Kajú'}
                       </span>
                     </div>
                     <Button 
@@ -270,8 +270,8 @@ const description = "Descubre artículos especializados sobre entrenamiento, ali
                 excerpt: article.data?.description || 'Descripción del artículo',
                 image: article.data?.image || '/images/articles/default.jpg',
                 author: {
-                  name: article.data?.author || 'Editor Balto',
-                  avatar: getAuthorAvatar(article.data?.author || 'Editor Balto')
+                  name: article.data?.author || 'Editor Kajú',
+                  avatar: getAuthorAvatar(article.data?.author || 'Editor Kajú')
                 },
                 date: article.data?.date ? article.data.date.toISOString() : new Date().toISOString(),
                 readingTime: article.data?.readingTime || 5,

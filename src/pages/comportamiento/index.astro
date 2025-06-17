@@ -36,8 +36,8 @@ const articles = todosLosArticulos
     image: articulo.data.image || '/images/articles/default.jpg',
     date: articulo.data.date.toISOString().split('T')[0],
     author: {
-      name: articulo.data.author || 'Editor Balto',
-      avatar: getAuthorAvatar(articulo.data?.author || 'Editor Balto') // ✅ CORREGIDO: articulo en lugar de article
+      name: articulo.data.author || 'Editor Kajú',
+      avatar: getAuthorAvatar(articulo.data?.author || 'Editor Kajú') // ✅ CORREGIDO: articulo en lugar de article
     },
     readingTime: articulo.data.readingTime || 5,
     categories: [articulo.data.category, ...(articulo.data.tags || [])].filter(Boolean)

@@ -62,7 +62,7 @@ function getAuthorAvatar(authorName: string): string {
    'Editor Balto': '/images/baltologo.svg'
  };
  
- return authorAvatars[authorName] || '/images/baltologo.svg';
+ return authorAvatars[authorName] || '/images/kajulogo.svg';
 }
 
  let allArticles: any[] = [];
@@ -111,8 +111,8 @@ function getAuthorAvatar(authorName: string): string {
      image: article.data?.image || '/images/articles/default.jpg',
      date: article.data?.date ? article.data.date.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
      author: {
-       name: article.data?.author || 'Editor Balto',
-       avatar: getAuthorAvatar(article.data?.author || 'Editor Balto')
+       name: article.data?.author || 'Editor Kajú',
+       avatar: getAuthorAvatar(article.data?.author || 'Editor Kajú')
      },
      readingTime: article.data?.readingTime || 5,
      categories: [article.data?.category, ...(article.data?.tags || [])].filter(Boolean)
@@ -157,8 +157,8 @@ function getAuthorAvatar(authorName: string): string {
      image: article.data?.image || '/images/articles/default.jpg',
      date: article.data?.date ? article.data.date.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
      author: {
-       name: article.data?.author || 'Editor Balto',
-       avatar: getAuthorAvatar(article.data?.author || 'Editor Balto')
+       name: article.data?.author || 'Editor Kajú',
+       avatar: getAuthorAvatar(article.data?.author || 'Editor Kajú')
      },
      readingTime: article.data?.readingTime || 5,
      categories: [article.data?.category, ...(article.data?.tags || [])].filter(Boolean)

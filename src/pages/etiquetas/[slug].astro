@@ -112,8 +112,8 @@ export async function getStaticPaths() {
         article.data.date.toISOString().split('T')[0] : 
         new Date().toISOString().split('T')[0],
       author: {
-        name: article.data?.author || 'Editor Balto',
-        avatar: getAuthorAvatar(article.data?.author || 'Editor Balto')
+        name: article.data?.author || 'Editor Kajú',
+        avatar: getAuthorAvatar(article.data?.author || 'Editor Kajú')
       },
       readingTime: article.data?.readingTime || 5,
       categories: [article.data?.category, ...(article.data?.tags || [])].filter(Boolean)
@@ -160,8 +160,8 @@ export async function getStaticPaths() {
           article.data.date.toISOString().split('T')[0] : 
           new Date().toISOString().split('T')[0],
         author: {
-          name: article.data?.author || 'Editor Balto',
-          avatar: getAuthorAvatar(article.data?.author || 'Editor Balto')
+          name: article.data?.author || 'Editor Kajú',
+          avatar: getAuthorAvatar(article.data?.author || 'Editor Kajú')
         },
         readingTime: article.data?.readingTime || 5,
         categories: [article.data?.category, ...(article.data?.tags || [])].filter(Boolean)
@@ -279,7 +279,7 @@ const relatedTags = [
 ---
 
 <BaseLayout
-  title={`${tag.name} | Etiquetas Balto`}
+  title={`${tag.name} | Etiquetas Kajú`}
   description={tag.description}
 >
   {/* Breadcrumbs */}

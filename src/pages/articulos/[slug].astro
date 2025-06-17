@@ -47,7 +47,7 @@ export async function getStaticPaths() {
         slug: article.slug,
         title: article.data.title,
         category: article.data.category || 'general',
-        author: article.data.author || 'Editor Balto',
+        author: article.data.author || 'Editor Kajú',
         readingTime: article.data.readingTime || 5,
         image: article.data.image || '/images/articles/default.jpg'
       });
@@ -101,10 +101,10 @@ function getAuthorAvatar(authorName: string): string {
   const authorAvatars: Record<string, string> = {
     'Ana María Prieto': '/images/ana-p2.webp',
     'Manuel Alejandro Bedoya': '/images/manuel-p1.webp',
-    'Equipo Editorial Balto': '/images/baltologo.svg',
+    'Equipo Editorial Kajú': '/images/kajulogo.svg',
   };
   
-  return authorAvatars[authorName] || authorAvatars['Equipo Editorial Balto'];
+  return authorAvatars[authorName] || authorAvatars['Equipo Editorial Kajú'];
 }
 
 // 📊 OBTENER VIEWS DEL ARTÍCULO ACTUAL
@@ -168,13 +168,13 @@ const articleData = {
   title: articulo.data.title,
   description: articulo.data.description,
   author: {
-    name: articulo.data.author || 'Editor Balto',
+    name: articulo.data.author || 'Editor Kajú',
     bio: articulo.data.author === 'Ana María Prieto' 
       ? 'Especialista en cuidado y bienestar de mascotas'
       : articulo.data.author === 'Manuel Alejandro Bedoya'
       ? 'Entrenador certificado en comportamiento canino'  
       : 'Especialista en cuidado y bienestar de mascotas',
-    avatar: getAuthorAvatar(articulo.data.author || 'Editor Balto')
+    avatar: getAuthorAvatar(articulo.data.author || 'Editor Kajú')
   },
   date: articulo.data.date.toISOString(),
   readingTime: articulo.data.readingTime || 5,

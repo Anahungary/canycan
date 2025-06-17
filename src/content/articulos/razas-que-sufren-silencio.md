@@ -3,7 +3,7 @@ title: "Razas que Sufren en Silencio: ¿Qué animales ya no deberían criarse?"
 description: "Investigación completa sobre razas de perros y gatos con problemas genéticos graves. Descubre por qué algunos países ya prohiben estas razas y las alternativas saludables disponibles."
 date: 2024-05-30T10:00:00.000Z
 author: "Manuel Alejandro Bedoya"
-authorBio: "Papá de Río, administrador de Balto que se esmera en amaestrar a su perro y comparte sus experiencias reales de entrenamiento amateur."
+authorBio: "Papá de Río, administrador de Kajú que se esmera en amaestrar a su perro y comparte sus experiencias reales de entrenamiento amateur."
 tags: ["bienestar-animal", "genetica-canina", "cria-responsable", "salud-animal"]
 category: "salud-animal"
 featured: true

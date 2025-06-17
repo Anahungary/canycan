@@ -2,8 +2,8 @@
 title: "BARF vs Comida Comercial vs Dieta Mixta: Análisis científico completo de alimentación canina"
 description: "Comparativa exhaustiva basada en evidencia científica sobre las tres principales opciones de alimentación para perros: BARF, alimento comercial y dietas mixtas, con pros, contras y recomendaciones veterinarias."
 date: 2025-05-30T18:00:00.000Z
-author: "Equipo Editorial Balto"
-authorBio: "El equipo de Balto investiga y verifica información con fuentes confiables para brindarte contenido útil y real sobre el cuidado de mascotas."
+author: "Equipo Editorial Kajú"
+authorBio: "El equipo de Kajú investiga y verifica información con fuentes confiables para brindarte contenido útil y real sobre el cuidado de mascotas."
 
 tags: ["nutricion-canina", "dieta-barf", "alimento-comercial", "salud-animal"]
 category: "nutricion"

@@ -2,8 +2,8 @@
 title: "Alimentación para mascotas en Colombia 2025: Mejores marcas, precios y tendencias nutricionales"
 description: "Guía completa sobre alimentación de perros y gatos en Colombia. Mejores marcas, comparativa de precios, tendencias premium y consejos de veterinarios especializados."
 date: 2025-05-29T20:00:00.000Z
-author: "Equipo Editorial Balto"
-authorBio: "El equipo de Balto investiga y verifica información con fuentes confiables para brindarte contenido útil y real sobre el cuidado de mascotas."
+author: "Equipo Editorial Kajú"
+authorBio: "El equipo de Kajú investiga y verifica información con fuentes confiables para brindarte contenido útil y real sobre el cuidado de mascotas."
 tags: ["alimentacion-mascotas", "nutricion-animal", "colombia", "marcas-premium", "cuidado-mascotas"]
 category: "nutricion"
 featured: true
